@@ -5,6 +5,7 @@
 import itertools
 import re
 
+__version__ = '0.1.0'
 
 def _to_int(value):
     try:
