@@ -30,12 +30,14 @@ class test(cmd.Command):
         ('test-suite=', None, "A test suite to run (defaults to 'tests')"),
     ]
 
+    DEFAULT_TEST_SUITE = 'tests'
+
     def initialize_options(self):
         self.test_runner = None
         self.test_suite = None
 
     def finalize_options(self):
-        self.ensure_string('test_suite', 'tests')
+        self.ensure_string('test_suite', self.DEFAULT_TEST_SUITE)
 
     def run(self):
         """Run the test suite."""
@@ -47,7 +49,12 @@ class test(cmd.Command):
 
         ex_path = sys.path
         sys.path.insert(0, os.path.join(root_dir, 'src'))
-        suite = unittest.TestLoader().loadTestsFromName(self.test_suite)
+        loader = unittest.defaultTestLoader
+
+        if self.test_suite != self.DEFAULT_TEST_SUITE:
+            suite = loader.loadTestsFromName(self.test_suite)
+        else:
+            suite = loader.discover(self.test_suite)
 
         unittest.TextTestRunner(verbosity=verbosity).run(suite)
         sys.path = ex_path
