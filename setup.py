@@ -68,7 +68,7 @@ setup(
     description=("A library implementing the 'SemVer' scheme."),
     license="BSD",
     keywords=['semantic version', 'versioning', 'version'],
-    url="http://github.com/rbarrois/python-semantic_version",
+    url="http://github.com/rbarrois/python-semanticversion",
     download_url="http://pypi.python.org/pypi/semantic_version/",
     package_dir={'': 'src'},
     packages=['semantic_version'],
