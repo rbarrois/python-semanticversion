@@ -91,6 +91,11 @@ class SemanticVersionTestCase(unittest.TestCase):
             for field in fields:
                 self.assertIn(repr(field), repr(version))
 
+    def test_compare_to_self(self):
+        for text in self.versions:
+            self.assertEqual(base.SemanticVersion(text), base.SemanticVersion(text))
+            self.assertNotEqual(text, base.SemanticVersion(text))
+
     partial_versions = {
         '1.0': (1, 0, None, None, None),
         '1': (1, None, None, None, None),
@@ -128,6 +133,13 @@ class SemanticVersionTestCase(unittest.TestCase):
             for field in fields:
                 self.assertIn(repr(field), repr(version))
 
+    def test_compare_partial_to_self(self):
+        for text in self.partial_versions:
+            self.assertEqual(
+                base.SemanticVersion(text, partial=True),
+                base.SemanticVersion(text, partial=True))
+            self.assertNotEqual(text, base.SemanticVersion(text, partial=True))
 
-if __name__ == '__main__':
+
+if __name__ == '__main__':  # pragma: no cover
     unittest.main()

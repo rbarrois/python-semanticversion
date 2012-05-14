@@ -8,6 +8,9 @@ import semantic_version
 
 class ParsingTestCase(unittest.TestCase):
     invalids = [
+        None,
+        '',
+        '0',
         '0.1',
         '0.1.4a',
         '0.1.1.1',
@@ -58,7 +61,8 @@ class ComparisonTestCase(unittest.TestCase):
                     self.assertTrue(first_ver == second_ver, '%r != %r' % (first_ver, second_ver))
                 else:
                     self.assertTrue(first_ver > second_ver, '%r !> %r' % (first_ver, second_ver))
+                self.assertEqual(cmp(i, j), semantic_version.compare(first, second))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     unittest.main()

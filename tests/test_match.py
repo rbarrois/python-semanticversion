@@ -8,6 +8,8 @@ import semantic_version
 
 class MatchTestCase(unittest.TestCase):
     invalid_specs = [
+        '',
+        '!0.1',
         '<0.1',
         '<=0.1.4a',
         '>0.1.1.1',
@@ -41,6 +43,26 @@ class MatchTestCase(unittest.TestCase):
             '0.1.1',
             '0.1.2-rc1',
             '0.1.2-rc1.3.4',
+            '0.1.2',
+        ],
+        '<0.1.2': [
+            '0.1.1',
+            '0.1.2-rc1',
+            '0.1.2-rc1.3.4',
+            '0.1.2-rc1+build4.5',
+        ],
+        '>=0.1.1': [
+            '0.1.1',
+            '0.1.1+build4.5',
+            '0.1.2-rc1.3',
+            '0.2.0',
+            '1.0.0',
+        ],
+        '>0.1.1': [
+            '0.1.1+build4.5',
+            '0.1.2-rc1.3',
+            '0.2.0',
+            '1.0.0',
         ],
     }
 
@@ -60,8 +82,9 @@ class MatchTestCase(unittest.TestCase):
                 version = semantic_version.SemanticVersion(version_txt)
                 
                 self.assertTrue(spec.match(version), "%r does not match %r" % (version, spec))
+                self.assertTrue(semantic_version.match(spec_txt, version_txt))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     unittest.main()
 

@@ -90,18 +90,12 @@ class SemanticVersion(object):
         major = int(major)
 
         if minor is None:
-            if partial:
-                return (major, None, None, None, None)
-            else:
-                raise ValueError('Missing minor number: %r' % version_string)
+            return (major, None, None, None, None)
         else:
             minor = int(minor)
 
         if patch is None:
-            if partial:
-                return (major, minor, None, None, None)
-            else:
-                raise ValueError('Missing patch number: %r' % version_string)
+            return (major, minor, None, None, None)
         else:
             patch = int(patch)
 
@@ -258,7 +252,7 @@ class RequirementSpec(object):
             return version >= self.spec
         elif self.kind == self.KIND_GT:
             return version > self.spec
-        else:
+        else:  # pragma: no cover
             raise ValueError('Unexpected match kind: %r' % self.kind)
 
     def __str__(self):
