@@ -41,7 +41,11 @@ class test(cmd.Command):
 
     def run(self):
         """Run the test suite."""
-        import unittest
+        try:
+            import unittest2 as unittest
+        except ImportError:
+            import unittest
+
         if self.verbose:
             verbosity=1
         else:
