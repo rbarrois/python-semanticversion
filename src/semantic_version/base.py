@@ -58,7 +58,7 @@ def identifier_list_cmp(a, b):
 class SemanticVersion(object):
 
     version_re = re.compile('^(\d+)\.(\d+)\.(\d+)(?:-([0-9a-zA-Z.-]+))?(?:\+([0-9a-zA-Z.-]+))?$')
-    partial_version_re = re.compile('^(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:-([0-9a-zA-Z.-]+))?(?:\+([0-9a-zA-Z.-]+))?$')
+    partial_version_re = re.compile('^(\d+)(?:\.(\d+)(?:\.(\d+)(?:-([0-9a-zA-Z.-]+))?(?:\+([0-9a-zA-Z.-]+))?)?)?$')
 
     def __init__(self, version_string, partial=False):
         major, minor, patch, prerelease, build = self.parse(version_string, partial)
@@ -151,7 +151,7 @@ class SemanticVersion(object):
             self.build,
         )
 
-    def _comparison_functions(self):
+    def _comparison_functions(self, partial=False):
         def prerelease_cmp(a, b):
             if a and b:
                 return identifier_list_cmp(a, b)
@@ -183,7 +183,7 @@ class SemanticVersion(object):
 
             return alt_cmp_fun
 
-        if self.partial:
+        if partial:
             return [
                 cmp,
                 make_optional(cmp),
@@ -205,83 +205,15 @@ class SemanticVersion(object):
             return NotImplemented
 
         field_pairs = zip(self, other)
-        for cmp_fun, field_pair in zip(self._comparison_functions(), field_pairs):
+        comparison_functions = self._comparison_functions(partial=self.partial or other.partial)
+
+        for cmp_fun, field_pair in zip(comparison_functions, field_pairs):
             self_field, other_field = field_pair
             cmp_res = cmp_fun(self_field, other_field)
             if cmp_res != 0:
                 return cmp_res
 
         return 0
-
-
-class PartialSemanticVersion(SemanticVersion):
-    version_re = re.compile('^(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:-([0-9a-zA-Z.-]+))?(?:\+([0-9a-zA-Z.-]+))?$')
-
-    @classmethod
-    def parse(cls, version_string):
-        if not version_string:
-            raise ValueError('Invalid version string %r.' % version_string)
-
-        match = cls.version_re.match(version_string)
-        if not match:
-            raise ValueError('Invalid version string %r.' % version_string)
-
-        major, minor, patch, prerelease, build = match.groups()
-
-        major = int(major)
-
-        if minor is None:
-            return (major, minor, None, None, None)
-        else:
-            minor = int(minor)
-
-        if patch is None:
-            return (major, minor, patch, None, None)
-        else:
-            patch = int(patch)
-
-        if prerelease is None:
-            if build:
-                # Build info, let's keep prerelease
-                prerelease = []
-            else:
-                prerelease = None
-        else:
-            prerelease = prerelease.split('.')
-
-        if build is None:
-            build = None
-        else:
-            build = build.split('.')
-
-        return (major, minor, patch, prerelease, build)
-
-    @classmethod
-    def _comparison_functions(cls):
-        major_cmp, minor_cmp, patch_cmp, prerelease_cmp, build_cmp = \
-            super(PartialSemanticVersion, cls)._comparison_functions()
-
-        return [
-            major_cmp,
-            make_optional(minor_cmp),
-            make_optional(patch_cmp),
-            make_optional(prerelease_cmp),
-            make_optional(build_cmp),
-        ]
-
-    def __str__(self):
-        if self.minor is None:
-            return '%d' % self.major
-        elif self.patch is None:
-            return '%d.%d' % (self.major, self.minor)
-
-        version = '%d.%d.%d' % (self.major, self.minor, self.patch)
-
-        if self.prerelease:
-            version = '%s-%s' % (version, '.'.join(self.prerelease))
-        if self.build:
-            version = '%s+%s' % (version, '.'.join(self.build))
-        return version
 
 
 class RequirementSpec(object):
