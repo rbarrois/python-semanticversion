@@ -1,6 +1,9 @@
 python-semantic_version
 =======================
 
+.. image:: https://secure.travis-ci.org/rbarrois/python-semanticversion.png?branch=master
+    :target: http://travis-ci.org/rbarrois/python-semanticversion/
+
 This small python library provides a few tools to handle `SemVer <http://semver.org>`_ in Python.
 
 
