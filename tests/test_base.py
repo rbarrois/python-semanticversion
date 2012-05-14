@@ -128,3 +128,6 @@ class SemanticVersionTestCase(unittest.TestCase):
             for field in fields:
                 self.assertIn(repr(field), repr(version))
 
+
+if __name__ == '__main__':
+    unittest.main()
