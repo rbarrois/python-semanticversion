@@ -261,6 +261,11 @@ class Spec(object):
     def __repr__(self):
         return '<Spec: %s %r>' % (self.kind, self.spec)
 
+    def __eq__(self, other):
+        if not isinstance(other, Spec):
+            return NotImplemented
+        return self.kind == other.kind and self.spec == other.spec
+
 
 def compare(v1, v2):
     return cmp(SemanticVersion(v1), SemanticVersion(v2))
