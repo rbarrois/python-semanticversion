@@ -83,6 +83,17 @@ class MatchTestCase(unittest.TestCase):
                 version = semantic_version.Version(version_txt)
                 self.assertTrue(spec.match(version), "%r does not match %r" % (version, spec))
                 self.assertTrue(semantic_version.match(spec_txt, version_txt))
+                self.assertTrue(version in spec, "%r not in %r" % (version, spec))
+
+    def test_contains(self):
+        spec = semantic_version.Spec('<=0.1.1')
+        self.assertFalse('0.1.0' in spec, "0.1.0 should not be in %r" % spec)
+
+        version = semantic_version.Version('0.1.1+4.2')
+        self.assertFalse(version in spec, "%r should not be in %r" % (version, spec))
+
+        version = semantic_version.Version('0.1.1-rc1+4.2')
+        self.assertTrue(version in spec, "%r should be in %r" % (version, spec))
 
 
 if __name__ == '__main__':  # pragma: no cover

@@ -255,6 +255,11 @@ class Spec(object):
         else:  # pragma: no cover
             raise ValueError('Unexpected match kind: %r' % self.kind)
 
+    def __contains__(self, version):
+        if isinstance(version, Version):
+            return self.match(version)
+        return False
+
     def __str__(self):
         return '%s%s' % (self.kind, self.spec)
 

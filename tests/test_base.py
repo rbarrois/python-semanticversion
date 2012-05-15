@@ -145,5 +145,18 @@ class VersionTestCase(unittest.TestCase):
             self.assertNotEqual(text, base.Version(text, partial=True))
 
 
+class SpecTestCase(unittest.TestCase):
+    def test_equality(self):
+        spec1 = base.Spec('==0.1.0')
+        spec2 = base.Spec('==0.1.0')
+        self.assertEqual(spec1, spec2)
+        self.assertFalse(spec1 == '==0.1.0')
+
+    def test_to_string(self):
+        spec = base.Spec('==0.1.0')
+        self.assertEqual('==0.1.0', str(spec))
+        self.assertEqual(base.Spec.KIND_EQUAL, spec.kind)
+
+
 if __name__ == '__main__':  # pragma: no cover
     unittest.main()
