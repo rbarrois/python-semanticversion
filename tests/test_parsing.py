@@ -27,11 +27,11 @@ class ParsingTestCase(unittest.TestCase):
 
     def test_invalid(self):
         for invalid in self.invalids:
-            self.assertRaises(ValueError, semantic_version.SemanticVersion, invalid)
+            self.assertRaises(ValueError, semantic_version.Version, invalid)
 
     def test_simple(self):
         for valid in self.valids:
-            version = semantic_version.SemanticVersion(valid)
+            version = semantic_version.Version(valid)
             self.assertEqual(valid, str(version))
 
 
@@ -52,9 +52,9 @@ class ComparisonTestCase(unittest.TestCase):
 
     def test_comparisons(self):
         for i, first in enumerate(self.order):
-            first_ver = semantic_version.SemanticVersion(first)
+            first_ver = semantic_version.Version(first)
             for j, second in enumerate(self.order):
-                second_ver = semantic_version.SemanticVersion(second)
+                second_ver = semantic_version.Version(second)
                 if i < j:
                     self.assertTrue(first_ver < second_ver, '%r !< %r' % (first_ver, second_ver))
                 elif i == j:

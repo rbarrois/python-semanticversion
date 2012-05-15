@@ -55,7 +55,7 @@ def identifier_list_cmp(a, b):
     return cmp(len(a), len(b))
 
 
-class SemanticVersion(object):
+class Version(object):
 
     version_re = re.compile('^(\d+)\.(\d+)\.(\d+)(?:-([0-9a-zA-Z.-]+))?(?:\+([0-9a-zA-Z.-]+))?$')
     partial_version_re = re.compile('^(\d+)(?:\.(\d+)(?:\.(\d+)(?:-([0-9a-zA-Z.-]+))?(?:\+([0-9a-zA-Z.-]+))?)?)?$')
@@ -237,7 +237,7 @@ class Spec(object):
             raise ValueError("Invalid requirement specification: %r" % requirement_string)
 
         kind, version = match.groups()
-        spec = SemanticVersion(version, partial=(kind == cls.KIND_ALMOST))
+        spec = Version(version, partial=(kind == cls.KIND_ALMOST))
         return (kind, spec)
 
     def match(self, version):
@@ -268,8 +268,8 @@ class Spec(object):
 
 
 def compare(v1, v2):
-    return cmp(SemanticVersion(v1), SemanticVersion(v2))
+    return cmp(Version(v1), Version(v2))
 
 
 def match(spec, version):
-    return Spec(spec).match(SemanticVersion(version))
+    return Spec(spec).match(Version(version))

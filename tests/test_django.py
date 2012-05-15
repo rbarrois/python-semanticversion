@@ -37,12 +37,12 @@ class DjangoFieldTestCase(unittest.TestCase):
     def test_version(self):
         obj = models.VersionModel(version='0.1.1', spec='>0.1.0')
 
-        self.assertEqual(semantic_version.SemanticVersion('0.1.1'), obj.version)
+        self.assertEqual(semantic_version.Version('0.1.1'), obj.version)
         self.assertEqual(semantic_version.Spec('>0.1.0'), obj.spec)
 
         alt_obj = models.VersionModel(version=obj.version, spec=obj.spec)
 
-        self.assertEqual(semantic_version.SemanticVersion('0.1.1'), alt_obj.version)
+        self.assertEqual(semantic_version.Version('0.1.1'), alt_obj.version)
         self.assertEqual(semantic_version.Spec('>0.1.0'), alt_obj.spec)
         self.assertEqual(obj.spec, alt_obj.spec)
         self.assertEqual(obj.version, alt_obj.version)
@@ -54,13 +54,13 @@ class DjangoFieldTestCase(unittest.TestCase):
     def test_partial(self):
         obj = models.PartialVersionModel(partial='0.1')
 
-        self.assertEqual(semantic_version.SemanticVersion('0.1', partial=True), obj.partial)
+        self.assertEqual(semantic_version.Version('0.1', partial=True), obj.partial)
         self.assertIsNone(obj.optional)
         self.assertIsNone(obj.optional_spec)
 
         alt_obj = models.PartialVersionModel(partial=obj.partial, optional=obj.optional,
             optional_spec=obj.optional_spec)
-        self.assertEqual(semantic_version.SemanticVersion('0.1', partial=True), alt_obj.partial)
+        self.assertEqual(semantic_version.Version('0.1', partial=True), alt_obj.partial)
         self.assertEqual(obj.partial, alt_obj.partial)
         self.assertIsNone(obj.optional)
         self.assertIsNone(obj.optional_spec)

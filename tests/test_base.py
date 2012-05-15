@@ -59,7 +59,7 @@ class ComparisonTestCase(unittest.TestCase):
                     a, b, result, expected))
 
 
-class SemanticVersionTestCase(unittest.TestCase):
+class VersionTestCase(unittest.TestCase):
     versions = {
         '1.0.0-alpha': (1, 0, 0, ['alpha'], []),
         '1.0.0-alpha.1': (1, 0, 0, ['alpha', '1'], []),
@@ -83,22 +83,22 @@ class SemanticVersionTestCase(unittest.TestCase):
 
     def test_parsing(self):
         for text, expected_fields in self.versions.items():
-            version = base.SemanticVersion(text)
+            version = base.Version(text)
             actual_fields = (version.major, version.minor, version.patch,
                 version.prerelease, version.build)
             self.assertEqual(expected_fields, actual_fields)
 
     def test_str(self):
         for text, fields in self.versions.items():
-            version = base.SemanticVersion(text)
+            version = base.Version(text)
             self.assertEqual(text, str(version))
             for field in fields:
                 self.assertIn(repr(field), repr(version))
 
     def test_compare_to_self(self):
         for text in self.versions:
-            self.assertEqual(base.SemanticVersion(text), base.SemanticVersion(text))
-            self.assertNotEqual(text, base.SemanticVersion(text))
+            self.assertEqual(base.Version(text), base.Version(text))
+            self.assertNotEqual(text, base.Version(text))
 
     partial_versions = {
         '1.0': (1, 0, None, None, None),
@@ -125,14 +125,14 @@ class SemanticVersionTestCase(unittest.TestCase):
 
     def test_parsing_partials(self):
         for text, expected_fields in self.partial_versions.items():
-            version = base.SemanticVersion(text, partial=True)
+            version = base.Version(text, partial=True)
             actual_fields = (version.major, version.minor, version.patch,
                 version.prerelease, version.build)
             self.assertEqual(expected_fields, actual_fields)
 
     def test_str_partials(self):
         for text, fields in self.partial_versions.items():
-            version = base.SemanticVersion(text, partial=True)
+            version = base.Version(text, partial=True)
             self.assertEqual(text, str(version))
             for field in fields:
                 self.assertIn(repr(field), repr(version))
@@ -140,9 +140,9 @@ class SemanticVersionTestCase(unittest.TestCase):
     def test_compare_partial_to_self(self):
         for text in self.partial_versions:
             self.assertEqual(
-                base.SemanticVersion(text, partial=True),
-                base.SemanticVersion(text, partial=True))
-            self.assertNotEqual(text, base.SemanticVersion(text, partial=True))
+                base.Version(text, partial=True),
+                base.Version(text, partial=True))
+            self.assertNotEqual(text, base.Version(text, partial=True))
 
 
 if __name__ == '__main__':  # pragma: no cover

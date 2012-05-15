@@ -21,12 +21,12 @@ class VersionField(models.CharField):
         super(VersionField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
-        """Converts any value to a base.SemanticVersion field."""
+        """Converts any value to a base.Version field."""
         if value is None or value == '':
             return value
-        if isinstance(value, base.SemanticVersion):
+        if isinstance(value, base.Version):
             return value
-        return base.SemanticVersion(value, partial=self.partial)
+        return base.Version(value, partial=self.partial)
 
     def get_prep_value(self, obj):
         return str(obj)
@@ -54,7 +54,7 @@ class SpecField(models.CharField):
         return super(SpecField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
-        """Converts any value to a base.SemanticVersion field."""
+        """Converts any value to a base.Version field."""
         if value is None or value == '':
             return value
         if isinstance(value, base.Spec):

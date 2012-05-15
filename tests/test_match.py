@@ -80,7 +80,7 @@ class MatchTestCase(unittest.TestCase):
             spec = semantic_version.Spec(spec_txt)
             self.assertNotEqual(spec, spec_txt)
             for version_txt in versions:
-                version = semantic_version.SemanticVersion(version_txt)
+                version = semantic_version.Version(version_txt)
                 self.assertTrue(spec.match(version), "%r does not match %r" % (version, spec))
                 self.assertTrue(semantic_version.match(spec_txt, version_txt))
 
