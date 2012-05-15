@@ -5,4 +5,4 @@
 __version__ = '0.1.0'
 
 
-from .base import compare, match, SemanticVersion, RequirementSpec
+from .base import compare, match, SemanticVersion, Spec

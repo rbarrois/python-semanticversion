@@ -68,19 +68,19 @@ class MatchTestCase(unittest.TestCase):
 
     def test_invalid(self):
         for invalid in self.invalid_specs:
-            self.assertRaises(ValueError, semantic_version.RequirementSpec, invalid)
+            self.assertRaises(ValueError, semantic_version.Spec, invalid)
 
     def test_simple(self):
         for valid in self.valid_specs:
-            version = semantic_version.RequirementSpec(valid)
+            version = semantic_version.Spec(valid)
             self.assertEqual(valid, str(version))
 
     def test_match(self):
         for spec_txt, versions in self.matches.items():
-            spec = semantic_version.RequirementSpec(spec_txt)
+            spec = semantic_version.Spec(spec_txt)
+            self.assertNotEqual(spec, spec_txt)
             for version_txt in versions:
                 version = semantic_version.SemanticVersion(version_txt)
-                
                 self.assertTrue(spec.match(version), "%r does not match %r" % (version, spec))
                 self.assertTrue(semantic_version.match(spec_txt, version_txt))
 

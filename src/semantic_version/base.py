@@ -210,7 +210,7 @@ class SemanticVersion(object):
         return 0
 
 
-class RequirementSpec(object):
+class Spec(object):
     """A requirement specification."""
 
     KIND_LT = '<'
@@ -267,4 +267,4 @@ def compare(v1, v2):
 
 
 def match(spec, version):
-    return RequirementSpec(spec).match(SemanticVersion(version))
+    return Spec(spec).match(SemanticVersion(version))
