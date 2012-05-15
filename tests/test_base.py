@@ -4,7 +4,11 @@
 
 """Test the various functions from 'base'."""
 
-import unittest
+try:  # pragma: no cover
+    import unittest2 as unittest
+except ImportError:  # pragma: no cover
+    import unittest
+
 
 from semantic_version import base
 
