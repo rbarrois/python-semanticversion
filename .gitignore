@@ -2,3 +2,4 @@
 .*.swp
 .coverage
 htmlcov/
+tests/db/
