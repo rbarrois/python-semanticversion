@@ -4,4 +4,5 @@
 htmlcov/
 tests/db/
 dist/
+doc/_build/
 MANIFEST
