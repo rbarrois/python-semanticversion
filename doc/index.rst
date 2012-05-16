@@ -9,8 +9,63 @@ python-semanticversion
 This small python library provides a few tools to handle `SemVer <http://semver.org>`_ in Python.
 
 
-The first release (0.1.0) should handle the 2.0.0-rc1 version of the SemVer scheme.
+The first release (1.0.0) should handle the 2.0.0-rc1 version of the SemVer scheme.
 
+
+Getting started
+===============
+
+.. currentmodule:: semantic_version
+
+This module provides two classes to handle semantic versions:
+
+- :class:`Version` represents a version number (``0.1.1-alpha+build.2012-05-15``)
+- :class:`Spec` represents a requirement specification (``>=0.1.1``)
+
+
+Defining a :class:`Version` is quite simple::
+
+    >>> import semantic_version
+    >>> v = semantic_version.Version('0.1.1')
+    >>> v.major
+    0
+    >>> v.minor
+    1
+    >>> v.patch
+    1
+    >>> v.prerelease
+    []
+    >>> v.build
+    []
+    >>> list(v)
+    [0, 1, 1, [], []]
+
+If the provided version string is invalid, a :exc:`ValueError` will be raised::
+
+    >>> semantic_version.Version('0.1')
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+      File "/Users/rbarrois/dev/semantic_version/src/semantic_version/base.py", line 64, in __init__
+        major, minor, patch, prerelease, build = self.parse(version_string, partial)
+      File "/Users/rbarrois/dev/semantic_version/src/semantic_version/base.py", line 86, in parse
+        raise ValueError('Invalid version string: %r' % version_string)
+    ValueError: Invalid version string: '0.1'
+
+In order to define "relaxed" version strings, you must pass in ``partial=True``::
+
+    >>> v = semantic_version.Version('0.1', partial=True)
+    >>> list(v)
+    [0, 1, None, None, None]
+
+
+Obviously, :class:`Versions <Version>` can be compared::
+
+    >>> semantic_version.Version('0.1.1') < semantic_version.Version('0.1.2')
+    True
+    >>> semantic_version.Version('0.1.1') > semantic_version.Version('0.1.1-alpha')
+    True
+    >>> semantic_version.Version('0.1.1') <= semantic_version.Version('0.1.1-alpha')
+    False
 
 Links
 =====
@@ -25,6 +80,9 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+
+   django
+   reference
 
 
 
