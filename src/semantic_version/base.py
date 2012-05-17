@@ -145,6 +145,9 @@ class Version(object):
             self.build,
         )
 
+    def __hash__(self):
+        return hash((self.major, self.minor, self.patch, self.prerelease, self.build))
+
     def _comparison_functions(self, partial=False):
         def prerelease_cmp(a, b):
             if a and b:
@@ -292,6 +295,10 @@ class Spec(object):
         if not isinstance(other, Spec):
             return NotImplemented
         return self.kind == other.kind and self.spec == other.spec
+
+    def __hash__(self):
+        return hash((self.kind, self.spec))
+
 
 
 def compare(v1, v2):

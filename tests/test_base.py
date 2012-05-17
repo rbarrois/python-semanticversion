@@ -144,6 +144,10 @@ class VersionTestCase(unittest.TestCase):
                 base.Version(text, partial=True))
             self.assertNotEqual(text, base.Version(text, partial=True))
 
+    def test_hash(self):
+        self.assertEqual(1,
+            len(set([base.Version('0.1.0'), base.Version('0.1.0')])))
+
 
 class SpecTestCase(unittest.TestCase):
     components = {
@@ -254,6 +258,10 @@ class SpecTestCase(unittest.TestCase):
         spec = base.Spec('==0.1.0')
         self.assertEqual('==0.1.0', str(spec))
         self.assertEqual(base.Spec.KIND_EQUAL, spec.kind)
+
+    def test_hash(self):
+        self.assertEqual(1,
+            len(set([base.Spec('==0.1.0'), base.Spec('==0.1.0')])))
 
 
 if __name__ == '__main__':  # pragma: no cover
