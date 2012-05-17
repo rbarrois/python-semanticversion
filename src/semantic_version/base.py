@@ -104,17 +104,17 @@ class Version(object):
                 # No build info, strip here
                 return (major, minor, patch, None, None)
             else:
-                prerelease = []
+                prerelease = ()
         else:
-            prerelease = prerelease.split('.')
+            prerelease = tuple(prerelease.split('.'))
 
         if build is None:
             if partial:
                 build = None
             else:
-                build = []
+                build = ()
         else:
-            build = build.split('.')
+            build = tuple(build.split('.'))
 
         return (major, minor, patch, prerelease, build)
 

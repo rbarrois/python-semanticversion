@@ -61,24 +61,24 @@ class ComparisonTestCase(unittest.TestCase):
 
 class VersionTestCase(unittest.TestCase):
     versions = {
-        '1.0.0-alpha': (1, 0, 0, ['alpha'], []),
-        '1.0.0-alpha.1': (1, 0, 0, ['alpha', '1'], []),
-        '1.0.0-beta.2': (1, 0, 0, ['beta', '2'], []),
-        '1.0.0-beta.11': (1, 0, 0, ['beta', '11'], []),
-        '1.0.0-rc.1': (1, 0, 0, ['rc', '1'], []),
-        '1.0.0-rc.1+build.1': (1, 0, 0, ['rc', '1'], ['build', '1']),
-        '1.0.0': (1, 0, 0, [], []),
-        '1.0.0+0.3.7': (1, 0, 0, [], ['0', '3', '7']),
-        '1.3.7+build': (1, 3, 7, [], ['build']),
-        '1.3.7+build.2.b8f12d7': (1, 3, 7, [], ['build', '2', 'b8f12d7']),
-        '1.3.7+build.11.e0f985a': (1, 3, 7, [], ['build', '11', 'e0f985a']),
-        '1.1.1': (1, 1, 1, [], []),
-        '1.1.2': (1, 1, 2, [], []),
-        '1.1.3-rc4.5': (1, 1, 3, ['rc4', '5'], []),
+        '1.0.0-alpha': (1, 0, 0, ('alpha',), ()),
+        '1.0.0-alpha.1': (1, 0, 0, ('alpha', '1'), ()),
+        '1.0.0-beta.2': (1, 0, 0, ('beta', '2'), ()),
+        '1.0.0-beta.11': (1, 0, 0, ('beta', '11'), ()),
+        '1.0.0-rc.1': (1, 0, 0, ('rc', '1'), ()),
+        '1.0.0-rc.1+build.1': (1, 0, 0, ('rc', '1'), ('build', '1')),
+        '1.0.0': (1, 0, 0, (), ()),
+        '1.0.0+0.3.7': (1, 0, 0, (), ('0', '3', '7')),
+        '1.3.7+build': (1, 3, 7, (), ('build',)),
+        '1.3.7+build.2.b8f12d7': (1, 3, 7, (), ('build', '2', 'b8f12d7')),
+        '1.3.7+build.11.e0f985a': (1, 3, 7, (), ('build', '11', 'e0f985a')),
+        '1.1.1': (1, 1, 1, (), ()),
+        '1.1.2': (1, 1, 2, (), ()),
+        '1.1.3-rc4.5': (1, 1, 3, ('rc4', '5'), ()),
         '1.1.3-rc42.3-14-15.24+build.2012-04-13.223':
-            (1, 1, 3, ['rc42', '3-14-15', '24'], ['build', '2012-04-13', '223']),
+            (1, 1, 3, ('rc42', '3-14-15', '24'), ('build', '2012-04-13', '223')),
         '1.1.3+build.2012-04-13.HUY.alpha-12.1':
-            (1, 1, 3, [], ['build', '2012-04-13', 'HUY', 'alpha-12', '1']),
+            (1, 1, 3, (), ('build', '2012-04-13', 'HUY', 'alpha-12', '1')),
     }
 
     def test_parsing(self):
@@ -103,24 +103,24 @@ class VersionTestCase(unittest.TestCase):
     partial_versions = {
         '1.0': (1, 0, None, None, None),
         '1': (1, None, None, None, None),
-        '1.0.0-alpha': (1, 0, 0, ['alpha'], None),
-        '1.0.0-alpha.1': (1, 0, 0, ['alpha', '1'], None),
-        '1.0.0-beta.2': (1, 0, 0, ['beta', '2'], None),
-        '1.0.0-beta.11': (1, 0, 0, ['beta', '11'], None),
-        '1.0.0-rc.1': (1, 0, 0, ['rc', '1'], None),
-        '1.0.0-rc.1+build.1': (1, 0, 0, ['rc', '1'], ['build', '1']),
+        '1.0.0-alpha': (1, 0, 0, ('alpha',), None),
+        '1.0.0-alpha.1': (1, 0, 0, ('alpha', '1'), None),
+        '1.0.0-beta.2': (1, 0, 0, ('beta', '2'), None),
+        '1.0.0-beta.11': (1, 0, 0, ('beta', '11'), None),
+        '1.0.0-rc.1': (1, 0, 0, ('rc', '1'), None),
+        '1.0.0-rc.1+build.1': (1, 0, 0, ('rc', '1'), ('build', '1')),
         '1.0.0': (1, 0, 0, None, None),
-        '1.0.0+0.3.7': (1, 0, 0, [], ['0', '3', '7']),
-        '1.3.7+build': (1, 3, 7, [], ['build']),
-        '1.3.7+build.2.b8f12d7': (1, 3, 7, [], ['build', '2', 'b8f12d7']),
-        '1.3.7+build.11.e0f985a': (1, 3, 7, [], ['build', '11', 'e0f985a']),
+        '1.0.0+0.3.7': (1, 0, 0, (), ('0', '3', '7')),
+        '1.3.7+build': (1, 3, 7, (), ('build',)),
+        '1.3.7+build.2.b8f12d7': (1, 3, 7, (), ('build', '2', 'b8f12d7')),
+        '1.3.7+build.11.e0f985a': (1, 3, 7, (), ('build', '11', 'e0f985a')),
         '1.1.1': (1, 1, 1, None, None),
         '1.1.2': (1, 1, 2, None, None),
-        '1.1.3-rc4.5': (1, 1, 3, ['rc4', '5'], None),
+        '1.1.3-rc4.5': (1, 1, 3, ('rc4', '5'), None),
         '1.1.3-rc42.3-14-15.24+build.2012-04-13.223':
-            (1, 1, 3, ['rc42', '3-14-15', '24'], ['build', '2012-04-13', '223']),
+            (1, 1, 3, ('rc42', '3-14-15', '24'), ('build', '2012-04-13', '223')),
         '1.1.3+build.2012-04-13.HUY.alpha-12.1':
-            (1, 1, 3, [], ['build', '2012-04-13', 'HUY', 'alpha-12', '1']),
+            (1, 1, 3, (), ('build', '2012-04-13', 'HUY', 'alpha-12', '1')),
     }
 
     def test_parsing_partials(self):
@@ -148,16 +148,16 @@ class VersionTestCase(unittest.TestCase):
 class SpecTestCase(unittest.TestCase):
     components = {
         '~=0.1': (base.Spec.KIND_EQ_LOOSE, 0, 1, None, None, None),
-        '~=0.1.2-rc3': (base.Spec.KIND_EQ_LOOSE, 0, 1, 2, ['rc3'], None),
-        '~=0.1.2+build3.14': (base.Spec.KIND_EQ_LOOSE, 0, 1, 2, [], ['build3', '14']),
-        '<=0.1.1': (base.Spec.KIND_LTE, 0, 1, 1, [], []),
-        '<0.1.1': (base.Spec.KIND_LT, 0, 1, 1, [], []),
+        '~=0.1.2-rc3': (base.Spec.KIND_EQ_LOOSE, 0, 1, 2, ('rc3',), None),
+        '~=0.1.2+build3.14': (base.Spec.KIND_EQ_LOOSE, 0, 1, 2, (), ('build3', '14')),
+        '<=0.1.1': (base.Spec.KIND_LTE, 0, 1, 1, (), ()),
+        '<0.1.1': (base.Spec.KIND_LT, 0, 1, 1, (), ()),
         '<~0.1.1': (base.Spec.KIND_LTE_LOOSE, 0, 1, 1, None, None),
         '<~0.1': (base.Spec.KIND_LTE_LOOSE, 0, 1, None, None, None),
-        '>=0.2.3-rc2': (base.Spec.KIND_GTE, 0, 2, 3, ['rc2'], []),
-        '>0.2.3-rc2': (base.Spec.KIND_GT, 0, 2, 3, ['rc2'], []),
+        '>=0.2.3-rc2': (base.Spec.KIND_GTE, 0, 2, 3, ('rc2',), ()),
+        '>0.2.3-rc2': (base.Spec.KIND_GT, 0, 2, 3, ('rc2',), ()),
         '>~2': (base.Spec.KIND_GTE_LOOSE, 2, None, None, None, None),
-        '!=0.1.1': (base.Spec.KIND_NEQ, 0, 1, 1, [], []),
+        '!=0.1.1': (base.Spec.KIND_NEQ, 0, 1, 1, (), ()),
         '!~0.3': (base.Spec.KIND_NEQ_LOOSE, 0, 3, None, None, None),
     }
 
