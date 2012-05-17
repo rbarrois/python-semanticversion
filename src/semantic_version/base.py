@@ -148,8 +148,25 @@ class Version(object):
     def __hash__(self):
         return hash((self.major, self.minor, self.patch, self.prerelease, self.build))
 
-    def _comparison_functions(self, partial=False):
+    @classmethod
+    def _comparison_functions(cls, partial=False):
+        """Retrieve comparison methods to apply on version components.
+
+        This is a private API.
+
+        Args:
+            partial (bool): whether to provide 'partial' or 'strict' matching.
+
+        Returns:
+            5-tuple of cmp-like functions.
+        """
+
         def prerelease_cmp(a, b):
+            """Compare prerelease components.
+
+            Special rule: a version without prerelease component has higher
+            precedence than one with a prerelease component.
+            """
             if a and b:
                 return identifier_list_cmp(a, b)
             elif a:
@@ -161,6 +178,11 @@ class Version(object):
                 return 0
 
         def build_cmp(a, b):
+            """Compare build components.
+
+            Special rule: a version without build component has lower
+            precedence than one with a build component.
+            """
             if a and b:
                 return identifier_list_cmp(a, b)
             elif a:
@@ -172,6 +194,7 @@ class Version(object):
                 return 0
 
         def make_optional(orig_cmp_fun):
+            """Convert a cmp-like function to consider 'None == *'."""
             @functools.wraps(orig_cmp_fun)
             def alt_cmp_fun(a, b):
                 if a is None or b is None:
@@ -182,7 +205,7 @@ class Version(object):
 
         if partial:
             return [
-                cmp,
+                cmp,  # Major is still mandatory
                 make_optional(cmp),
                 make_optional(cmp),
                 make_optional(prerelease_cmp),
