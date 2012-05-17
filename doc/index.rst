@@ -109,6 +109,34 @@ Simpler test syntax is also available using the ``in`` keyword::
     False
 
 
+Combining requirements
+======================
+
+In order to express complex version specifications, use the :class:`SpecList` class::
+
+    >>> # At least 0.1.1, not 0.2.X, avoid broken 0.1.5-alpha.
+    >>> sl = SpecList('>=0.1.1,<~0.2,!=0.1.5-alpha')
+    >>> sl.match(Version('0.1.1'))
+    True
+    >>> Version('0.1.1-rc1') in sl
+    False
+    >>> Version('0.1.2') in sl
+    True
+    >>> Version('0.2.0-alpha') in sl
+    False
+    >>> Version('0.1.5-alpha') in sl
+    False
+
+
+Using with Django
+=================
+
+The :mod:`semantic_version.django_fields` module provides django fields to
+store :class:`Version`, :class:`Spec` or :class:`SpecList` objects.
+
+More documentation is available in the :doc:`django` section.
+
+
 Contents
 ========
 
@@ -117,6 +145,7 @@ Contents
 
    reference
    django
+   changelog
 
 Links
 =====

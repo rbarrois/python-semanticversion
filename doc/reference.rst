@@ -43,10 +43,10 @@ Module-level functions
     :rtype: ``bool``
 
 
-Representing a version
-----------------------
+Representing a version (the Version class)
+------------------------------------------
 
-.. class:: Version
+.. class:: Version(version_string[, partial=False])
 
     Object representation of a `SemVer`_-compliant version.
 
@@ -84,7 +84,7 @@ Representing a version
 
     .. attribute:: prerelease
 
-        ``list`` of ``strings``, the prerelease component.
+        ``tuple`` of ``strings``, the prerelease component.
 
         It contains the various dot-separated identifiers in the prerelease component.
 
@@ -92,7 +92,7 @@ Representing a version
 
     .. attribute:: build
 
-        ``list`` of ``strings``, the build component.
+        ``tuple`` of ``strings``, the build component.
 
         It contains the various dot-separated identifiers in the build component.
 
@@ -106,7 +106,19 @@ Representing a version
     .. method:: __iter__(self)
 
         Iterates over the version components (:attr:`major`, :attr:`minor`,
-        :attr:`patch`, :attr:`prerelease`, :attr:`build`).
+        :attr:`patch`, :attr:`prerelease`, :attr:`build`)::
+
+            >>> list(Version('0.1.1'))
+            [0, 1, 1, [], []]
+
+        .. note:: This may pose some subtle bugs when iterating over a single version
+                  while expecting an iterable of versions -- similar to::
+
+                      >>> list('abc')
+                      ['a', 'b', 'c']
+                      >>> list(('abc',))
+                      ['abc']
+
 
     .. method:: __cmp__(self, other)
 
@@ -115,22 +127,53 @@ Representing a version
         The rules are:
 
         - For non-:attr:`partial` versions, compare using the `SemVer`_ scheme
-        - If any compared object is :attr:`partial`, compare using the `SemVer`_ scheme,
-          but stop at the first component undefined in the :attr:`partial` :class:`Version`;
-          that is, a component whose value is ``None``.
+        - If any compared object is :attr:`partial`:
+            - Begin comparison using the `SemVer`_ scheme
+            - If a component (:attr:`minor`, :attr:`patch`, :attr:`prerelease` or :attr:`build`)
+              was absent from the :attr:`partial` :class:`Version` -- represented with :obj:`None`
+              --, consider both versions equal.
+
+            For instance, ``Version('1.0', partial=True)`` means "any version beginning in ``1.0``".
+
+            ``Version('1.0.1-alpha', partial=True)`` means "The ``1.0.1-alpha`` version or any
+            ulterior build of that same version": ``1.0.1-alpha+build3`` matches, ``1.0.1-alpha.2`` doesn't.
+
+        Examples::
+
+              >>> Version('1.0', partial=True) == Version('1.0.1')
+              True
+              >>> Version('1.0.1-rc1.1') == Version('1.0.1-rc1', partial=True)
+              False
+              >>> Version('1.0.1-rc1+build345') == Version('1.0.1-rc1')
+              False
+              >>> Version('1.0.1-rc1+build345') == Version('1.0.1-rc1', partial=True)
+              True
 
 
     .. method:: __str__(self)
 
-        Returns the standard text representation of the version.
-
-        .. code-block:: pycon
+        Returns the standard text representation of the version::
 
             >>> v = Version('0.1.1-rc2+build4.4')
             >>> v
             <SemVer(0, 1, 1, ['rc2'], ['build4', '4'])>
             >>> str(v)
             '0.1.1-rc2+build4.4'
+
+
+    .. method:: __hash__(self)
+
+        Provides a hash based solely on the components.
+
+        Allows using a :class:`Version` as a dictionary key.
+
+        .. note:: A fully qualified :attr:`partial` :class:`Version`
+
+                  (up to the :attr:`build` component) will hash the same as the
+                  equally qualified, non-:attr:`partial` :class:`Version`::
+
+                      >>> hash(Version('1.0.1+build4')) == hash(Version('1.0.1+build4', partial=True))
+                      True
 
 
     .. rubric:: Class methods
@@ -146,14 +189,14 @@ Representing a version
         :rtype: (major, minor, patch, prerelease, build)
 
 
-Version specifications
-----------------------
+Version specifications (the Spec class)
+---------------------------------------
 
 
 Version specifications describe a 'range' of accepted versions:
 older than, equal, similar to, …
 
-.. class:: Spec
+.. class:: Spec(spec_string)
 
     Stores a version specification, defined from a string::
 
@@ -174,13 +217,14 @@ older than, equal, similar to, …
     .. attribute:: kind
 
         One of :data:`KIND_LT`, :data:`KIND_LTE`, :data:`KIND_EQUAL`, :data:`KIND_GTE`,
-        :data:`KIND_GT`, :data:`KIND_ALMOST`.
+        :data:`KIND_GT`, :data:`KIND_NEQ`, :data:`KIND_LTE_LOOSE`, :data:`KIND_EQ_LOOSE`,
+        :data:`KIND_GTE_LOOSE`, :data:`KIND_NEQ_LOOSE`.
 
     .. attribute:: spec
 
         :class:`Version` in the :class:`Spec` description.
 
-        If :attr:`kind` is :data:`KIND_ALMOST`, this will be a :attr:`~Version.partial` :class:`Version`.
+        If :attr:`kind` is a ``_LOOSE`` kind, this will be a :attr:`~Version.partial` :class:`Version`.
 
 
     .. rubric:: Class methods
@@ -200,7 +244,10 @@ older than, equal, similar to, …
 
     .. method:: match(self, version)
 
-        Test whether a given :class:`Version` matches this :class:`Spec`.
+        Test whether a given :class:`Version` matches this :class:`Spec`::
+
+            >>> Spec('>0.1.1').match(Version('0.1.1-alpha'))
+            False
 
         :param version: The version to test against the spec
         :type version: :class:`Version`
@@ -209,8 +256,26 @@ older than, equal, similar to, …
 
     .. method:: __contains__(self, version)
 
-        Allows the use of the ``version in spec`` syntax.
-        Simply an alias of the :func:`match` method.
+        Alias of the :func:`match` method;
+        allows the use of the ``version in spec`` syntax::
+
+            >>> Version('1.1.1') in Spec('<=1.1.2')
+            True
+
+
+    .. method:: __str__(self)
+
+        Converting a :class:`Spec` to a string returns the initial description string::
+
+            >>> str(Spec('>=0.1.1'))
+            '>=0.1.1'
+
+
+    .. method:: __hash__(self)
+
+        Provides a hash based solely on the current kind and the specified version.
+
+        Allows using a :class:`Spec` as a dictionary key.
 
 
     .. rubric:: Class attributes
@@ -218,27 +283,172 @@ older than, equal, similar to, …
 
     .. data:: KIND_LT
 
-        The kind of 'Less than' specifications
+        The kind of 'Less than' specifications::
+
+            >>> Version('1.0.0-alpha') in Spec('<1.0.0')
+            True
 
     .. data:: KIND_LTE
 
-        The kind of 'Less or equal to' specifications
+        The kind of 'Less or equal to' specifications::
+
+            >>> Version('1.0.0-alpha1+build999') in Spec('<=1.0.0-alpha1')
+            False
 
     .. data:: KIND_EQUAL
 
-        The kind of 'equal to' specifications
+        The kind of 'equal to' specifications::
+
+            >>> Version('1.0.0+build3.3') in Spec('==1.0.0')
+            False
 
     .. data:: KIND_GTE
 
-        The kind of 'Greater or equal to' specifications
+        The kind of 'Greater or equal to' specifications::
+
+            >>> Version('1.0.0') in Spec('>=1.0.0')
+            True
 
     .. data:: KIND_GT
 
-        The kind of 'Greater than' specifications
+        The kind of 'Greater than' specifications::
 
-    .. data:: KIND_ALMOST
+            >>> Version('1.0.0+build667') in Spec('>1.0.1')
+            True
+
+    .. data:: KIND_NEQ
+
+        The kind of 'Not equal to' specifications::
+
+            >>> Version('1.0.1') in Spec('!=1.0.1')
+            False
 
         The kind of 'Almost equal to' specifications
+
+
+    .. data:: KIND_LTE_LOOSE
+
+        The kind of 'Loosely lesser or equal to' specifications::
+
+            >>> Version('1.0.1-alpha+build99') in Spec('<=1.0.1-alpha')
+            False
+            >>> Version('1.0.1-alpha+build99') in Spec('<~1.0.1-alpha')
+            True
+
+    .. data:: KIND_EQ_LOOSE
+
+        The kind of 'Almost equal to' specifications::
+
+            >>> Version('1.0.1-alpha') in Spec('~=1.0.1')
+            True
+
+    .. data:: KIND_GTE_LOOSE
+
+        The kind of 'Loosely greater or equal to' specifications::
+
+            >>> Version('1.0.1-alpha') in Spec('>=1.0.1')
+            False
+            >>> Version('1.0.1-alpha') in Spec('>~1.0.1')
+            True
+
+    .. data:: KIND_NEQ_LOOSE
+
+        The kind of 'Loosely not equal to' specifications::
+
+            >>> Version('1.0.1-alpha') not in Spec('!=1.0.1')
+            False
+            >>> Version('1.0.1-alpha') not in Spec('!~1.0.1')
+            True
+
+
+Combining version specifications (the SpecList class)
+-----------------------------------------------------
+
+It may be useful to define a rule such as
+"Accept any version between the first 1.0.0 (incl. pre-release) and strictly before 1.2.0; ecluding 1.1.4 which was broken.".
+
+This is possible with the :class:`SpecList` class.
+
+
+.. class:: SpecList(spec_string)
+
+    Stores a list of :class:`Spec` and matches any :class:`Version` against all
+    contained :class:`specs <Spec>`.
+
+    It is build from a comma-separated list of version specifications::
+
+        >>> SpecList('>~1.0.0,<1.2.0,!~1.1.4')
+        <SpecList: (
+            <Spec: >~ <~SemVer: 1 0 0 None None>>,
+            <Spec: < <SemVer: 1 2 0 [] []>>,
+            <Spec: !~ <~SemVer: 1 1 4 None None>>
+        )>
+
+
+    .. rubric:: Attributes
+
+
+    .. attribute:: specs
+
+        Tuple of :class:`Spec`, the included specifications.
+
+
+    .. rubric:: Methods
+
+
+    .. method:: match(self, version)
+
+        Test whether a given :class:`Version` matches all included :class:`Spec`::
+
+            >>> SpecList('>=1.1.0,<1.1.2').match(Version('1.1.1'))
+            True
+
+        :param version: The version to test against the specs
+        :type version: :class:`Version`
+        :rtype: ``bool``
+
+    .. method:: __contains__(self, version)
+
+        Alias of the :func:`match` method;
+        allows the use of the ``version in speclist`` syntax::
+
+            >>> Version('1.1.1-alpha') in SpecList('>=1.1.0,<1.1.1')
+            True
+
+
+    .. method:: __str__(self)
+
+        Converting a :class:`SpecList` returns the initial description string::
+
+            >>> str(SpecList('>=0.1.1,!=0.1.2'))
+            '>=0.1.1,!=0.1.2'
+
+    .. method:: __iter__(self)
+
+        Returns an iterator over the contained specs::
+
+            >>> for spec in SpecList('>=0.1.1,!=0.1.2'):
+            ...     print spec
+            >=0.1.1
+            !=0.1.2
+
+    .. method:: __hash__(self)
+
+        Provides a hash based solely on the hash of contained specs.
+
+        Allows using a :class:`SpecList` as a dictionary key.
+
+
+    .. rubric:: Class methods
+
+
+    .. classmethod:: parse(self, specs_string)
+
+        Retrieve a ``(*specs)`` tuple from a string.
+
+        :param str requirement_string: The textual description of the specifications
+        :raises: :exc:`ValueError`: if the ``requirement_string`` is invalid.
+        :rtype: ``(*spec)`` tuple
 
 
 .. _SemVer: http://semver.org/
