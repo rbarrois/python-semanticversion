@@ -218,9 +218,30 @@ class Spec(object):
     KIND_EQUAL = '=='
     KIND_GTE = '>='
     KIND_GT = '>'
-    KIND_ALMOST = '~'
+    KIND_NEQ = '!='
 
-    re_spec = re.compile(r'^(<|<=|==|>=|>|~)(\d.*)$')
+    STRICT_KINDS = (
+        KIND_LT,
+        KIND_LTE,
+        KIND_EQUAL,
+        KIND_GTE,
+        KIND_GT,
+        KIND_NEQ,
+    )
+
+    KIND_LTE_LOOSE = '<~'
+    KIND_EQ_LOOSE = '~='
+    KIND_GTE_LOOSE = '>~'
+    KIND_NEQ_LOOSE = '!~'
+
+    LOOSE_KINDS = (
+        KIND_LTE_LOOSE,
+        KIND_EQ_LOOSE,
+        KIND_GTE_LOOSE,
+        KIND_NEQ_LOOSE,
+    )
+
+    re_spec = re.compile(r'^(<|<=|==|>=|>|!=|<~|>~|~=)(\d.*)$')
 
     def __init__(self, requirement_string):
         kind, spec = self.parse(requirement_string)
@@ -237,21 +258,22 @@ class Spec(object):
             raise ValueError("Invalid requirement specification: %r" % requirement_string)
 
         kind, version = match.groups()
-        spec = Version(version, partial=(kind == cls.KIND_ALMOST))
+        spec = Version(version, partial=(kind in cls.LOOSE_KINDS))
         return (kind, spec)
 
     def match(self, version):
         if self.kind == self.KIND_LT:
             return version < self.spec
-        elif self.kind == self.KIND_LTE:
+        elif self.kind in (self.KIND_LTE, self.KIND_LTE_LOOSE):
             return version <= self.spec
-        elif self.kind in (self.KIND_EQUAL, self.KIND_ALMOST):
-            # self.spec must be on left side, since it is a partial match.
-            return self.spec == version
-        elif self.kind == self.KIND_GTE:
+        elif self.kind in (self.KIND_EQUAL, self.KIND_EQ_LOOSE):
+            return version == self.spec
+        elif self.kind in (self.KIND_GTE, self.KIND_GTE_LOOSE):
             return version >= self.spec
         elif self.kind == self.KIND_GT:
             return version > self.spec
+        elif self.kind in (self.KIND_NEQ, self.KIND_NEQ_LOOSE):
+            return version != self.spec
         else:  # pragma: no cover
             raise ValueError('Unexpected match kind: %r' % self.kind)
 
