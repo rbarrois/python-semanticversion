@@ -1,6 +1,17 @@
 ChangeLog
 =========
 
+1.2.0 (18/05/2012)
+------------------
+
+*New:*
+
+    * Allow split specifications when instantiating a
+      :class:`~semantic_version.SpecList`::
+
+            >>> SpecList('>=0.1.1', '!=0.1.3') == SpecList('>=0.1.1,!=0.1.3')
+            True
+
 1.1.0 (18/05/2012)
 ------------------
 
