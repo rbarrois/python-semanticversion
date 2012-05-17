@@ -2,7 +2,7 @@
 # Copyright (c) 2012 Raphaël Barrois
 
 
-__version__ = '1.0.0-beta'
+__version__ = '1.0.0'
 
 
 from .base import compare, match, Version, Spec

@@ -18,7 +18,7 @@ def get_version():
             match = version_re.match(line[:-1])
             if match:
                 return match.groups()[0]
-    return '0.0'
+    return '0.0.0'
 
 
 class test(cmd.Command):
