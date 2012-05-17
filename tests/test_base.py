@@ -146,6 +146,104 @@ class VersionTestCase(unittest.TestCase):
 
 
 class SpecTestCase(unittest.TestCase):
+    components = {
+        '~=0.1': (base.Spec.KIND_EQ_LOOSE, 0, 1, None, None, None),
+        '~=0.1.2-rc3': (base.Spec.KIND_EQ_LOOSE, 0, 1, 2, ['rc3'], None),
+        '~=0.1.2+build3.14': (base.Spec.KIND_EQ_LOOSE, 0, 1, 2, [], ['build3', '14']),
+        '<=0.1.1': (base.Spec.KIND_LTE, 0, 1, 1, [], []),
+        '<0.1.1': (base.Spec.KIND_LT, 0, 1, 1, [], []),
+        '<~0.1.1': (base.Spec.KIND_LTE_LOOSE, 0, 1, 1, None, None),
+        '<~0.1': (base.Spec.KIND_LTE_LOOSE, 0, 1, None, None, None),
+        '>=0.2.3-rc2': (base.Spec.KIND_GTE, 0, 2, 3, ['rc2'], []),
+        '>0.2.3-rc2': (base.Spec.KIND_GT, 0, 2, 3, ['rc2'], []),
+        '>~2': (base.Spec.KIND_GTE_LOOSE, 2, None, None, None, None),
+        '!=0.1.1': (base.Spec.KIND_NEQ, 0, 1, 1, [], []),
+        '!~0.3': (base.Spec.KIND_NEQ_LOOSE, 0, 3, None, None, None),
+    }
+
+    def test_components(self):
+        for spec_text, components in self.components.items():
+            kind, major, minor, patch, prerelease, build = components
+            spec = base.Spec(spec_text)
+
+            self.assertNotEqual(spec, spec_text)
+            self.assertEqual(spec_text, str(spec))
+
+            self.assertEqual(kind, spec.kind)
+            self.assertEqual(major, spec.spec.major)
+            self.assertEqual(minor, spec.spec.minor)
+            self.assertEqual(patch, spec.spec.patch)
+            self.assertEqual(prerelease, spec.spec.prerelease)
+            self.assertEqual(build, spec.spec.build)
+
+    matches = {
+        '~=0.1': (
+            ['0.1.0', '0.1.99', '0.1.0-rc1', '0.1.4-rc1+build2'],
+            ['0.0.1', '0.2.0'],
+        ),
+        '~=0.1.2-rc3': (
+            ['0.1.2-rc3+build1', '0.1.2-rc3+build4.5'],
+            ['0.1.2-rc4', '0.1.2', '0.1.3'],
+        ),
+        '~=0.1.2+build3.14': (
+            ['0.1.2+build3.14'],
+            ['0.1.2-rc+build3.14', '0.1.2+build3.15'],
+        ),
+        '<=0.1.1': (
+            ['0.0.0', '0.1.1-alpha1', '0.1.1'],
+            ['0.1.1+build2', '0.1.2'],
+        ),
+        '<0.1.1': (
+            ['0.1.0', '0.1.1-zzz+999', '0.0.0'],
+            ['0.1.1', '1.2.0', '0.1.1+build3'],
+        ),
+        '<~0.1.1': (
+            ['0.1.1+build4', '0.1.1-alpha', '0.1.0'],
+            ['0.2.3', '1.1.1', '0.1.2'],
+        ),
+        '<~0.1': (
+            ['0.1.0', '0.1.1+4', '0.1.99', '0.1.0-alpha', '0.0.1'],
+            ['0.2.0', '1.0.0'],
+        ),
+        '>=0.2.3-rc2': (
+            ['0.2.3-rc3', '0.2.3', '0.2.3+1', '0.2.3-rc2', '0.2.3-rc2+1'],
+            ['0.2.3-rc1', '0.2.2'],
+        ),
+        '>0.2.3-rc2': (
+            ['0.2.3-rc3', '0.2.3', '0.2.3-rc2+1'],
+            ['0.2.3-rc1', '0.2.2'],
+        ),
+        '>~2': (
+            ['2.1.1', '2.0.0-alpha1', '3.1.4'],
+            ['1.9.9', '1.9.9999'],
+        ),
+        '!=0.1.1': (
+            ['0.1.1-alpha', '0.1.2', '0.1.0', '1.4.2'],
+            ['0.1.1'],
+        ),
+        '!~0.3': (
+            ['0.4.0', '1.3.0'],
+            ['0.3.0', '0.3.99', '0.3.0-alpha', '0.3.999999+4'],
+        ),
+    }
+
+    def test_matches(self):
+        for spec_text, versions in self.matches.items():
+            spec = base.Spec(spec_text)
+            matching, failing = versions
+
+            for version_text in matching:
+                version = base.Version(version_text)
+                self.assertTrue(version in spec, "%r should be in %r" % (version, spec))
+                self.assertTrue(spec.match(version), "%r should match %r" % (version, spec))
+
+            for version_text in failing:
+                version = base.Version(version_text)
+                self.assertFalse(version in spec,
+                    "%r should not be in %r" % (version, spec))
+                self.assertFalse(spec.match(version),
+                    "%r should not match %r" % (version, spec))
+
     def test_equality(self):
         spec1 = base.Spec('==0.1.0')
         spec2 = base.Spec('==0.1.0')

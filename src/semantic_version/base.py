@@ -241,7 +241,7 @@ class Spec(object):
         KIND_NEQ_LOOSE,
     )
 
-    re_spec = re.compile(r'^(<|<=|==|>=|>|!=|<~|>~|~=)(\d.*)$')
+    re_spec = re.compile(r'^(<|<=|==|>=|>|!=|<~|>~|~=|!~)(\d.*)$')
 
     def __init__(self, requirement_string):
         kind, spec = self.parse(requirement_string)
