@@ -129,6 +129,7 @@ class VersionTestCase(unittest.TestCase):
             actual_fields = (version.major, version.minor, version.patch,
                 version.prerelease, version.build)
             self.assertEqual(expected_fields, actual_fields)
+            self.assertTrue(version.partial, "%r should have partial=True" % version)
 
     def test_str_partials(self):
         for text, fields in self.partial_versions.items():
