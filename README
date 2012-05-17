@@ -10,6 +10,56 @@ This small python library provides a few tools to handle `SemVer <http://semver.
 The first release (0.1.0) should handle the 2.0.0-rc1 version of the SemVer scheme.
 
 
+Usage
+=====
+
+Define a Version::
+
+  >>> from semantic_version import Version
+  >>> v = Version('0.1.1')
+
+Compare it to other versions::
+
+  >>> v < Version('0.1.2')
+  True
+  >>> sorted([Version('0.1.1'), Version('0.11.1'), Version('0.1.1-alpha')])
+  [<SemVer(0, 1, 1, ('alpha',), ())>,
+   <SemVer(0, 1, 1, (), ())>,
+   <SemVer(0, 11, 1, (), ())>]
+
+Define a simple specification::
+
+  >>> from semantic_version import Spec
+  >>> s = Spec('>=0.1.1')
+  >>> Version('0.1.1') in s
+  True
+  >>> Version('0.1.1-alpha') in s
+  False
+
+Define complex specifications::
+
+  >>> from semantic_version import SpecList
+  >>> s = SpecList('>=0.1.1,<0.2.0')
+  >>> Version('0.1.2') in s
+  True
+  >>> Version('0.3.0') in s
+  False
+  >>> Version('0.2.0') in s
+  False
+
+
+Framework integration
+=====================
+
+Integrates with `Django <http://djangoproject.com>`_, through ``VersionField``, ``SpecField`` and ``SpecListField``::
+
+    from semantic_version import django_fields as semver_fields
+
+    class MyComputer(models.Model):
+        name = models.CharField(max_length=40)
+        kernel_version = semver_fields.VersionField()
+
+
 Links
 =====
 
