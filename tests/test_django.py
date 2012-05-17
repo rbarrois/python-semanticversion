@@ -67,7 +67,7 @@ class DjangoFieldTestCase(unittest.TestCase):
 
     def test_serialization(self):
         o1 = models.VersionModel(version='0.1.1', spec='<0.2.4-rc42')
-        o2 = models.VersionModel(version='0.4.3-rc3+build3', spec='~0.4')
+        o2 = models.VersionModel(version='0.4.3-rc3+build3', spec='~=0.4')
 
         data = serializers.serialize('json', [o1, o2])
 
@@ -77,7 +77,7 @@ class DjangoFieldTestCase(unittest.TestCase):
 
     def test_serialization_partial(self):
         o1 = models.PartialVersionModel(partial='0.1.1', optional='0.2.4-rc42', optional_spec=None)
-        o2 = models.PartialVersionModel(partial='0.4.3-rc3+build3', optional='', optional_spec='~1.1')
+        o2 = models.PartialVersionModel(partial='0.4.3-rc3+build3', optional='', optional_spec='~=1.1')
 
         data = serializers.serialize('json', [o1, o2])
 
@@ -102,7 +102,7 @@ if django_loaded:
 
         def test_db_interaction(self):
             o1 = models.VersionModel(version='0.1.1', spec='<0.2.4-rc42')
-            o2 = models.VersionModel(version='0.4.3-rc3+build3', spec='~0.4')
+            o2 = models.VersionModel(version='0.4.3-rc3+build3', spec='~=0.4')
 
             o1.save()
             o2.save()
