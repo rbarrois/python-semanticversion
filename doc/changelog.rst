@@ -1,7 +1,7 @@
 ChangeLog
 =========
 
-1.1.0 (current)
+1.1.0 (18/05/2012)
 ------------------
 
 *New:*
@@ -11,7 +11,7 @@ ChangeLog
     * :class:`~semantic_version.SpecList` class combining many :class:`~semantic_version.Spec`
     * Add :class:`~semantic_version.django_fields.SpecListField` to store a :class:`~semantic_version.SpecList`.
 
-1.0.0 (18/05/2012)
+1.0.0 (17/05/2012)
 ------------------
 
 First public release.
