@@ -5,4 +5,4 @@
 __version__ = '1.1.0-alpha'
 
 
-from .base import compare, match, Version, Spec
+from .base import compare, match, Version, Spec, SpecList
