@@ -149,6 +149,17 @@ class VersionTestCase(unittest.TestCase):
         self.assertEqual(1,
             len(set([base.Version('0.1.0'), base.Version('0.1.0')])))
 
+        self.assertEqual(2,
+            len(set([base.Version('0.1.0'), base.Version('0.1.0', partial=True)])))
+
+        # A fully-defined 'partial' version isn't actually partial.
+        self.assertEqual(1,
+            len(set([
+                base.Version('0.1.0-a1+34'),
+                base.Version('0.1.0-a1+34', partial=True)
+            ]))
+        )
+
 
 class SpecTestCase(unittest.TestCase):
     components = {
