@@ -370,7 +370,7 @@ It may be useful to define a rule such as
 This is possible with the :class:`SpecList` class.
 
 
-.. class:: SpecList(spec_string)
+.. class:: SpecList(spec_string[, spec_string[, ...]])
 
     Stores a list of :class:`Spec` and matches any :class:`Version` against all
     contained :class:`specs <Spec>`.
@@ -382,6 +382,16 @@ This is possible with the :class:`SpecList` class.
             <Spec: >~ <~SemVer: 1 0 0 None None>>,
             <Spec: < <SemVer: 1 2 0 [] []>>,
             <Spec: !~ <~SemVer: 1 1 4 None None>>
+        )>
+
+    Version specifications may also be passed in separated arguments::
+
+        >>> SpecList('>~1.0.0', '<1.2.0', '!~1.1.4,!~1.1.13')
+        <SpecList: (
+            <Spec: >~ <~SemVer: 1 0 0 None None>>,
+            <Spec: < <SemVer: 1 2 0 [] []>>,
+            <Spec: !~ <~SemVer: 1 1 4 None None>>
+            <Spec: !~ <~SemVer: 1 1 13 None None>>
         )>
 
 

@@ -324,8 +324,9 @@ class Spec(object):
 
 
 class SpecList(object):
-    def __init__(self, specs_string):
-        self.specs = self.parse(specs_string)
+    def __init__(self, *specs_strings):
+        subspecs = [self.parse(spec) for spec in specs_strings]
+        self.specs = sum(subspecs, ())
 
     @classmethod
     def parse(self, specs_string):

@@ -293,6 +293,22 @@ class SpecListTestCase(unittest.TestCase):
             for spec_text in specs:
                 self.assertTrue(repr(base.Spec(spec_text)) in repr(spec_list))
 
+    split_examples = {
+        ('>=0.1.1', '<0.1.2', '!=0.1.1+build1'): ['>=0.1.1', '<0.1.2', '!=0.1.1+build1'],
+        ('>~0.1', '!=0.1.3-rc1,<0.1.3'): ['>~0.1', '!=0.1.3-rc1', '<0.1.3'],
+    }
+
+    def test_parsing_split(self):
+        for spec_list_texts, specs in self.split_examples.items():
+            spec_list = base.SpecList(*spec_list_texts)
+
+            self.assertEqual(','.join(spec_list_texts), str(spec_list))
+            self.assertEqual(specs, [str(spec) for spec in spec_list])
+            self.assertEqual(spec_list, base.SpecList(','.join(spec_list_texts)))
+
+            for spec_text in specs:
+                self.assertTrue(repr(base.Spec(spec_text)) in repr(spec_list))
+
     matches = {
         '>=0.1.1,<0.1.2': (
             ['0.1.1', '0.1.2-alpha', '0.1.1+4'],
