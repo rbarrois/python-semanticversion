@@ -300,6 +300,41 @@ class Spec(object):
         return hash((self.kind, self.spec))
 
 
+class SpecList(object):
+    def __init__(self, specs_string):
+        self.specs = self.parse(specs_string)
+
+    @classmethod
+    def parse(self, specs_string):
+        spec_texts = specs_string.split(',')
+        return tuple(Spec(spec_text) for spec_text in spec_texts)
+
+    def match(self, version):
+        return all(spec.match(version) for spec in self.specs)
+
+    def __contains__(self, version):
+        if isinstance(version, Version):
+            return self.match(version)
+        return False
+
+    def __iter__(self):
+        return iter(self.specs)
+
+    def __str__(self):
+        return ','.join(str(spec) for spec in self.specs)
+
+    def __repr__(self):
+        return '<SpecList: %r>' % (self.specs,)
+
+    def __eq__(self, other):
+        if not isinstance(other, SpecList):
+            return NotImplemented
+
+        return set(self.specs) == set(other.specs)
+
+    def __hash__(self):
+        return hash(self.specs)
+
 
 def compare(v1, v2):
     return cmp(Version(v1), Version(v2))

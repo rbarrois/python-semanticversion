@@ -264,5 +264,67 @@ class SpecTestCase(unittest.TestCase):
             len(set([base.Spec('==0.1.0'), base.Spec('==0.1.0')])))
 
 
+class SpecListTestCase(unittest.TestCase):
+    examples = {
+        '>=0.1.1,<0.1.2': ['>=0.1.1', '<0.1.2'],
+        '>~0.1,!=0.1.3-rc1,<0.1.3': ['>~0.1', '!=0.1.3-rc1', '<0.1.3'],
+    }
+
+    def test_parsing(self):
+        for spec_list_text, specs in self.examples.items():
+            spec_list = base.SpecList(spec_list_text)
+
+            self.assertEqual(spec_list_text, str(spec_list))
+            self.assertNotEqual(spec_list_text, spec_list)
+            self.assertEqual(specs, [str(spec) for spec in spec_list])
+
+            for spec_text in specs:
+                self.assertTrue(repr(base.Spec(spec_text)) in repr(spec_list))
+
+    matches = {
+        '>=0.1.1,<0.1.2': (
+            ['0.1.1', '0.1.2-alpha', '0.1.1+4'],
+            ['0.1.1-alpha', '0.1.2', '1.3.4'],
+        ),
+        '>~0.1,!=0.1.3-rc1,<0.1.3': (
+            ['0.1.1', '0.1.3-rc1+4', '0.1.3-alpha'],
+            ['0.0.1', '0.1.3', '0.2.2', '0.1.3-rc1'],
+        ),
+    }
+
+    def test_matches(self):
+        for spec_list_text, versions in self.matches.items():
+            spec_list = base.SpecList(spec_list_text)
+            matching, failing = versions
+
+            for version_text in matching:
+                version = base.Version(version_text)
+                self.assertTrue(version in spec_list,
+                    "%r should be in %r" % (version, spec_list))
+                self.assertTrue(spec_list.match(version),
+                    "%r should match %r" % (version, spec_list))
+
+            for version_text in failing:
+                version = base.Version(version_text)
+                self.assertFalse(version in spec_list,
+                    "%r should not be in %r" % (version, spec_list))
+                self.assertFalse(spec_list.match(version),
+                    "%r should not match %r" % (version, spec_list))
+
+    def test_equality(self):
+        for spec_list_text in self.examples:
+            slist1 = base.SpecList(spec_list_text)
+            slist2 = base.SpecList(spec_list_text)
+            self.assertEqual(slist1, slist2)
+            self.assertFalse(slist1 == spec_list_text)
+
+    def test_contains(self):
+        self.assertFalse('ii' in base.SpecList('>=0.1.1'))
+
+    def test_hash(self):
+        self.assertEqual(1,
+            len(set([base.SpecList('>=0.1.1'), base.SpecList('>=0.1.1')])))
+
+
 if __name__ == '__main__':  # pragma: no cover
     unittest.main()
