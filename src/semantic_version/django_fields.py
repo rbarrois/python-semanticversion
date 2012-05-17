@@ -61,4 +61,16 @@ class SpecField(BaseSemVerField):
         return base.Spec(value)
 
 
+class SpecListField(BaseSemVerField):
+    default_error_messages = {
+        'invalid': _(u"Enter a valid version number spec list in ==X.Y.Z,>=A.B.C format."),
+    }
+    description = _(u"Version specification list")
 
+    def to_python(self, value):
+        """Converts any value to a base.SpecList field."""
+        if value is None or value == '':
+            return value
+        if isinstance(value, base.SpecList):
+            return value
+        return base.SpecList(value)
