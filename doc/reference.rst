@@ -252,10 +252,18 @@ rules apply:
 
     This allows to test :class:`Version` objects against the :class:`Spec`::
 
-        >>> Spec('>=0.1.1').match(Version('0.1.1-rc1'))  # pre-release have lower precedence
-        False
-        >>> Version('0.1.1+build2') in Spec('>=0.1.1')   # build version have higher precedence
+        >>> Spec('>=0.1.1').match(Version('0.1.1-rc1'))  # pre-release satisfy conditions
         True
+        >>> Version('0.1.1+build2') in Spec('>=0.1.1')   # build version satisfy specifications
+        True
+        >>>
+        >>> # Use the '-' marker to include the pre-release component in checks
+        >>> Spec('>=0.1.1-').match(Version('0.1.1-rc1')
+        False
+        >>>
+        >>> # Use the '+' marker to include the build identifier in checks
+        >>> Spec('<=0.1.1-alpha+').match(Version('0.1.1-alpha+build1'))
+        False
 
 
     .. rubric:: Attributes
@@ -264,14 +272,13 @@ rules apply:
     .. attribute:: kind
 
         One of :data:`KIND_LT`, :data:`KIND_LTE`, :data:`KIND_EQUAL`, :data:`KIND_GTE`,
-        :data:`KIND_GT`, :data:`KIND_NEQ`, :data:`KIND_LTE_LOOSE`, :data:`KIND_EQ_LOOSE`,
-        :data:`KIND_GTE_LOOSE`, :data:`KIND_NEQ_LOOSE`.
+        :data:`KIND_GT` and :data:`KIND_NEQ`.
 
     .. attribute:: spec
 
         :class:`Version` in the :class:`Spec` description.
 
-        If :attr:`kind` is a ``_LOOSE`` kind, this will be a :attr:`~Version.partial` :class:`Version`.
+        It is alway a :attr:`~Version.partial` :class:`Version`.
 
 
     .. rubric:: Class methods
@@ -293,7 +300,9 @@ rules apply:
 
         Test whether a given :class:`Version` matches this :class:`Spec`::
 
-            >>> Spec('>0.1.1').match(Version('0.1.1-alpha'))
+            >>> Spec('>=0.1.1').match(Version('0.1.1-alpha'))
+            True
+            >>> Spec('>=0.1.1-').match(Version('0.1.1-alpha'))
             False
 
         :param version: The version to test against the spec
@@ -333,21 +342,21 @@ rules apply:
         The kind of 'Less than' specifications::
 
             >>> Version('1.0.0-alpha') in Spec('<1.0.0')
-            True
+            False
 
     .. data:: KIND_LTE
 
         The kind of 'Less or equal to' specifications::
 
             >>> Version('1.0.0-alpha1+build999') in Spec('<=1.0.0-alpha1')
-            False
+            True
 
     .. data:: KIND_EQUAL
 
         The kind of 'equal to' specifications::
 
             >>> Version('1.0.0+build3.3') in Spec('==1.0.0')
-            False
+            True
 
     .. data:: KIND_GTE
 
@@ -361,7 +370,7 @@ rules apply:
         The kind of 'Greater than' specifications::
 
             >>> Version('1.0.0+build667') in Spec('>1.0.1')
-            True
+            False
 
     .. data:: KIND_NEQ
 
@@ -373,39 +382,6 @@ rules apply:
         The kind of 'Almost equal to' specifications
 
 
-    .. data:: KIND_LTE_LOOSE
-
-        The kind of 'Loosely lesser or equal to' specifications::
-
-            >>> Version('1.0.1-alpha+build99') in Spec('<=1.0.1-alpha')
-            False
-            >>> Version('1.0.1-alpha+build99') in Spec('<~1.0.1-alpha')
-            True
-
-    .. data:: KIND_EQ_LOOSE
-
-        The kind of 'Almost equal to' specifications::
-
-            >>> Version('1.0.1-alpha') in Spec('~=1.0.1')
-            True
-
-    .. data:: KIND_GTE_LOOSE
-
-        The kind of 'Loosely greater or equal to' specifications::
-
-            >>> Version('1.0.1-alpha') in Spec('>=1.0.1')
-            False
-            >>> Version('1.0.1-alpha') in Spec('>~1.0.1')
-            True
-
-    .. data:: KIND_NEQ_LOOSE
-
-        The kind of 'Loosely not equal to' specifications::
-
-            >>> Version('1.0.1-alpha') not in Spec('!=1.0.1')
-            False
-            >>> Version('1.0.1-alpha') not in Spec('!~1.0.1')
-            True
 
 
 Combining version specifications (the SpecList class)
@@ -424,21 +400,21 @@ This is possible with the :class:`SpecList` class.
 
     It is build from a comma-separated list of version specifications::
 
-        >>> SpecList('>~1.0.0,<1.2.0,!~1.1.4')
+        >>> SpecList('>=1.0.0,<1.2.0,!=1.1.4')
         <SpecList: (
-            <Spec: >~ <~SemVer: 1 0 0 None None>>,
-            <Spec: < <SemVer: 1 2 0 [] []>>,
-            <Spec: !~ <~SemVer: 1 1 4 None None>>
+            <Spec: >= <~SemVer: 1 0 0 None None>>,
+            <Spec: < <~SemVer: 1 2 0 None None>>,
+            <Spec: != <~SemVer: 1 1 4 None None>>
         )>
 
     Version specifications may also be passed in separated arguments::
 
-        >>> SpecList('>~1.0.0', '<1.2.0', '!~1.1.4,!~1.1.13')
+        >>> SpecList('>=1.0.0', '<1.2.0', '!=1.1.4,!=1.1.13')
         <SpecList: (
-            <Spec: >~ <~SemVer: 1 0 0 None None>>,
-            <Spec: < <SemVer: 1 2 0 [] []>>,
-            <Spec: !~ <~SemVer: 1 1 4 None None>>
-            <Spec: !~ <~SemVer: 1 1 13 None None>>
+            <Spec: >= <~SemVer: 1 0 0 None None>>,
+            <Spec: < <SemVer: 1 2 0 None None>>,
+            <Spec: != <~SemVer: 1 1 4 None None>>
+            <Spec: != <~SemVer: 1 1 13 None None>>
         )>
 
 

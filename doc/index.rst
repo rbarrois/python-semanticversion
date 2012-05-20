@@ -87,25 +87,47 @@ The :class:`Spec` object describes a range of accepted versions::
     >>> s = Spec('>=0.1.1')  # At least 0.1.1
     >>> s.match(Version('0.1.1'))
     True
-    >>> s.match(Version('0.1.1-alpha1'))
-    False
-
-It is also possible to define 'approximate' version specifications::
-
-    >>> s = Spec('~0.1')  # Matches 0.1.*
-    >>> s.match(Version('0.1.0-alpha1'))
+    >>> s.match(Version('0.1.1-alpha1'))  # pre-release satisfy version spec
     True
-    >>> s.match(Version('0.1.9999999999+build99'))
-    True
-    >>> s.match(Version('0.2.0'))
+    >>> s.match(Version('0.1.0'))
     False
 
 Simpler test syntax is also available using the ``in`` keyword::
 
-    >>> s = Spec('~0.1.1')
+    >>> s = Spec('==0.1.1')
     >>> Version('0.1.1-alpha1') in s
     True
     >>> Version('0.1.2') in s
+    False
+
+
+Including pre-release identifiers in specifications
+"""""""""""""""""""""""""""""""""""""""""""""""""""
+
+When testing a :class:`Version` against a :class:`Spec`, comparisons are only
+performed for components defined in the :class:`Spec`; thus, a pre-release
+version (``1.0.0-alpha``), while not strictly equal to the non pre-release
+version (``1.0.0``), satisfies the ``==1.0.0`` :class:`Spec`.
+
+Pre-release identifiers will only be compared if included in the :class:`Spec`
+definition or (for the empty pre-release number) if a single dash is appended
+(``1.0.0-``)::
+
+    >>> Version('0.1.0-alpha') in Spec('>=0.1.0')  # No pre-release identifier
+    True
+    >>> Version('0.1.0-alpha') in Spec('>=0.1.0-')  # Include pre-release in checks
+    False
+
+Including build identifiers in specifications
+"""""""""""""""""""""""""""""""""""""""""""""
+
+The same rule applies for the build identifier: comparisons will include it only
+if it was included in the :class:`Spec` definition, or - for the unnumbered build
+version - if a single + is appended to the definition(``1.0.0+``, ``1.0.0-alpha+``)::
+
+    >>> Version('1.0.0+build2') in Spec('<=1.0.0')   # Build identifier ignored
+    True
+    >>> Version('1.0.0+build2') in Spec('<=1.0.0+')  # Include build in checks
     False
 
 
@@ -114,17 +136,19 @@ Combining requirements
 
 In order to express complex version specifications, use the :class:`SpecList` class::
 
-    >>> # At least 0.1.1, not 0.2.X, avoid broken 0.1.5-alpha.
-    >>> sl = SpecList('>=0.1.1,<~0.2,!=0.1.5-alpha')
+    >>> # At least 0.1.1, not 0.2.0, avoid broken 0.1.5-alpha.
+    >>> sl = SpecList('>=0.1.1,<0.2.0,!=0.1.5-alpha')
     >>> sl.match(Version('0.1.1'))
     True
     >>> Version('0.1.1-rc1') in sl
-    False
+    True
     >>> Version('0.1.2') in sl
     True
     >>> Version('0.2.0-alpha') in sl
     False
     >>> Version('0.1.5-alpha') in sl
+    False
+    >>> Version('0.1.5-alpha+build2') in sl
     False
 
 
