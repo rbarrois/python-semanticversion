@@ -58,7 +58,7 @@ def identifier_list_cmp(a, b):
 class Version(object):
 
     version_re = re.compile('^(\d+)\.(\d+)\.(\d+)(?:-([0-9a-zA-Z.-]+))?(?:\+([0-9a-zA-Z.-]+))?$')
-    partial_version_re = re.compile('^(\d+)(?:\.(\d+)(?:\.(\d+)(?:-([0-9a-zA-Z.-]+))?(?:\+([0-9a-zA-Z.-]+))?)?)?$')
+    partial_version_re = re.compile('^(\d+)\.(\d+)\.(\d+)(?:-([0-9a-zA-Z.-]*))?(?:\+([0-9a-zA-Z.-]*))?$')
 
     def __init__(self, version_string, partial=False):
         major, minor, patch, prerelease, build = self.parse(version_string, partial)
@@ -100,11 +100,13 @@ class Version(object):
             patch = int(patch)
 
         if prerelease is None:
-            if partial and not build:
+            if partial and (build is None):
                 # No build info, strip here
                 return (major, minor, patch, None, None)
             else:
                 prerelease = ()
+        elif prerelease == '':
+            prerelease = ()
         else:
             prerelease = tuple(prerelease.split('.'))
 
@@ -113,6 +115,8 @@ class Version(object):
                 build = None
             else:
                 build = ()
+        elif build == '':
+            build = ()
         else:
             build = tuple(build.split('.'))
 
@@ -122,16 +126,11 @@ class Version(object):
         return iter((self.major, self.minor, self.patch, self.prerelease, self.build))
 
     def __str__(self):
-        if self.minor is None:
-            return '%d' % self.major
-        elif self.patch is None:
-            return '%d.%d' % (self.major, self.minor)
-
         version = '%d.%d.%d' % (self.major, self.minor, self.patch)
 
-        if self.prerelease:
+        if self.prerelease or (self.partial and self.prerelease == () and self.build is None):
             version = '%s-%s' % (version, '.'.join(self.prerelease))
-        if self.build:
+        if self.build or (self.partial and self.build == ()):
             version = '%s+%s' % (version, '.'.join(self.build))
         return version
 
@@ -255,19 +254,7 @@ class Spec(object):
         KIND_NEQ,
     )
 
-    KIND_LTE_LOOSE = '<~'
-    KIND_EQ_LOOSE = '~='
-    KIND_GTE_LOOSE = '>~'
-    KIND_NEQ_LOOSE = '!~'
-
-    LOOSE_KINDS = (
-        KIND_LTE_LOOSE,
-        KIND_EQ_LOOSE,
-        KIND_GTE_LOOSE,
-        KIND_NEQ_LOOSE,
-    )
-
-    re_spec = re.compile(r'^(<|<=|==|>=|>|!=|<~|>~|~=|!~)(\d.*)$')
+    re_spec = re.compile(r'^(<|<=|==|>=|>|!=)(\d.*)$')
 
     def __init__(self, requirement_string):
         kind, spec = self.parse(requirement_string)
@@ -284,21 +271,21 @@ class Spec(object):
             raise ValueError("Invalid requirement specification: %r" % requirement_string)
 
         kind, version = match.groups()
-        spec = Version(version, partial=(kind in cls.LOOSE_KINDS))
+        spec = Version(version, partial=True)
         return (kind, spec)
 
     def match(self, version):
         if self.kind == self.KIND_LT:
             return version < self.spec
-        elif self.kind in (self.KIND_LTE, self.KIND_LTE_LOOSE):
+        elif self.kind == self.KIND_LTE:
             return version <= self.spec
-        elif self.kind in (self.KIND_EQUAL, self.KIND_EQ_LOOSE):
+        elif self.kind == self.KIND_EQUAL:
             return version == self.spec
-        elif self.kind in (self.KIND_GTE, self.KIND_GTE_LOOSE):
+        elif self.kind == self.KIND_GTE:
             return version >= self.spec
         elif self.kind == self.KIND_GT:
             return version > self.spec
-        elif self.kind in (self.KIND_NEQ, self.KIND_NEQ_LOOSE):
+        elif self.kind == self.KIND_NEQ:
             return version != self.spec
         else:  # pragma: no cover
             raise ValueError('Unexpected match kind: %r' % self.kind)

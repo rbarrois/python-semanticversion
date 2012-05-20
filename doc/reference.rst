@@ -236,17 +236,11 @@ rules apply:
     True
 
 * Setting a build separator without a build identifier (``>1.1.1+``) forces
-  satisfaction tests to include build identifiers::
+  satisfaction tests to include both prerelease and build identifiers::
 
     >>> Version('1.1.1+build2') in Spec('>1.1.1')
     False
     >>> Version('1.1.1+build2') in Spec('>1.1.1+')
-    True
-
-* Including both pre-release and build separators while omitting identifiers is
-  strictly equivalent to including only the build separator::
-
-    >>> Spec('>1.1.1-+') == Spec('>1.1.1+')
     True
 
 .. class:: Spec(spec_string)

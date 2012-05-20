@@ -17,7 +17,7 @@ class MatchTestCase(unittest.TestCase):
     ]
 
     valid_specs = [
-        '~=0.1',
+        '==0.1.0',
         '<=0.1.1',
         '>0.1.2-rc1',
         '>=0.1.2-rc1.3.4',
@@ -26,14 +26,7 @@ class MatchTestCase(unittest.TestCase):
     ]
 
     matches = {
-        '~=0.1': [
-            '0.1.1',
-            '0.1.2-rc1',
-            '0.1.2-rc1.3.4',
-            '0.1.2+build42-12.2012-01-01.12h23',
-            '0.1.2-rc1.3-14.15+build.2012-01-01.11h34',
-        ],
-        '~=0.1.2': [
+        '==0.1.2': [
             '0.1.2-rc1',
             '0.1.2-rc1.3.4',
             '0.1.2+build42-12.2012-01-01.12h23',
@@ -44,8 +37,9 @@ class MatchTestCase(unittest.TestCase):
             '0.1.2-rc1',
             '0.1.2-rc1.3.4',
             '0.1.2',
+            '0.1.2+build4',
         ],
-        '<0.1.2': [
+        '<0.1.2+': [
             '0.1.1',
             '0.1.2-rc1',
             '0.1.2-rc1.3.4',
@@ -59,19 +53,19 @@ class MatchTestCase(unittest.TestCase):
             '1.0.0',
         ],
         '>0.1.1': [
-            '0.1.1+build4.5',
+            '0.1.2+build4.5',
             '0.1.2-rc1.3',
             '0.2.0',
             '1.0.0',
         ],
-        '>~0.1': [
-            '0.1.1',
-            '0.1.0-rc1',
+        '>0.1.1+': [
+            '0.1.1+b2',
+            '0.1.2-rc1',
             '1.1.1',
             '2.0.4',
         ],
-        '<~0.1.1': [
-            '0.1.1',
+        '<0.1.1-': [
+            '0.1.1-alpha',
             '0.1.1-rc4',
             '0.1.0+12.3',
         ],
@@ -101,7 +95,7 @@ class MatchTestCase(unittest.TestCase):
         self.assertFalse('0.1.0' in spec, "0.1.0 should not be in %r" % spec)
 
         version = semantic_version.Version('0.1.1+4.2')
-        self.assertFalse(version in spec, "%r should not be in %r" % (version, spec))
+        self.assertTrue(version in spec, "%r should be in %r" % (version, spec))
 
         version = semantic_version.Version('0.1.1-rc1+4.2')
         self.assertTrue(version in spec, "%r should be in %r" % (version, spec))

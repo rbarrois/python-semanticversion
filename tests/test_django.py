@@ -35,40 +35,46 @@ if django_loaded:  # pragma: no cover
 @unittest.skipIf(not django_loaded, "Django not installed")
 class DjangoFieldTestCase(unittest.TestCase):
     def test_version(self):
-        obj = models.VersionModel(version='0.1.1', spec='>0.1.0', speclist='~=0.1,!~0.1.1')
+        obj = models.VersionModel(version='0.1.1', spec='>0.1.0', speclist='==0.1.1,!=0.1.1-alpha')
 
         self.assertEqual(semantic_version.Version('0.1.1'), obj.version)
         self.assertEqual(semantic_version.Spec('>0.1.0'), obj.spec)
-        self.assertEqual(semantic_version.SpecList('~=0.1,!~0.1.1'), obj.speclist)
+        self.assertEqual(semantic_version.SpecList('==0.1.1,!=0.1.1-alpha'), obj.speclist)
 
         alt_obj = models.VersionModel(version=obj.version, spec=obj.spec, speclist=obj.speclist)
 
         self.assertEqual(semantic_version.Version('0.1.1'), alt_obj.version)
         self.assertEqual(semantic_version.Spec('>0.1.0'), alt_obj.spec)
-        self.assertEqual(semantic_version.SpecList('~=0.1,!~0.1.1'), alt_obj.speclist)
+        self.assertEqual(semantic_version.SpecList('==0.1.1,!=0.1.1-alpha'), alt_obj.speclist)
         self.assertEqual(obj.spec, alt_obj.spec)
         self.assertEqual(obj.version, alt_obj.version)
         self.assertEqual(obj.speclist, alt_obj.speclist)
 
     def test_invalid_input(self):
         self.assertRaises(ValueError, models.VersionModel,
-            version='0.1.1', spec='blah', speclist='~=0.1,!~0.1.1')
+            version='0.1.1', spec='blah', speclist='==0.1.1,!=0.1.1-alpha')
         self.assertRaises(ValueError, models.VersionModel,
-            version='0.1', spec='>0.1.1', speclist='~=0.1,!~0.1.1')
+            version='0.1', spec='>0.1.1', speclist='==0.1.1,!=0.1.1-alpha')
         self.assertRaises(ValueError, models.VersionModel,
-            version='0.1.1', spec='>0.1.1', speclist='~=0,!=0.2')
+            version='0.1.1', spec='>0.1.1', speclist='==0,!=0.2')
 
     def test_partial(self):
-        obj = models.PartialVersionModel(partial='0.1')
+        obj = models.PartialVersionModel(partial='0.1.0')
 
-        self.assertEqual(semantic_version.Version('0.1', partial=True), obj.partial)
+        self.assertEqual(semantic_version.Version('0.1.0', partial=True), obj.partial)
         self.assertIsNone(obj.optional)
         self.assertIsNone(obj.optional_spec)
         self.assertIsNone(obj.optional_speclist)
 
-        alt_obj = models.PartialVersionModel(partial=obj.partial, optional=obj.optional,
-            optional_spec=obj.optional_spec, optional_speclist=obj.optional_speclist)
-        self.assertEqual(semantic_version.Version('0.1', partial=True), alt_obj.partial)
+        # Copy values to another model
+        alt_obj = models.PartialVersionModel(
+            partial=obj.partial,
+            optional=obj.optional,
+            optional_spec=obj.optional_spec,
+            optional_speclist=obj.optional_speclist,
+        )
+
+        self.assertEqual(semantic_version.Version('0.1.0', partial=True), alt_obj.partial)
         self.assertEqual(obj.partial, alt_obj.partial)
         self.assertIsNone(obj.optional)
         self.assertIsNone(obj.optional_spec)
@@ -76,9 +82,9 @@ class DjangoFieldTestCase(unittest.TestCase):
 
     def test_serialization(self):
         o1 = models.VersionModel(version='0.1.1', spec='<0.2.4-rc42',
-            speclist='~=0.1,!=0.1.1')
-        o2 = models.VersionModel(version='0.4.3-rc3+build3', spec='~=0.4',
-            speclist='<=0.1.1-rc2,!~0.1.1-rc1')
+            speclist='==0.1.1,!=0.1.1-alpha')
+        o2 = models.VersionModel(version='0.4.3-rc3+build3', spec='==0.4.3',
+            speclist='<=0.1.1-rc2,!=0.1.1-rc1')
 
         data = serializers.serialize('json', [o1, o2])
 
@@ -90,7 +96,7 @@ class DjangoFieldTestCase(unittest.TestCase):
         o1 = models.PartialVersionModel(partial='0.1.1', optional='0.2.4-rc42',
             optional_spec=None, optional_speclist=None)
         o2 = models.PartialVersionModel(partial='0.4.3-rc3+build3', optional='',
-            optional_spec='~=1.1', optional_speclist='~=0.1,!=0.1.1')
+            optional_spec='==1.1.0', optional_speclist='==0.1.1,!=0.1.1-alpha')
 
         data = serializers.serialize('json', [o1, o2])
 
@@ -115,7 +121,7 @@ if django_loaded:
 
         def test_db_interaction(self):
             o1 = models.VersionModel(version='0.1.1', spec='<0.2.4-rc42')
-            o2 = models.VersionModel(version='0.4.3-rc3+build3', spec='~=0.4')
+            o2 = models.VersionModel(version='0.4.3-rc3+build3', spec='==0.4.3')
 
             o1.save()
             o2.save()
