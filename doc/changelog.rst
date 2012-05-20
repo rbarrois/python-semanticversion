@@ -1,6 +1,14 @@
 ChangeLog
 =========
 
+1.3.0 (Master)
+--------------
+
+*Backwards incompatible changes:*
+
+    * Removed "loose" specification support
+    * Cleanup :class:`~semantic_version.Spec` to be more intuitive.
+
 1.2.0 (18/05/2012)
 ------------------
 
