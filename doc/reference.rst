@@ -196,6 +196,59 @@ Version specifications (the Spec class)
 Version specifications describe a 'range' of accepted versions:
 older than, equal, similar to, …
 
+The main issue with representing version specifications is that the usual syntax
+does not map well onto `SemVer`_ precedence rules:
+
+* A specification of ``<1.3.4`` is not expected to allow ``1.3.4-rc2``, but strict `SemVer`_ comparisons allow it ;
+* Converting the previous specification to ``<=1.3.3`` in order to avoid ``1.3.4``
+  prereleases has the issue of excluding ``1.3.3+build3`` ;
+* It may be necessary to exclude either all variations on a patch-level release
+  (``!=1.3.3``) or specifically one build-level release (``1.3.3-build.434``).
+
+
+In order to have version specification behave naturally, the rules are the following:
+
+* If no pre-release number was included in the specification, pre-release numbers
+  are ignored when deciding whether a version satisfies a specification.
+* If no build number was included in the specification, build numbers are ignored
+  when deciding whether a version satisfies a specification.
+
+This means that::
+
+    >>> Version('1.1.1-rc1') in Spec('<1.1.1')
+    False
+    >>> Version('1.1.1-rc1') in Spec('<1.1.1-rc4')
+    True
+    >>> Version('1.1.1-rc1+build4') in Spec('<=1.1.1-rc1')
+    True
+    >>> Version('1.1.1-rc1+build4') in Spec('<=1.1.1-rc1+build2')
+    False
+
+In order to force matches to *strictly* compare version numbers, these additional
+rules apply:
+
+* Setting a pre-release separator without a pre-release identifier (``<=1.1.1-``)
+  forces match to take into account pre-release version::
+
+    >>> Version('1.1.1-rc1') in Spec('<1.1.1')
+    False
+    >>> Version('1.1.1-rc1') in Spec('<1.1.1-')
+    True
+
+* Setting a build separator without a build identifier (``>1.1.1+``) forces
+  satisfaction tests to include build identifiers::
+
+    >>> Version('1.1.1+build2') in Spec('>1.1.1')
+    False
+    >>> Version('1.1.1+build2') in Spec('>1.1.1+')
+    True
+
+* Including both pre-release and build separators while omitting identifiers is
+  strictly equivalent to including only the build separator::
+
+    >>> Spec('>1.1.1-+') == Spec('>1.1.1+')
+    True
+
 .. class:: Spec(spec_string)
 
     Stores a version specification, defined from a string::
