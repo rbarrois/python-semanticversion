@@ -189,8 +189,8 @@ Representing a version (the Version class)
         :rtype: (major, minor, patch, prerelease, build)
 
 
-Version specifications (the Spec class)
----------------------------------------
+Version specifications (the SpecItem class)
+-------------------------------------------
 
 
 Version specifications describe a 'range' of accepted versions:
@@ -215,13 +215,13 @@ In order to have version specification behave naturally, the rules are the follo
 
 This means that::
 
-    >>> Version('1.1.1-rc1') in Spec('<1.1.1')
+    >>> Version('1.1.1-rc1') in SpecItem('<1.1.1')
     False
-    >>> Version('1.1.1-rc1') in Spec('<1.1.1-rc4')
+    >>> Version('1.1.1-rc1') in SpecItem('<1.1.1-rc4')
     True
-    >>> Version('1.1.1-rc1+build4') in Spec('<=1.1.1-rc1')
+    >>> Version('1.1.1-rc1+build4') in SpecItem('<=1.1.1-rc1')
     True
-    >>> Version('1.1.1-rc1+build4') in Spec('<=1.1.1-rc1+build2')
+    >>> Version('1.1.1-rc1+build4') in SpecItem('<=1.1.1-rc1+build2')
     False
 
 In order to force matches to *strictly* compare version numbers, these additional
@@ -230,39 +230,39 @@ rules apply:
 * Setting a pre-release separator without a pre-release identifier (``<=1.1.1-``)
   forces match to take into account pre-release version::
 
-    >>> Version('1.1.1-rc1') in Spec('<1.1.1')
+    >>> Version('1.1.1-rc1') in SpecItem('<1.1.1')
     False
-    >>> Version('1.1.1-rc1') in Spec('<1.1.1-')
+    >>> Version('1.1.1-rc1') in SpecItem('<1.1.1-')
     True
 
 * Setting a build separator without a build identifier (``>1.1.1+``) forces
   satisfaction tests to include both prerelease and build identifiers::
 
-    >>> Version('1.1.1+build2') in Spec('>1.1.1')
+    >>> Version('1.1.1+build2') in SpecItem('>1.1.1')
     False
-    >>> Version('1.1.1+build2') in Spec('>1.1.1+')
+    >>> Version('1.1.1+build2') in SpecItem('>1.1.1+')
     True
 
-.. class:: Spec(spec_string)
+.. class:: SpecItem(spec_string)
 
     Stores a version specification, defined from a string::
 
-        >>> Spec('>=0.1.1')
-        <Spec: >= <SemVer(0, 1, 1, [], [])>>
+        >>> SpecItem('>=0.1.1')
+        <SpecItem: >= <SemVer(0, 1, 1, [], [])>>
 
-    This allows to test :class:`Version` objects against the :class:`Spec`::
+    This allows to test :class:`Version` objects against the :class:`SpecItem`::
 
-        >>> Spec('>=0.1.1').match(Version('0.1.1-rc1'))  # pre-release satisfy conditions
+        >>> SpecItem('>=0.1.1').match(Version('0.1.1-rc1'))  # pre-release satisfy conditions
         True
-        >>> Version('0.1.1+build2') in Spec('>=0.1.1')   # build version satisfy specifications
+        >>> Version('0.1.1+build2') in SpecItem('>=0.1.1')   # build version satisfy specifications
         True
         >>>
         >>> # Use the '-' marker to include the pre-release component in checks
-        >>> Spec('>=0.1.1-').match(Version('0.1.1-rc1')
+        >>> SpecItem('>=0.1.1-').match(Version('0.1.1-rc1')
         False
         >>>
         >>> # Use the '+' marker to include the build identifier in checks
-        >>> Spec('<=0.1.1-alpha+').match(Version('0.1.1-alpha+build1'))
+        >>> SpecItem('<=0.1.1-alpha+').match(Version('0.1.1-alpha+build1'))
         False
 
 
@@ -276,7 +276,7 @@ rules apply:
 
     .. attribute:: spec
 
-        :class:`Version` in the :class:`Spec` description.
+        :class:`Version` in the :class:`SpecItem` description.
 
         It is alway a :attr:`~Version.partial` :class:`Version`.
 
@@ -298,11 +298,11 @@ rules apply:
 
     .. method:: match(self, version)
 
-        Test whether a given :class:`Version` matches this :class:`Spec`::
+        Test whether a given :class:`Version` matches this :class:`SpecItem`::
 
-            >>> Spec('>=0.1.1').match(Version('0.1.1-alpha'))
+            >>> SpecItem('>=0.1.1').match(Version('0.1.1-alpha'))
             True
-            >>> Spec('>=0.1.1-').match(Version('0.1.1-alpha'))
+            >>> SpecItem('>=0.1.1-').match(Version('0.1.1-alpha'))
             False
 
         :param version: The version to test against the spec
@@ -315,15 +315,15 @@ rules apply:
         Alias of the :func:`match` method;
         allows the use of the ``version in spec`` syntax::
 
-            >>> Version('1.1.1') in Spec('<=1.1.2')
+            >>> Version('1.1.1') in SpecItem('<=1.1.2')
             True
 
 
     .. method:: __str__(self)
 
-        Converting a :class:`Spec` to a string returns the initial description string::
+        Converting a :class:`SpecItem` to a string returns the initial description string::
 
-            >>> str(Spec('>=0.1.1'))
+            >>> str(SpecItem('>=0.1.1'))
             '>=0.1.1'
 
 
@@ -331,7 +331,7 @@ rules apply:
 
         Provides a hash based solely on the current kind and the specified version.
 
-        Allows using a :class:`Spec` as a dictionary key.
+        Allows using a :class:`SpecItem` as a dictionary key.
 
 
     .. rubric:: Class attributes
@@ -341,42 +341,42 @@ rules apply:
 
         The kind of 'Less than' specifications::
 
-            >>> Version('1.0.0-alpha') in Spec('<1.0.0')
+            >>> Version('1.0.0-alpha') in SpecItem('<1.0.0')
             False
 
     .. data:: KIND_LTE
 
         The kind of 'Less or equal to' specifications::
 
-            >>> Version('1.0.0-alpha1+build999') in Spec('<=1.0.0-alpha1')
+            >>> Version('1.0.0-alpha1+build999') in SpecItem('<=1.0.0-alpha1')
             True
 
     .. data:: KIND_EQUAL
 
         The kind of 'equal to' specifications::
 
-            >>> Version('1.0.0+build3.3') in Spec('==1.0.0')
+            >>> Version('1.0.0+build3.3') in SpecItem('==1.0.0')
             True
 
     .. data:: KIND_GTE
 
         The kind of 'Greater or equal to' specifications::
 
-            >>> Version('1.0.0') in Spec('>=1.0.0')
+            >>> Version('1.0.0') in SpecItem('>=1.0.0')
             True
 
     .. data:: KIND_GT
 
         The kind of 'Greater than' specifications::
 
-            >>> Version('1.0.0+build667') in Spec('>1.0.1')
+            >>> Version('1.0.0+build667') in SpecItem('>1.0.1')
             False
 
     .. data:: KIND_NEQ
 
         The kind of 'Not equal to' specifications::
 
-            >>> Version('1.0.1') in Spec('!=1.0.1')
+            >>> Version('1.0.1') in SpecItem('!=1.0.1')
             False
 
         The kind of 'Almost equal to' specifications
@@ -384,37 +384,37 @@ rules apply:
 
 
 
-Combining version specifications (the SpecList class)
------------------------------------------------------
+Combining version specifications (the Spec class)
+-------------------------------------------------
 
 It may be useful to define a rule such as
 "Accept any version between the first 1.0.0 (incl. pre-release) and strictly before 1.2.0; ecluding 1.1.4 which was broken.".
 
-This is possible with the :class:`SpecList` class.
+This is possible with the :class:`Spec` class.
 
 
-.. class:: SpecList(spec_string[, spec_string[, ...]])
+.. class:: Spec(spec_string[, spec_string[, ...]])
 
-    Stores a list of :class:`Spec` and matches any :class:`Version` against all
-    contained :class:`specs <Spec>`.
+    Stores a list of :class:`SpecItem` and matches any :class:`Version` against all
+    contained :class:`specs <SpecItem>`.
 
     It is build from a comma-separated list of version specifications::
 
-        >>> SpecList('>=1.0.0,<1.2.0,!=1.1.4')
-        <SpecList: (
-            <Spec: >= <~SemVer: 1 0 0 None None>>,
-            <Spec: < <~SemVer: 1 2 0 None None>>,
-            <Spec: != <~SemVer: 1 1 4 None None>>
+        >>> Spec('>=1.0.0,<1.2.0,!=1.1.4')
+        <Spec: (
+            <SpecItem: >= <~SemVer: 1 0 0 None None>>,
+            <SpecItem: < <~SemVer: 1 2 0 None None>>,
+            <SpecItem: != <~SemVer: 1 1 4 None None>>
         )>
 
     Version specifications may also be passed in separated arguments::
 
-        >>> SpecList('>=1.0.0', '<1.2.0', '!=1.1.4,!=1.1.13')
-        <SpecList: (
-            <Spec: >= <~SemVer: 1 0 0 None None>>,
-            <Spec: < <SemVer: 1 2 0 None None>>,
-            <Spec: != <~SemVer: 1 1 4 None None>>
-            <Spec: != <~SemVer: 1 1 13 None None>>
+        >>> Spec('>=1.0.0', '<1.2.0', '!=1.1.4,!=1.1.13')
+        <Spec: (
+            <SpecItem: >= <~SemVer: 1 0 0 None None>>,
+            <SpecItem: < <SemVer: 1 2 0 None None>>,
+            <SpecItem: != <~SemVer: 1 1 4 None None>>
+            <SpecItem: != <~SemVer: 1 1 13 None None>>
         )>
 
 
@@ -423,7 +423,7 @@ This is possible with the :class:`SpecList` class.
 
     .. attribute:: specs
 
-        Tuple of :class:`Spec`, the included specifications.
+        Tuple of :class:`SpecItem`, the included specifications.
 
 
     .. rubric:: Methods
@@ -431,9 +431,9 @@ This is possible with the :class:`SpecList` class.
 
     .. method:: match(self, version)
 
-        Test whether a given :class:`Version` matches all included :class:`Spec`::
+        Test whether a given :class:`Version` matches all included :class:`SpecItem`::
 
-            >>> SpecList('>=1.1.0,<1.1.2').match(Version('1.1.1'))
+            >>> Spec('>=1.1.0,<1.1.2').match(Version('1.1.1'))
             True
 
         :param version: The version to test against the specs
@@ -445,22 +445,22 @@ This is possible with the :class:`SpecList` class.
         Alias of the :func:`match` method;
         allows the use of the ``version in speclist`` syntax::
 
-            >>> Version('1.1.1-alpha') in SpecList('>=1.1.0,<1.1.1')
+            >>> Version('1.1.1-alpha') in Spec('>=1.1.0,<1.1.1')
             True
 
 
     .. method:: __str__(self)
 
-        Converting a :class:`SpecList` returns the initial description string::
+        Converting a :class:`Spec` returns the initial description string::
 
-            >>> str(SpecList('>=0.1.1,!=0.1.2'))
+            >>> str(Spec('>=0.1.1,!=0.1.2'))
             '>=0.1.1,!=0.1.2'
 
     .. method:: __iter__(self)
 
         Returns an iterator over the contained specs::
 
-            >>> for spec in SpecList('>=0.1.1,!=0.1.2'):
+            >>> for spec in Spec('>=0.1.1,!=0.1.2'):
             ...     print spec
             >=0.1.1
             !=0.1.2
@@ -469,7 +469,7 @@ This is possible with the :class:`SpecList` class.
 
         Provides a hash based solely on the hash of contained specs.
 
-        Allows using a :class:`SpecList` as a dictionary key.
+        Allows using a :class:`Spec` as a dictionary key.
 
 
     .. rubric:: Class methods

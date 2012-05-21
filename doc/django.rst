@@ -6,8 +6,8 @@ Interaction with Django
 The ``python-semanticversion`` package provides three custom fields for Django:
 
 - :class:`VersionField`: stores a :class:`semantic_version.Version` object
+- :class:`SpecItemField`: stores a :class:`semantic_version.SpecItem` object
 - :class:`SpecField`: stores a :class:`semantic_version.Spec` object
-- :class:`SpecListField`: stores a :class:`semantic_version.SpecList` object
 
 Those fields are :class:`django.db.models.CharField` subclasses,
 with their :attr:`~django.db.models.CharField.max_length` defaulting to 200.
@@ -22,11 +22,11 @@ with their :attr:`~django.db.models.CharField.max_length` defaulting to 200.
         Boolean; whether :attr:`~semantic_version.Version.partial` versions are allowed.
 
 
+.. class:: SpecItemField
+
+    Stores a :class:`semantic_version.SpecItem` as its string representation.
+
+
 .. class:: SpecField
 
-    Stores a :class:`semantic_version.Spec` as its string representation.
-
-
-.. class:: SpecListField
-
-    Stores a :class:`semantic_version.SpecList` as its comma-separated string representation.
+    Stores a :class:`semantic_version.Spec` as its comma-separated string representation.

@@ -38,14 +38,14 @@ class DjangoFieldTestCase(unittest.TestCase):
         obj = models.VersionModel(version='0.1.1', spec='>0.1.0', speclist='==0.1.1,!=0.1.1-alpha')
 
         self.assertEqual(semantic_version.Version('0.1.1'), obj.version)
-        self.assertEqual(semantic_version.Spec('>0.1.0'), obj.spec)
-        self.assertEqual(semantic_version.SpecList('==0.1.1,!=0.1.1-alpha'), obj.speclist)
+        self.assertEqual(semantic_version.SpecItem('>0.1.0'), obj.spec)
+        self.assertEqual(semantic_version.Spec('==0.1.1,!=0.1.1-alpha'), obj.speclist)
 
         alt_obj = models.VersionModel(version=obj.version, spec=obj.spec, speclist=obj.speclist)
 
         self.assertEqual(semantic_version.Version('0.1.1'), alt_obj.version)
-        self.assertEqual(semantic_version.Spec('>0.1.0'), alt_obj.spec)
-        self.assertEqual(semantic_version.SpecList('==0.1.1,!=0.1.1-alpha'), alt_obj.speclist)
+        self.assertEqual(semantic_version.SpecItem('>0.1.0'), alt_obj.spec)
+        self.assertEqual(semantic_version.Spec('==0.1.1,!=0.1.1-alpha'), alt_obj.speclist)
         self.assertEqual(obj.spec, alt_obj.spec)
         self.assertEqual(obj.version, alt_obj.version)
         self.assertEqual(obj.speclist, alt_obj.speclist)

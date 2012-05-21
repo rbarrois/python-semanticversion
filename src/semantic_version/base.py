@@ -235,7 +235,7 @@ class Version(object):
         return 0
 
 
-class Spec(object):
+class SpecItem(object):
     """A requirement specification."""
 
     KIND_LT = '<'
@@ -299,10 +299,10 @@ class Spec(object):
         return '%s%s' % (self.kind, self.spec)
 
     def __repr__(self):
-        return '<Spec: %s %r>' % (self.kind, self.spec)
+        return '<SpecItem: %s %r>' % (self.kind, self.spec)
 
     def __eq__(self, other):
-        if not isinstance(other, Spec):
+        if not isinstance(other, SpecItem):
             return NotImplemented
         return self.kind == other.kind and self.spec == other.spec
 
@@ -310,7 +310,7 @@ class Spec(object):
         return hash((self.kind, self.spec))
 
 
-class SpecList(object):
+class Spec(object):
     def __init__(self, *specs_strings):
         subspecs = [self.parse(spec) for spec in specs_strings]
         self.specs = sum(subspecs, ())
@@ -318,7 +318,7 @@ class SpecList(object):
     @classmethod
     def parse(self, specs_string):
         spec_texts = specs_string.split(',')
-        return tuple(Spec(spec_text) for spec_text in spec_texts)
+        return tuple(SpecItem(spec_text) for spec_text in spec_texts)
 
     def match(self, version):
         return all(spec.match(version) for spec in self.specs)
@@ -335,10 +335,10 @@ class SpecList(object):
         return ','.join(str(spec) for spec in self.specs)
 
     def __repr__(self):
-        return '<SpecList: %r>' % (self.specs,)
+        return '<Spec: %r>' % (self.specs,)
 
     def __eq__(self, other):
-        if not isinstance(other, SpecList):
+        if not isinstance(other, Spec):
             return NotImplemented
 
         return set(self.specs) == set(other.specs)

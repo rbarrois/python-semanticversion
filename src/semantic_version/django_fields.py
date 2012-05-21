@@ -46,11 +46,26 @@ class VersionField(BaseSemVerField):
         return base.Version(value, partial=self.partial)
 
 
-class SpecField(BaseSemVerField):
+class SpecItemField(BaseSemVerField):
     default_error_messages = {
         'invalid': _(u"Enter a valid version number spec in ==X.Y.Z format."),
     }
     description = _(u"Version specification")
+
+    def to_python(self, value):
+        """Converts any value to a base.SpecItem field."""
+        if value is None or value == '':
+            return value
+        if isinstance(value, base.SpecItem):
+            return value
+        return base.SpecItem(value)
+
+
+class SpecField(BaseSemVerField):
+    default_error_messages = {
+        'invalid': _(u"Enter a valid version number spec list in ==X.Y.Z,>=A.B.C format."),
+    }
+    description = _(u"Version specification list")
 
     def to_python(self, value):
         """Converts any value to a base.Spec field."""
@@ -59,18 +74,3 @@ class SpecField(BaseSemVerField):
         if isinstance(value, base.Spec):
             return value
         return base.Spec(value)
-
-
-class SpecListField(BaseSemVerField):
-    default_error_messages = {
-        'invalid': _(u"Enter a valid version number spec list in ==X.Y.Z,>=A.B.C format."),
-    }
-    description = _(u"Version specification list")
-
-    def to_python(self, value):
-        """Converts any value to a base.SpecList field."""
-        if value is None or value == '':
-            return value
-        if isinstance(value, base.SpecList):
-            return value
-        return base.SpecList(value)

@@ -161,25 +161,25 @@ class VersionTestCase(unittest.TestCase):
         )
 
 
-class SpecTestCase(unittest.TestCase):
+class SpecItemTestCase(unittest.TestCase):
     components = {
-        '==0.1.0': (base.Spec.KIND_EQUAL, 0, 1, 0, None, None),
-        '==0.1.2-rc3': (base.Spec.KIND_EQUAL, 0, 1, 2, ('rc3',), None),
-        '==0.1.2+build3.14': (base.Spec.KIND_EQUAL, 0, 1, 2, (), ('build3', '14')),
-        '<=0.1.1+': (base.Spec.KIND_LTE, 0, 1, 1, (), ()),
-        '<0.1.1': (base.Spec.KIND_LT, 0, 1, 1, None, None),
-        '<=0.1.1': (base.Spec.KIND_LTE, 0, 1, 1, None, None),
-        '>=0.2.3-rc2': (base.Spec.KIND_GTE, 0, 2, 3, ('rc2',), None),
-        '>0.2.3-rc2+': (base.Spec.KIND_GT, 0, 2, 3, ('rc2',), ()),
-        '>=2.0.0': (base.Spec.KIND_GTE, 2, 0, 0, None, None),
-        '!=0.1.1+': (base.Spec.KIND_NEQ, 0, 1, 1, (), ()),
-        '!=0.3.0': (base.Spec.KIND_NEQ, 0, 3, 0, None, None),
+        '==0.1.0': (base.SpecItem.KIND_EQUAL, 0, 1, 0, None, None),
+        '==0.1.2-rc3': (base.SpecItem.KIND_EQUAL, 0, 1, 2, ('rc3',), None),
+        '==0.1.2+build3.14': (base.SpecItem.KIND_EQUAL, 0, 1, 2, (), ('build3', '14')),
+        '<=0.1.1+': (base.SpecItem.KIND_LTE, 0, 1, 1, (), ()),
+        '<0.1.1': (base.SpecItem.KIND_LT, 0, 1, 1, None, None),
+        '<=0.1.1': (base.SpecItem.KIND_LTE, 0, 1, 1, None, None),
+        '>=0.2.3-rc2': (base.SpecItem.KIND_GTE, 0, 2, 3, ('rc2',), None),
+        '>0.2.3-rc2+': (base.SpecItem.KIND_GT, 0, 2, 3, ('rc2',), ()),
+        '>=2.0.0': (base.SpecItem.KIND_GTE, 2, 0, 0, None, None),
+        '!=0.1.1+': (base.SpecItem.KIND_NEQ, 0, 1, 1, (), ()),
+        '!=0.3.0': (base.SpecItem.KIND_NEQ, 0, 3, 0, None, None),
     }
 
     def test_components(self):
         for spec_text, components in self.components.items():
             kind, major, minor, patch, prerelease, build = components
-            spec = base.Spec(spec_text)
+            spec = base.SpecItem(spec_text)
 
             self.assertEqual(kind, spec.kind)
             self.assertEqual(major, spec.spec.major)
@@ -244,7 +244,7 @@ class SpecTestCase(unittest.TestCase):
 
     def test_matches(self):
         for spec_text, versions in self.matches.items():
-            spec = base.Spec(spec_text)
+            spec = base.SpecItem(spec_text)
             matching, failing = versions
 
             for version_text in matching:
@@ -260,22 +260,22 @@ class SpecTestCase(unittest.TestCase):
                     "%r should not match %r" % (version, spec))
 
     def test_equality(self):
-        spec1 = base.Spec('==0.1.0')
-        spec2 = base.Spec('==0.1.0')
+        spec1 = base.SpecItem('==0.1.0')
+        spec2 = base.SpecItem('==0.1.0')
         self.assertEqual(spec1, spec2)
         self.assertFalse(spec1 == '==0.1.0')
 
     def test_to_string(self):
-        spec = base.Spec('==0.1.0')
+        spec = base.SpecItem('==0.1.0')
         self.assertEqual('==0.1.0', str(spec))
-        self.assertEqual(base.Spec.KIND_EQUAL, spec.kind)
+        self.assertEqual(base.SpecItem.KIND_EQUAL, spec.kind)
 
     def test_hash(self):
         self.assertEqual(1,
-            len(set([base.Spec('==0.1.0'), base.Spec('==0.1.0')])))
+            len(set([base.SpecItem('==0.1.0'), base.SpecItem('==0.1.0')])))
 
 
-class SpecListTestCase(unittest.TestCase):
+class SpecTestCase(unittest.TestCase):
     examples = {
         '>=0.1.1,<0.1.2': ['>=0.1.1', '<0.1.2'],
         '>=0.1.0,!=0.1.3-rc1,<0.1.3': ['>=0.1.0', '!=0.1.3-rc1', '<0.1.3'],
@@ -283,14 +283,14 @@ class SpecListTestCase(unittest.TestCase):
 
     def test_parsing(self):
         for spec_list_text, specs in self.examples.items():
-            spec_list = base.SpecList(spec_list_text)
+            spec_list = base.Spec(spec_list_text)
 
             self.assertEqual(spec_list_text, str(spec_list))
             self.assertNotEqual(spec_list_text, spec_list)
             self.assertEqual(specs, [str(spec) for spec in spec_list])
 
             for spec_text in specs:
-                self.assertTrue(repr(base.Spec(spec_text)) in repr(spec_list))
+                self.assertTrue(repr(base.SpecItem(spec_text)) in repr(spec_list))
 
     split_examples = {
         ('>=0.1.1', '<0.1.2', '!=0.1.1+build1'): ['>=0.1.1', '<0.1.2', '!=0.1.1+build1'],
@@ -299,14 +299,14 @@ class SpecListTestCase(unittest.TestCase):
 
     def test_parsing_split(self):
         for spec_list_texts, specs in self.split_examples.items():
-            spec_list = base.SpecList(*spec_list_texts)
+            spec_list = base.Spec(*spec_list_texts)
 
             self.assertEqual(','.join(spec_list_texts), str(spec_list))
             self.assertEqual(specs, [str(spec) for spec in spec_list])
-            self.assertEqual(spec_list, base.SpecList(','.join(spec_list_texts)))
+            self.assertEqual(spec_list, base.Spec(','.join(spec_list_texts)))
 
             for spec_text in specs:
-                self.assertTrue(repr(base.Spec(spec_text)) in repr(spec_list))
+                self.assertTrue(repr(base.SpecItem(spec_text)) in repr(spec_list))
 
     matches = {
         '>=0.1.1,<0.1.2': (
@@ -322,7 +322,7 @@ class SpecListTestCase(unittest.TestCase):
 
     def test_matches(self):
         for spec_list_text, versions in self.matches.items():
-            spec_list = base.SpecList(spec_list_text)
+            spec_list = base.Spec(spec_list_text)
             matching, failing = versions
 
             for version_text in matching:
@@ -341,17 +341,17 @@ class SpecListTestCase(unittest.TestCase):
 
     def test_equality(self):
         for spec_list_text in self.examples:
-            slist1 = base.SpecList(spec_list_text)
-            slist2 = base.SpecList(spec_list_text)
+            slist1 = base.Spec(spec_list_text)
+            slist2 = base.Spec(spec_list_text)
             self.assertEqual(slist1, slist2)
             self.assertFalse(slist1 == spec_list_text)
 
     def test_contains(self):
-        self.assertFalse('ii' in base.SpecList('>=0.1.1'))
+        self.assertFalse('ii' in base.Spec('>=0.1.1'))
 
     def test_hash(self):
         self.assertEqual(1,
-            len(set([base.SpecList('>=0.1.1'), base.SpecList('>=0.1.1')])))
+            len(set([base.Spec('>=0.1.1'), base.Spec('>=0.1.1')])))
 
 
 if __name__ == '__main__':  # pragma: no cover
