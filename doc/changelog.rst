@@ -1,14 +1,15 @@
 ChangeLog
 =========
 
-1.3.0 (Master)
+2.0.0 (Master)
 --------------
 
 *Backwards incompatible changes:*
 
     * Removed "loose" specification support
     * Cleanup :class:`~semantic_version.Spec` to be more intuitive.
-    * Rename Spec to SpecItem and SpecList to Spec.
+    * Merge Spec and SpecList into :class:`~semantic_version.Spec`.
+    * Remove :class:`~semantic_version.django_fields.SpecListField`
 
 1.2.0 (18/05/2012)
 ------------------

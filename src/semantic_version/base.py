@@ -88,16 +88,8 @@ class Version(object):
         major, minor, patch, prerelease, build = match.groups()
 
         major = int(major)
-
-        if minor is None:
-            return (major, None, None, None, None)
-        else:
-            minor = int(minor)
-
-        if patch is None:
-            return (major, minor, None, None, None)
-        else:
-            patch = int(patch)
+        minor = int(minor)
+        patch = int(patch)
 
         if prerelease is None:
             if partial and (build is None):
@@ -289,11 +281,6 @@ class SpecItem(object):
             return version != self.spec
         else:  # pragma: no cover
             raise ValueError('Unexpected match kind: %r' % self.kind)
-
-    def __contains__(self, version):
-        if isinstance(version, Version):
-            return self.match(version)
-        return False
 
     def __str__(self):
         return '%s%s' % (self.kind, self.spec)

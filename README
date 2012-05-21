@@ -40,8 +40,7 @@ Define a simple specification::
 
 Define complex specifications::
 
-  >>> from semantic_version import SpecList
-  >>> s = SpecList('>=0.1.1,<0.2.0')
+  >>> s = Spec('>=0.1.1,<0.2.0')
   >>> Version('0.1.2') in s
   True
   >>> Version('0.3.0') in s

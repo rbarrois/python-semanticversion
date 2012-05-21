@@ -189,7 +189,7 @@ Representing a version (the Version class)
         :rtype: (major, minor, patch, prerelease, build)
 
 
-Version specifications (the SpecItem class)
+Version specifications (the Spec class)
 -------------------------------------------
 
 
@@ -215,13 +215,13 @@ In order to have version specification behave naturally, the rules are the follo
 
 This means that::
 
-    >>> Version('1.1.1-rc1') in SpecItem('<1.1.1')
+    >>> Version('1.1.1-rc1') in Spec('<1.1.1')
     False
-    >>> Version('1.1.1-rc1') in SpecItem('<1.1.1-rc4')
+    >>> Version('1.1.1-rc1') in Spec('<1.1.1-rc4')
     True
-    >>> Version('1.1.1-rc1+build4') in SpecItem('<=1.1.1-rc1')
+    >>> Version('1.1.1-rc1+build4') in Spec('<=1.1.1-rc1')
     True
-    >>> Version('1.1.1-rc1+build4') in SpecItem('<=1.1.1-rc1+build2')
+    >>> Version('1.1.1-rc1+build4') in Spec('<=1.1.1-rc1+build2')
     False
 
 In order to force matches to *strictly* compare version numbers, these additional
@@ -230,168 +230,18 @@ rules apply:
 * Setting a pre-release separator without a pre-release identifier (``<=1.1.1-``)
   forces match to take into account pre-release version::
 
-    >>> Version('1.1.1-rc1') in SpecItem('<1.1.1')
+    >>> Version('1.1.1-rc1') in Spec('<1.1.1')
     False
-    >>> Version('1.1.1-rc1') in SpecItem('<1.1.1-')
+    >>> Version('1.1.1-rc1') in Spec('<1.1.1-')
     True
 
 * Setting a build separator without a build identifier (``>1.1.1+``) forces
   satisfaction tests to include both prerelease and build identifiers::
 
-    >>> Version('1.1.1+build2') in SpecItem('>1.1.1')
+    >>> Version('1.1.1+build2') in Spec('>1.1.1')
     False
-    >>> Version('1.1.1+build2') in SpecItem('>1.1.1+')
+    >>> Version('1.1.1+build2') in Spec('>1.1.1+')
     True
-
-.. class:: SpecItem(spec_string)
-
-    Stores a version specification, defined from a string::
-
-        >>> SpecItem('>=0.1.1')
-        <SpecItem: >= <SemVer(0, 1, 1, [], [])>>
-
-    This allows to test :class:`Version` objects against the :class:`SpecItem`::
-
-        >>> SpecItem('>=0.1.1').match(Version('0.1.1-rc1'))  # pre-release satisfy conditions
-        True
-        >>> Version('0.1.1+build2') in SpecItem('>=0.1.1')   # build version satisfy specifications
-        True
-        >>>
-        >>> # Use the '-' marker to include the pre-release component in checks
-        >>> SpecItem('>=0.1.1-').match(Version('0.1.1-rc1')
-        False
-        >>>
-        >>> # Use the '+' marker to include the build identifier in checks
-        >>> SpecItem('<=0.1.1-alpha+').match(Version('0.1.1-alpha+build1'))
-        False
-
-
-    .. rubric:: Attributes
-
-
-    .. attribute:: kind
-
-        One of :data:`KIND_LT`, :data:`KIND_LTE`, :data:`KIND_EQUAL`, :data:`KIND_GTE`,
-        :data:`KIND_GT` and :data:`KIND_NEQ`.
-
-    .. attribute:: spec
-
-        :class:`Version` in the :class:`SpecItem` description.
-
-        It is alway a :attr:`~Version.partial` :class:`Version`.
-
-
-    .. rubric:: Class methods
-
-
-    .. classmethod:: parse(cls, requirement_string)
-
-        Retrieve a ``(kind, version)`` tuple from a string.
-
-        :param str requirement_string: The textual description of the specification
-        :raises: :exc:`ValueError`: if the ``requirement_string`` is invalid.
-        :rtype: (``kind``, ``version``) tuple
-
-
-    .. rubric:: Methods
-
-
-    .. method:: match(self, version)
-
-        Test whether a given :class:`Version` matches this :class:`SpecItem`::
-
-            >>> SpecItem('>=0.1.1').match(Version('0.1.1-alpha'))
-            True
-            >>> SpecItem('>=0.1.1-').match(Version('0.1.1-alpha'))
-            False
-
-        :param version: The version to test against the spec
-        :type version: :class:`Version`
-        :rtype: ``bool``
-
-
-    .. method:: __contains__(self, version)
-
-        Alias of the :func:`match` method;
-        allows the use of the ``version in spec`` syntax::
-
-            >>> Version('1.1.1') in SpecItem('<=1.1.2')
-            True
-
-
-    .. method:: __str__(self)
-
-        Converting a :class:`SpecItem` to a string returns the initial description string::
-
-            >>> str(SpecItem('>=0.1.1'))
-            '>=0.1.1'
-
-
-    .. method:: __hash__(self)
-
-        Provides a hash based solely on the current kind and the specified version.
-
-        Allows using a :class:`SpecItem` as a dictionary key.
-
-
-    .. rubric:: Class attributes
-
-
-    .. data:: KIND_LT
-
-        The kind of 'Less than' specifications::
-
-            >>> Version('1.0.0-alpha') in SpecItem('<1.0.0')
-            False
-
-    .. data:: KIND_LTE
-
-        The kind of 'Less or equal to' specifications::
-
-            >>> Version('1.0.0-alpha1+build999') in SpecItem('<=1.0.0-alpha1')
-            True
-
-    .. data:: KIND_EQUAL
-
-        The kind of 'equal to' specifications::
-
-            >>> Version('1.0.0+build3.3') in SpecItem('==1.0.0')
-            True
-
-    .. data:: KIND_GTE
-
-        The kind of 'Greater or equal to' specifications::
-
-            >>> Version('1.0.0') in SpecItem('>=1.0.0')
-            True
-
-    .. data:: KIND_GT
-
-        The kind of 'Greater than' specifications::
-
-            >>> Version('1.0.0+build667') in SpecItem('>1.0.1')
-            False
-
-    .. data:: KIND_NEQ
-
-        The kind of 'Not equal to' specifications::
-
-            >>> Version('1.0.1') in SpecItem('!=1.0.1')
-            False
-
-        The kind of 'Almost equal to' specifications
-
-
-
-
-Combining version specifications (the Spec class)
--------------------------------------------------
-
-It may be useful to define a rule such as
-"Accept any version between the first 1.0.0 (incl. pre-release) and strictly before 1.2.0; ecluding 1.1.4 which was broken.".
-
-This is possible with the :class:`Spec` class.
-
 
 .. class:: Spec(spec_string[, spec_string[, ...]])
 
@@ -482,6 +332,139 @@ This is possible with the :class:`Spec` class.
         :param str requirement_string: The textual description of the specifications
         :raises: :exc:`ValueError`: if the ``requirement_string`` is invalid.
         :rtype: ``(*spec)`` tuple
+
+
+.. class:: SpecItem(spec_string)
+
+    .. note:: This class belong to the private python-semanticversion API.
+
+    Stores a version specification, defined from a string::
+
+        >>> SpecItem('>=0.1.1')
+        <SpecItem: >= <SemVer(0, 1, 1, [], [])>>
+
+    This allows to test :class:`Version` objects against the :class:`SpecItem`::
+
+        >>> SpecItem('>=0.1.1').match(Version('0.1.1-rc1'))  # pre-release satisfy conditions
+        True
+        >>> Version('0.1.1+build2') in SpecItem('>=0.1.1')   # build version satisfy specifications
+        True
+        >>>
+        >>> # Use the '-' marker to include the pre-release component in checks
+        >>> SpecItem('>=0.1.1-').match(Version('0.1.1-rc1')
+        False
+        >>>
+        >>> # Use the '+' marker to include the build identifier in checks
+        >>> SpecItem('<=0.1.1-alpha+').match(Version('0.1.1-alpha+build1'))
+        False
+
+
+    .. rubric:: Attributes
+
+
+    .. attribute:: kind
+
+        One of :data:`KIND_LT`, :data:`KIND_LTE`, :data:`KIND_EQUAL`, :data:`KIND_GTE`,
+        :data:`KIND_GT` and :data:`KIND_NEQ`.
+
+    .. attribute:: spec
+
+        :class:`Version` in the :class:`SpecItem` description.
+
+        It is alway a :attr:`~Version.partial` :class:`Version`.
+
+
+    .. rubric:: Class methods
+
+
+    .. classmethod:: parse(cls, requirement_string)
+
+        Retrieve a ``(kind, version)`` tuple from a string.
+
+        :param str requirement_string: The textual description of the specification
+        :raises: :exc:`ValueError`: if the ``requirement_string`` is invalid.
+        :rtype: (``kind``, ``version``) tuple
+
+
+    .. rubric:: Methods
+
+
+    .. method:: match(self, version)
+
+        Test whether a given :class:`Version` matches this :class:`SpecItem`::
+
+            >>> SpecItem('>=0.1.1').match(Version('0.1.1-alpha'))
+            True
+            >>> SpecItem('>=0.1.1-').match(Version('0.1.1-alpha'))
+            False
+
+        :param version: The version to test against the spec
+        :type version: :class:`Version`
+        :rtype: ``bool``
+
+
+    .. method:: __str__(self)
+
+        Converting a :class:`SpecItem` to a string returns the initial description string::
+
+            >>> str(SpecItem('>=0.1.1'))
+            '>=0.1.1'
+
+
+    .. method:: __hash__(self)
+
+        Provides a hash based solely on the current kind and the specified version.
+
+        Allows using a :class:`SpecItem` as a dictionary key.
+
+
+    .. rubric:: Class attributes
+
+
+    .. data:: KIND_LT
+
+        The kind of 'Less than' specifications::
+
+            >>> Version('1.0.0-alpha') in SpecItem('<1.0.0')
+            False
+
+    .. data:: KIND_LTE
+
+        The kind of 'Less or equal to' specifications::
+
+            >>> Version('1.0.0-alpha1+build999') in SpecItem('<=1.0.0-alpha1')
+            True
+
+    .. data:: KIND_EQUAL
+
+        The kind of 'equal to' specifications::
+
+            >>> Version('1.0.0+build3.3') in SpecItem('==1.0.0')
+            True
+
+    .. data:: KIND_GTE
+
+        The kind of 'Greater or equal to' specifications::
+
+            >>> Version('1.0.0') in SpecItem('>=1.0.0')
+            True
+
+    .. data:: KIND_GT
+
+        The kind of 'Greater than' specifications::
+
+            >>> Version('1.0.0+build667') in SpecItem('>1.0.1')
+            False
+
+    .. data:: KIND_NEQ
+
+        The kind of 'Not equal to' specifications::
+
+            >>> Version('1.0.1') in SpecItem('!=1.0.1')
+            False
+
+        The kind of 'Almost equal to' specifications
+
 
 
 .. _SemVer: http://semver.org/

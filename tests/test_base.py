@@ -249,13 +249,10 @@ class SpecItemTestCase(unittest.TestCase):
 
             for version_text in matching:
                 version = base.Version(version_text)
-                self.assertTrue(version in spec, "%r should be in %r" % (version, spec))
                 self.assertTrue(spec.match(version), "%r should match %r" % (version, spec))
 
             for version_text in failing:
                 version = base.Version(version_text)
-                self.assertFalse(version in spec,
-                    "%r should not be in %r" % (version, spec))
                 self.assertFalse(spec.match(version),
                     "%r should not match %r" % (version, spec))
 
