@@ -425,42 +425,42 @@ rules apply:
 
         The kind of 'Less than' specifications::
 
-            >>> Version('1.0.0-alpha') in SpecItem('<1.0.0')
+            >>> Version('1.0.0-alpha') in Spec('<1.0.0')
             False
 
     .. data:: KIND_LTE
 
         The kind of 'Less or equal to' specifications::
 
-            >>> Version('1.0.0-alpha1+build999') in SpecItem('<=1.0.0-alpha1')
+            >>> Version('1.0.0-alpha1+build999') in Spec('<=1.0.0-alpha1')
             True
 
     .. data:: KIND_EQUAL
 
         The kind of 'equal to' specifications::
 
-            >>> Version('1.0.0+build3.3') in SpecItem('==1.0.0')
+            >>> Version('1.0.0+build3.3') in Spec('==1.0.0')
             True
 
     .. data:: KIND_GTE
 
         The kind of 'Greater or equal to' specifications::
 
-            >>> Version('1.0.0') in SpecItem('>=1.0.0')
+            >>> Version('1.0.0') in Spec('>=1.0.0')
             True
 
     .. data:: KIND_GT
 
         The kind of 'Greater than' specifications::
 
-            >>> Version('1.0.0+build667') in SpecItem('>1.0.1')
+            >>> Version('1.0.0+build667') in Spec('>1.0.1')
             False
 
     .. data:: KIND_NEQ
 
         The kind of 'Not equal to' specifications::
 
-            >>> Version('1.0.1') in SpecItem('!=1.0.1')
+            >>> Version('1.0.1') in Spec('!=1.0.1')
             False
 
         The kind of 'Almost equal to' specifications
