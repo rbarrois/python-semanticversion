@@ -8,6 +8,7 @@ ChangeLog
 
     * Removed "loose" specification support
     * Cleanup :class:`~semantic_version.Spec` to be more intuitive.
+    * Rename Spec to SpecItem and SpecList to Spec.
 
 1.2.0 (18/05/2012)
 ------------------
