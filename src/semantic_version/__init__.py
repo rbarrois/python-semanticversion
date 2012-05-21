@@ -2,7 +2,7 @@
 # Copyright (c) 2012 Raphaël Barrois
 
 
-__version__ = '1.3.0-alpha'
+__version__ = '2.0.0-alpha'
 
 
-from .base import compare, match, Version, Spec
+from .base import compare, match, Spec, SpecItem, Version
