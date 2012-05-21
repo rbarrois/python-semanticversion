@@ -308,6 +308,7 @@ class Spec(object):
         return tuple(SpecItem(spec_text) for spec_text in spec_texts)
 
     def match(self, version):
+        """Check whether a Version satisfies the Spec."""
         return all(spec.match(version) for spec in self.specs)
 
     def __contains__(self, version):
