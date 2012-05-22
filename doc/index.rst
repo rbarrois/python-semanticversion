@@ -17,7 +17,7 @@ Getting started
 
 Intall the package from `PyPI`_, using pip::
 
-    pip install python-semanticversion
+    pip install semantic_version
 
 
 Import it in your code::

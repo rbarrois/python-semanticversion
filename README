@@ -15,6 +15,12 @@ The full doc is available on http://python-semanticversion.readthedocs.org/; sim
 Usage
 =====
 
+
+Install::
+
+  $ pip install semantic_version
+  $
+
 Define a Version::
 
   >>> from semantic_version import Version
