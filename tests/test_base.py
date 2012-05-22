@@ -343,6 +343,67 @@ class SpecTestCase(unittest.TestCase):
             self.assertEqual(slist1, slist2)
             self.assertFalse(slist1 == spec_list_text)
 
+    def test_filter_empty(self):
+        s = base.Spec('>=0.1.1')
+        res = tuple(s.filter(()))
+        self.assertEqual((), res)
+
+    def test_filter_incompatible(self):
+        s = base.Spec('>=0.1.1,!=0.1.4')
+        res = tuple(s.filter([
+            base.Version('0.1.0'),
+            base.Version('0.1.4'),
+            base.Version('0.1.4-alpha'),
+        ]))
+        self.assertEqual((), res)
+
+    def test_filter_compatible(self):
+        s = base.Spec('>=0.1.1,!=0.1.4,<0.2.0')
+        res = tuple(s.filter([
+            base.Version('0.1.0'),
+            base.Version('0.1.1'),
+            base.Version('0.1.5'),
+            base.Version('0.1.4-alpha'),
+            base.Version('0.1.2'),
+            base.Version('0.2.0-rc1'),
+            base.Version('3.14.15'),
+        ]))
+
+        expected = (
+            base.Version('0.1.1'),
+            base.Version('0.1.5'),
+            base.Version('0.1.2'),
+        )
+
+        self.assertEqual(expected, res)
+
+    def test_select_empty(self):
+        s = base.Spec('>=0.1.1')
+        self.assertIsNone(s.select(()))
+
+    def test_select_incompatible(self):
+        s = base.Spec('>=0.1.1,!=0.1.4')
+        res = s.select([
+            base.Version('0.1.0'),
+            base.Version('0.1.4'),
+            base.Version('0.1.4-alpha'),
+        ])
+        self.assertIsNone(res)
+
+    def test_select_compatible(self):
+        s = base.Spec('>=0.1.1,!=0.1.4,<0.2.0')
+        res = s.select([
+            base.Version('0.1.0'),
+            base.Version('0.1.1'),
+            base.Version('0.1.5'),
+            base.Version('0.1.4-alpha'),
+            base.Version('0.1.2'),
+            base.Version('0.2.0-rc1'),
+            base.Version('3.14.15'),
+        ])
+
+        self.assertEqual(base.Version('0.1.5'), res)
+
     def test_contains(self):
         self.assertFalse('ii' in base.Spec('>=0.1.1'))
 

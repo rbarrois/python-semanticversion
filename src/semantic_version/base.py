@@ -127,8 +127,8 @@ class Version(object):
         return version
 
     def __repr__(self):
-        return '<%sSemVer(%s, %s, %s, %r, %r)>' % (
-            '~' if self.partial else '',
+        return '<%sVersion(%s, %s, %s, %r, %r)>' % (
+            ', partial=True' if self.partial else '',
             self.major,
             self.minor,
             self.patch,
@@ -310,6 +310,19 @@ class Spec(object):
     def match(self, version):
         """Check whether a Version satisfies the Spec."""
         return all(spec.match(version) for spec in self.specs)
+
+    def filter(self, versions):
+        """Filter an iterable of versions satisfying the Spec."""
+        for version in versions:
+            if self.match(version):
+                yield version
+
+    def select(self, versions):
+        """Select the best compatible version among an iterable of options."""
+        options = list(self.filter(versions))
+        if options:
+            return max(options)
+        return None
 
     def __contains__(self, version):
         if isinstance(version, Version):

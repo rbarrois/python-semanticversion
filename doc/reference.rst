@@ -53,7 +53,7 @@ Representing a version (the Version class)
     Constructed from a textual version string::
 
         >>> Version('1.1.1')
-        <SemVer(1, 1, 1, [], [])>
+        <Version(1, 1, 1, [], [])>
         >>> str(Version('1.1.1'))
         '1.1.1'
 
@@ -156,7 +156,7 @@ Representing a version (the Version class)
 
             >>> v = Version('0.1.1-rc2+build4.4')
             >>> v
-            <SemVer(0, 1, 1, ['rc2'], ['build4', '4'])>
+            <Version(0, 1, 1, ['rc2'], ['build4', '4'])>
             >>> str(v)
             '0.1.1-rc2+build4.4'
 
@@ -252,19 +252,19 @@ rules apply:
 
         >>> Spec('>=1.0.0,<1.2.0,!=1.1.4')
         <Spec: (
-            <SpecItem: >= <~SemVer: 1 0 0 None None>>,
-            <SpecItem: < <~SemVer: 1 2 0 None None>>,
-            <SpecItem: != <~SemVer: 1 1 4 None None>>
+            <SpecItem: >= <~Version(1 0 0 None None)>>,
+            <SpecItem: < <~Version(1 2 0 None None)>>,
+            <SpecItem: != <~Version(1 1 4 None None)>>
         )>
 
     Version specifications may also be passed in separated arguments::
 
         >>> Spec('>=1.0.0', '<1.2.0', '!=1.1.4,!=1.1.13')
         <Spec: (
-            <SpecItem: >= <~SemVer: 1 0 0 None None>>,
-            <SpecItem: < <SemVer: 1 2 0 None None>>,
-            <SpecItem: != <~SemVer: 1 1 4 None None>>
-            <SpecItem: != <~SemVer: 1 1 13 None None>>
+            <SpecItem: >= <~Version(1 0 0 None None)>>,
+            <SpecItem: < <Version(1 2 0 None None)>>,
+            <SpecItem: != <~Version(1 1 4 None None)>>
+            <SpecItem: != <~Version(1 1 13 None None)>>
         )>
 
 
@@ -289,6 +289,36 @@ rules apply:
         :param version: The version to test against the specs
         :type version: :class:`Version`
         :rtype: ``bool``
+
+
+    .. method:: filter(self, versions)
+
+        Extract all compatible :class:`versions <Version>` from an iterable of
+        :class:`Version` objects.
+
+        :param versions: The versions to filter
+        :type versions: iterable of :class:`Version`
+        :yield: :class:`Version`
+
+
+    .. method:: select(self, versions)
+
+        Select the highest compatible version from an iterable of :class:`Version`
+        objects.
+
+        .. sourcecode:: pycon
+
+            >>> s = Spec('>=0.1.0')
+            >>> s.select([])
+            None
+            >>> s.select([Version('0.1.0'), Version('0.1.3'), Version('0.1.1')])
+            <Version(0, 1, 3, (), ())>
+
+        :param versions: The versions to filter
+        :type versions: iterable of :class:`Version`
+        :rtype: The highest compatible :class:`Version` if at least one of the
+                given versions is compatible; :class:`None` otherwise.
+
 
     .. method:: __contains__(self, version)
 
@@ -341,7 +371,7 @@ rules apply:
     Stores a version specification, defined from a string::
 
         >>> SpecItem('>=0.1.1')
-        <SpecItem: >= <SemVer(0, 1, 1, [], [])>>
+        <SpecItem: >= <Version(0, 1, 1, [], [])>>
 
     This allows to test :class:`Version` objects against the :class:`SpecItem`::
 

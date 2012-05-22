@@ -1,8 +1,18 @@
 ChangeLog
 =========
 
-2.0.0 (Master)
+2.1.0 (Master)
 --------------
+
+*New:*
+
+    * Add :func:`semantic_version.Spec.filter` (filter a list of :class:`~semantic_version.Version`)
+    * Add :func:`semantic_version.Spec.select` (select the highest
+      :class:`~semantic_version.Version` from a list)
+    * Update :func:`semantic_version.Version.__repr__`
+
+2.0.0 (22/05/2012)
+------------------
 
 *Backwards incompatible changes:*
 

@@ -9,7 +9,7 @@ python-semanticversion
 This small python library provides a few tools to handle `SemVer`_ in Python.
 
 
-The first release (1.0.0) should handle the 2.0.0-rc1 version of the SemVer scheme.
+It follows strictly the 2.0.0-rc1 version of the SemVer scheme.
 
 
 Getting started
@@ -115,6 +115,26 @@ Combining specifications can be expressed in two ways:
 
   >>> Spec('>=0.1.1', '!=0.2.4-alpha,<0.3.0')
 
+
+Using a specification
+"""""""""""""""""""""
+
+The :func:`Spec.filter` method filters an iterable of :class:`Version`::
+
+    >>> s = Spec('>=0.1.0,<0.4.0')
+    >>> versions = (Version('0.%d.0' % i) for i in range(6))
+    >>> for v in s.filter(versions):
+    ...     print v
+    0.1.0
+    0.2.0
+    0.3.0
+
+It is also possible to select the 'best' version from such iterables::
+
+    >>> s = Spec('>=0.1.0,<0.4.0')
+    >>> versions = (Version('0.%d.0' % i) for i in range(6))
+    >>> s.select(versions)
+    <Version(0, 3, 0, (), ())>
 
 Including pre-release identifiers in specifications
 """""""""""""""""""""""""""""""""""""""""""""""""""
