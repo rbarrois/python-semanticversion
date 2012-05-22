@@ -1,6 +1,14 @@
 ChangeLog
 =========
 
+2.1.2 (22/05/2012)
+------------------
+
+*Bugfix:*
+
+    * Properly validate :class:`~semantic_version.django_fields.VersionField` and
+      :class:`~semantic_version.django_fields.SpecField`.
+
 2.1.1 (22/05/2012)
 ------------------
 
