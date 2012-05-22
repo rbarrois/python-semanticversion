@@ -59,7 +59,7 @@ Select the best compatible version from a list::
 Framework integration
 =====================
 
-Integrates with `Django <http://djangoproject.com>`_, through ``VersionField``, ``SpecField`` and ``SpecListField``::
+Integrates with `Django <http://djangoproject.com>`_, through the ``VersionField`` and ``SpecField`` custom fields::
 
     from semantic_version import django_fields as semver_fields
 
