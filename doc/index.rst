@@ -185,6 +185,29 @@ Contents
    django
    changelog
 
+
+Contributing
+============
+
+In order to contribute to the source code:
+
+- Open an issue on `GitHub`_: https://github.com/rbarrois/python-semanticversion/issues
+- Fork the `repository <https://github.com/rbarrois/python-semanticversion>`_
+  and submit a pull request on `GitHub`_
+- Send me a patch (mailto:raphael.barrois@polytechnique.org)
+
+When submitting patches or pull requests, you should respect the following rules:
+
+- Coding conventions are based on :pep:`8`
+- The whole test suite must pass after adding the changes
+- The test coverage for a new feature must be 100%
+- New features and methods should be documented in the :doc:`reference` section
+  and included in the :doc:`changelog`
+
+.. note:: 'raw' patches / pull requests will be accepted too, but will require more
+          cooperative work to bring them to the expected standard.
+
+
 Links
 =====
 
@@ -196,7 +219,6 @@ Links
 
 .. _SemVer: http://semver.org/
 .. _PyPI: http://pypi.python.org/
-
 
 Indices and tables
 ==================
