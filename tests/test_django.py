@@ -31,6 +31,13 @@ if django_loaded:  # pragma: no cover
     from django_test_app import models
     from django.core import serializers
 
+try:  # pragma: no cover
+    import south
+    import south.creator.freezer
+    import south.modelsinspector
+except ImportError:  # pragma: no cover
+    south = None
+
 
 @unittest.skipIf(not django_loaded, "Django not installed")
 class DjangoFieldTestCase(unittest.TestCase):
@@ -96,6 +103,50 @@ class DjangoFieldTestCase(unittest.TestCase):
         obj1, obj2 = serializers.deserialize('json', data)
         self.assertEqual(o1, obj1.object)
         self.assertEqual(o2, obj2.object)
+
+
+@unittest.skipIf(not django_loaded or south is None, "Couldn't import south and django")
+class SouthTestCase(unittest.TestCase):
+    def test_freezing_version_model(self):
+        frozen = south.modelsinspector.get_model_fields(models.VersionModel)
+
+        self.assertEqual(frozen['version'],
+            ('semantic_version.django_fields.VersionField', [], {'max_length': '200'}))
+
+        self.assertEqual(frozen['spec'],
+            ('semantic_version.django_fields.SpecField', [], {'max_length': '200'}))
+
+    def test_freezing_partial_version_model(self):
+        frozen = south.modelsinspector.get_model_fields(models.PartialVersionModel)
+
+        self.assertEqual(frozen['partial'],
+            ('semantic_version.django_fields.VersionField', [], {'max_length': '200', 'partial': 'True'}))
+
+        self.assertEqual(frozen['optional'],
+            ('semantic_version.django_fields.VersionField', [], {'max_length': '200', 'blank': 'True', 'null': 'True'}))
+
+        self.assertEqual(frozen['optional_spec'],
+            ('semantic_version.django_fields.SpecField', [], {'max_length': '200', 'blank': 'True', 'null': 'True'}))
+
+    def test_freezing_app(self):
+        frozen = south.creator.freezer.freeze_apps('django_test_app')
+
+        # Test VersionModel
+        self.assertEqual(frozen['django_test_app.versionmodel']['version'],
+            ('semantic_version.django_fields.VersionField', [], {'max_length': '200'}))
+
+        self.assertEqual(frozen['django_test_app.versionmodel']['spec'],
+            ('semantic_version.django_fields.SpecField', [], {'max_length': '200'}))
+
+        # Test PartialVersionModel
+        self.assertEqual(frozen['django_test_app.partialversionmodel']['partial'],
+            ('semantic_version.django_fields.VersionField', [], {'max_length': '200', 'partial': 'True'}))
+
+        self.assertEqual(frozen['django_test_app.partialversionmodel']['optional'],
+            ('semantic_version.django_fields.VersionField', [], {'max_length': '200', 'blank': 'True', 'null': 'True'}))
+
+        self.assertEqual(frozen['django_test_app.partialversionmodel']['optional_spec'],
+            ('semantic_version.django_fields.SpecField', [], {'max_length': '200', 'blank': 'True', 'null': 'True'}))
 
 
 if django_loaded:

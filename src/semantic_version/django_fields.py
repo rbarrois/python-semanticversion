@@ -59,3 +59,24 @@ class SpecField(BaseSemVerField):
         if isinstance(value, base.Spec):
             return value
         return base.Spec(value)
+
+
+def add_south_rules():
+    from south.modelsinspector import add_introspection_rules
+
+    add_introspection_rules([
+        (
+            (VersionField,),
+            [],
+            {'partial': ('partial', {'default': False})},
+        ),
+    ], ["semantic_version\.django_fields"])
+
+
+try:  # pragma: no cover
+    import south
+except ImportError: # pragma: no cover
+    south = None
+
+if south:  # pragma: no cover
+    add_south_rules()
