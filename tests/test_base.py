@@ -59,6 +59,36 @@ class ComparisonTestCase(unittest.TestCase):
                     a, b, result, expected))
 
 
+class TopLevelTestCase(unittest.TestCase):
+    """Test module-level functions."""
+
+    versions = (
+        ('0.1.0', '0.1.1', -1),
+        ('0.1.1', '0.1.1', 0),
+        ('0.1.1', '0.1.0', 1),
+        ('0.1.0-alpha', '0.1.0', -1),
+        ('0.1.0-alpha+2', '0.1.0-alpha', 1),
+    )
+
+    def test_compare(self):
+        for a, b, expected in self.versions:
+            result = base.compare(a, b)
+            self.assertEqual(expected, result,
+                "compare(%r, %r) should be %r instead of %r" % (a, b, expected, result))
+
+    matches = (
+        ('>=0.1.1', '0.1.2'),
+        ('>=0.1.1', '0.1.1'),
+        ('>=0.1.1', '0.1.1-alpha'),
+        ('>=0.1.1,!=0.2.0', '0.2.1'),
+    )
+
+    def test_match(self):
+        for spec, version in self.matches:
+            self.assertTrue(base.match(spec, version),
+                "%r should accept %r" % (spec, version))
+
+
 class VersionTestCase(unittest.TestCase):
     versions = {
         '1.0.0-alpha': (1, 0, 0, ('alpha',), ()),

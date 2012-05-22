@@ -190,7 +190,7 @@ Representing a version (the Version class)
 
 
 Version specifications (the Spec class)
--------------------------------------------
+---------------------------------------
 
 
 Version specifications describe a 'range' of accepted versions:

@@ -128,7 +128,7 @@ class Version(object):
 
     def __repr__(self):
         return '<%sVersion(%s, %s, %s, %r, %r)>' % (
-            ', partial=True' if self.partial else '',
+            '~' if self.partial else '',
             self.major,
             self.minor,
             self.patch,
