@@ -211,7 +211,7 @@ When submitting patches or pull requests, you should respect the following rules
 Links
 =====
 
-- Package on `PyPI`_: http://pypi.python.org/semantic_version/
+- Package on `PyPI`_: http://pypi.python.org/pypi/semantic_version/
 - Doc on `ReadTheDocs <http://readthedocs.org/>`_: http://readthedocs.org/docs/python-semanticversion/
 - Source on `GitHub <http://github.com/>`_: http://github.com/rbarrois/python-semanticversion/
 - Build on `Travis CI <http://travis-ci.org/>`_: http://travis-ci.org/rbarrois/python-semanticversion/
