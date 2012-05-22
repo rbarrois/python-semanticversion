@@ -127,13 +127,9 @@ class Version(object):
         return version
 
     def __repr__(self):
-        return '<%sVersion(%s, %s, %s, %r, %r)>' % (
-            '~' if self.partial else '',
-            self.major,
-            self.minor,
-            self.patch,
-            self.prerelease,
-            self.build,
+        return 'Version(%r%s)' % (
+            str(self),
+            ', partial=True' if self.partial else '',
         )
 
     def __hash__(self):

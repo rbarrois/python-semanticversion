@@ -53,7 +53,7 @@ Representing a version (the Version class)
     Constructed from a textual version string::
 
         >>> Version('1.1.1')
-        <Version(1, 1, 1, [], [])>
+        Version('1.1.1')
         >>> str(Version('1.1.1'))
         '1.1.1'
 
@@ -156,7 +156,7 @@ Representing a version (the Version class)
 
             >>> v = Version('0.1.1-rc2+build4.4')
             >>> v
-            <Version(0, 1, 1, ['rc2'], ['build4', '4'])>
+            Version('0.1.1-rc2+build4.4')
             >>> str(v)
             '0.1.1-rc2+build4.4'
 
@@ -252,19 +252,19 @@ rules apply:
 
         >>> Spec('>=1.0.0,<1.2.0,!=1.1.4')
         <Spec: (
-            <SpecItem: >= <~Version(1 0 0 None None)>>,
-            <SpecItem: < <~Version(1 2 0 None None)>>,
-            <SpecItem: != <~Version(1 1 4 None None)>>
+            <SpecItem: >= Version('1.0.0', partial=True)>,
+            <SpecItem: < Version('1.2.0', partial=True)>,
+            <SpecItem: != Version('1.1.4', partial=True)>
         )>
 
     Version specifications may also be passed in separated arguments::
 
         >>> Spec('>=1.0.0', '<1.2.0', '!=1.1.4,!=1.1.13')
         <Spec: (
-            <SpecItem: >= <~Version(1 0 0 None None)>>,
-            <SpecItem: < <Version(1 2 0 None None)>>,
-            <SpecItem: != <~Version(1 1 4 None None)>>
-            <SpecItem: != <~Version(1 1 13 None None)>>
+            <SpecItem: >= Version('1.0.0', partial=True)>,
+            <SpecItem: < Version('1.2.0', partial=True)>,
+            <SpecItem: != Version('1.1.4', partial=True)>,
+            <SpecItem: != Version('1.1.13', partial=True)>,
         )>
 
 
@@ -312,7 +312,7 @@ rules apply:
             >>> s.select([])
             None
             >>> s.select([Version('0.1.0'), Version('0.1.3'), Version('0.1.1')])
-            <Version(0, 1, 3, (), ())>
+            Version('0.1.3')
 
         :param versions: The versions to filter
         :type versions: iterable of :class:`Version`
@@ -371,7 +371,7 @@ rules apply:
     Stores a version specification, defined from a string::
 
         >>> SpecItem('>=0.1.1')
-        <SpecItem: >= <Version(0, 1, 1, [], [])>>
+        <SpecItem: >= Version('0.1.1', partial=True)>
 
     This allows to test :class:`Version` objects against the :class:`SpecItem`::
 

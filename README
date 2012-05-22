@@ -25,9 +25,7 @@ Compare it to other versions::
   >>> v < Version('0.1.2')
   True
   >>> sorted([Version('0.1.1'), Version('0.11.1'), Version('0.1.1-alpha')])
-  [<Version(0, 1, 1, ('alpha',), ())>,
-   <Version(0, 1, 1, (), ())>,
-   <Version(0, 11, 1, (), ())>]
+  [Version('0.1.1-alpha'), Version('0.1.1'), Version('0.11.1')]
 
 Define a simple specification::
 
@@ -53,7 +51,7 @@ Select the best compatible version from a list::
 
   >>> s = Spec('>=0.1.1,<0.2.0')
   >>> s.select([Version('0.1.1'), Version('0.1.9-alpha'), Version('0.1.9-alpha+1'))
-  <Version(0, 1, 9, ('alpha',), (1,))>
+  Version('0.1.9-alpha+1')
 
 
 Framework integration

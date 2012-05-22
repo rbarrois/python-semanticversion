@@ -134,7 +134,7 @@ It is also possible to select the 'best' version from such iterables::
     >>> s = Spec('>=0.1.0,<0.4.0')
     >>> versions = (Version('0.%d.0' % i) for i in range(6))
     >>> s.select(versions)
-    <Version(0, 3, 0, (), ())>
+    Version('0.3.0')
 
 Including pre-release identifiers in specifications
 """""""""""""""""""""""""""""""""""""""""""""""""""

@@ -119,11 +119,10 @@ class VersionTestCase(unittest.TestCase):
             self.assertEqual(expected_fields, actual_fields)
 
     def test_str(self):
-        for text, fields in self.versions.items():
+        for text in self.versions:
             version = base.Version(text)
             self.assertEqual(text, str(version))
-            for field in fields:
-                self.assertIn(repr(field), repr(version))
+            self.assertEqual("Version('%s')" % text, repr(version))
 
     def test_compare_to_self(self):
         for text in self.versions:
@@ -162,11 +161,10 @@ class VersionTestCase(unittest.TestCase):
             self.assertTrue(version.partial, "%r should have partial=True" % version)
 
     def test_str_partials(self):
-        for text, fields in self.partial_versions.items():
+        for text in self.partial_versions:
             version = base.Version(text, partial=True)
             self.assertEqual(text, str(version))
-            for field in fields:
-                self.assertIn(repr(field), repr(version))
+            self.assertEqual("Version('%s', partial=True)" % text, repr(version))
 
     def test_compare_partial_to_self(self):
         for text in self.partial_versions:
