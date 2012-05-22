@@ -54,6 +54,8 @@ class DjangoFieldTestCase(unittest.TestCase):
         self.assertEqual(obj.spec, alt_obj.spec)
         self.assertEqual(obj.version, alt_obj.version)
 
+        obj.full_clean()
+
     def test_invalid_input(self):
         self.assertRaises(ValueError, models.VersionModel,
             version='0.1.1', spec='blah')
@@ -80,6 +82,8 @@ class DjangoFieldTestCase(unittest.TestCase):
         self.assertEqual(obj.partial, alt_obj.partial)
         self.assertIsNone(obj.optional)
         self.assertIsNone(obj.optional_spec)
+
+        obj.full_clean()
 
     def test_serialization(self):
         o1 = models.VersionModel(version='0.1.1', spec='==0.1.1,!=0.1.1-alpha')

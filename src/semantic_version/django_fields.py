@@ -26,6 +26,9 @@ class BaseSemVerField(models.CharField):
         value = self.to_python(self._get_val_from_obj(obj))
         return str(value)
 
+    def run_validators(self, value):
+        return super(BaseSemVerField, self).run_validators(str(value))
+
 
 class VersionField(BaseSemVerField):
     default_error_messages = {
