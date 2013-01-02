@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2012 Raphaël Barrois
+# Copyright (c) 2012-2013 Raphaël Barrois
 
 from django.db import models
 from semantic_version import django_fields as semver_fields

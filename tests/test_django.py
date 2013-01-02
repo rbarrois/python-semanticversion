@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2012 Raphaël Barrois
+# Copyright (c) 2012-2013 Raphaël Barrois
 
 try:  # pragma: no cover
     import unittest2 as unittest
