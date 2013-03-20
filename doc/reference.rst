@@ -188,6 +188,37 @@ Representing a version (the Version class)
         :raises: :exc:`ValueError`, if the :attr:`version_string` is invalid.
         :rtype: (major, minor, patch, prerelease, build)
 
+    .. classmethod:: coerce(cls, version_string[, partial=False])
+
+        Try to convert an arbitrary version string into a :class:`Version` instance.
+
+        Rules are:
+
+        - If no minor or patch component, and :attr:`partial` is :obj:`False`,
+          replace them with zeroes
+        - Any character outside of ``a-zA-Z0-9.+-`` is replaced with a ``-``
+        - If more than 3 dot-separated numerical components, everything from the
+          fourth component belongs to the :attr:`build` part
+        - Any extra ``+`` in the :attr:`build` part will be replaced with dots
+
+        Examples:
+
+        .. code-block:: pycon
+
+          >>> Version.coerce('02')
+          Version('2.0.0')
+          >>> Version.coerce('1.2.3.4')
+          Version('1.2.3+4')
+          >>> Version.coerce('1.2.3.4beta2')
+          Version('1.2.3+4beta2')
+          >>> Version.coerce('1.2.3.4.5_6/7+8+9+10')
+          Version('1.2.3+4.5-6-7.8.9.10')
+
+        :param str version_string: The version string to coerce
+        :param bool partial: Whether to allow generating a :attr:`partial` version
+        :raises: :exc:`ValueError`, if the :attr:`version_string` is invalid.
+        :rtype: :class:`Version`
+
 
 Version specifications (the Spec class)
 ---------------------------------------

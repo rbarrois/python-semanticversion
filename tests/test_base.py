@@ -301,6 +301,25 @@ class SpecItemTestCase(unittest.TestCase):
             len(set([base.SpecItem('==0.1.0'), base.SpecItem('==0.1.0')])))
 
 
+class CoerceTestCase(unittest.TestCase):
+    examples = {
+        # Dict of target: [list of equivalents]
+        '0.1.0': ('0.1', '0.1+', '0.1-', '0.1.0', '0.000001.000000000000'),
+        '0.1.0+2': ('0.1.0+2', '0.1.0.2'),
+        '0.1.0+2.3.4': ('0.1.0+2.3.4', '0.1.0+2+3+4', '0.1.0.2+3+4'),
+        '0.1.0+2-3.4': ('0.1.0+2-3.4', '0.1.0+2-3+4', '0.1.0.2-3+4', '0.1.0.2_3+4'),
+        '0.1.0-a2.3': ('0.1.0-a2.3', '0.1.0a2.3', '0.1.0_a2.3'),
+        '0.1.0-a2.3+4.5-6': ('0.1.0-a2.3+4.5-6', '0.1.0a2.3+4.5-6', '0.1.0a2.3+4.5_6', '0.1.0a2.3+4+5/6'),
+    }
+
+    def test_coerce(self):
+        for equivalent, samples in self.examples.items():
+            target = base.Version(equivalent)
+            for sample in samples:
+                v_sample = base.Version.coerce(sample)
+                self.assertEqual(target, v_sample)
+
+
 class SpecTestCase(unittest.TestCase):
     examples = {
         '>=0.1.1,<0.1.2': ['>=0.1.1', '<0.1.2'],

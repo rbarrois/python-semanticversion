@@ -136,6 +136,22 @@ It is also possible to select the 'best' version from such iterables::
     >>> s.select(versions)
     Version('0.3.0')
 
+
+Coercing an arbitrary version string
+""""""""""""""""""""""""""""""""""""
+
+Some user-supplied input might not match the semantic version scheme.
+For such cases, the :meth:`Version.coerce` method will try to convert any
+version-like string into a valid semver version::
+
+    >>> Version.coerce('0')
+    Version('0.0.0')
+    >>> Version.coerce('0.1.2.3.4')
+    Version('0.1.2+3.4')
+    >>> Version.coerce('0.1.2a3')
+    Version('0.1.2-a3')
+
+
 Including pre-release identifiers in specifications
 """""""""""""""""""""""""""""""""""""""""""""""""""
 

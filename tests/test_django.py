@@ -61,6 +61,15 @@ class DjangoFieldTestCase(unittest.TestCase):
         self.assertEqual(semantic_version.Version('0.1.1'), obj.version)
         self.assertEqual(semantic_version.Spec('==0,!=0.2'), obj.spec)
 
+    def test_coerce(self):
+        obj = models.CoerceVersionModel(version='0.1.1a+2', partial='23')
+        self.assertEqual(semantic_version.Version('0.1.1-a+2'), obj.version)
+        self.assertEqual(semantic_version.Version('23', partial=True), obj.partial)
+
+        obj2 = models.CoerceVersionModel(version='23', partial='0.1.2.3.4.5/6')
+        self.assertEqual(semantic_version.Version('23.0.0'), obj2.version)
+        self.assertEqual(semantic_version.Version('0.1.2+3.4.5-6', partial=True), obj2.partial)
+
     def test_invalid_input(self):
         self.assertRaises(ValueError, models.VersionModel,
             version='0.1.1', spec='blah')
@@ -135,6 +144,15 @@ class SouthTestCase(unittest.TestCase):
         self.assertEqual(frozen['optional_spec'],
             ('semantic_version.django_fields.SpecField', [], {'max_length': '200', 'blank': 'True', 'null': 'True'}))
 
+    def test_freezing_coerce_version_model(self):
+        frozen = south.modelsinspector.get_model_fields(models.CoerceVersionModel)
+
+        self.assertEqual(frozen['version'],
+            ('semantic_version.django_fields.VersionField', [], {'max_length': '200', 'coerce': 'True'}))
+
+        self.assertEqual(frozen['partial'],
+                ('semantic_version.django_fields.VersionField', [], {'max_length': '200', 'partial': 'True', 'coerce': 'True'}))
+
     def test_freezing_app(self):
         frozen = south.creator.freezer.freeze_apps('django_test_app')
 
@@ -154,6 +172,13 @@ class SouthTestCase(unittest.TestCase):
 
         self.assertEqual(frozen['django_test_app.partialversionmodel']['optional_spec'],
             ('semantic_version.django_fields.SpecField', [], {'max_length': '200', 'blank': 'True', 'null': 'True'}))
+
+        # Test CoerceVersionModel
+        self.assertEqual(frozen['django_test_app.coerceversionmodel']['version'],
+            ('semantic_version.django_fields.VersionField', [], {'max_length': '200', 'coerce': 'True'}))
+
+        self.assertEqual(frozen['django_test_app.coerceversionmodel']['partial'],
+            ('semantic_version.django_fields.VersionField', [], {'max_length': '200', 'partial': 'True', 'coerce': 'True'}))
 
 
 if django_loaded:

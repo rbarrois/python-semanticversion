@@ -9,6 +9,12 @@ ChangeLog
     * `#1 <https://github.com/rbarrois/python-semanticversion/issues/1>`_: Allow partial
       versions without minor or patch level
 
+*New:*
+
+    * Add the :meth:`Version.coerce <semantic_version.Version.coerce>` class method to
+      :class:`~semantic_version.Version` class for mapping arbitrary version strings to
+      semver.
+
 2.1.2 (22/05/2012)
 ------------------
 

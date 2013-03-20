@@ -20,6 +20,11 @@ with their :attr:`~django.db.models.CharField.max_length` defaulting to 200.
 
         Boolean; whether :attr:`~semantic_version.Version.partial` versions are allowed.
 
+    .. attribute:: coerce
+
+        Boolean; whether passed in values should be coerced into a semver string
+        before storing.
+
 
 .. class:: SpecField
 

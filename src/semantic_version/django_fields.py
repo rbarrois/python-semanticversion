@@ -38,6 +38,7 @@ class VersionField(BaseSemVerField):
 
     def __init__(self, *args, **kwargs):
         self.partial = kwargs.pop('partial', False)
+        self.coerce = kwargs.pop('coerce', False)
         super(VersionField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
@@ -46,7 +47,10 @@ class VersionField(BaseSemVerField):
             return value
         if isinstance(value, base.Version):
             return value
-        return base.Version(value, partial=self.partial)
+        if self.coerce:
+            return base.Version.coerce(value, partial=self.partial)
+        else:
+            return base.Version(value, partial=self.partial)
 
 
 class SpecField(BaseSemVerField):
@@ -71,7 +75,10 @@ def add_south_rules():
         (
             (VersionField,),
             [],
-            {'partial': ('partial', {'default': False})},
+            {
+                'partial': ('partial', {'default': False}),
+                'coerce': ('coerce', {'default': False}),
+            },
         ),
     ], ["semantic_version\.django_fields"])
 
