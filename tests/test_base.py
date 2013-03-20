@@ -197,6 +197,7 @@ class SpecItemTestCase(unittest.TestCase):
         '<=0.1.1+': (base.SpecItem.KIND_LTE, 0, 1, 1, (), ()),
         '<0.1.1': (base.SpecItem.KIND_LT, 0, 1, 1, None, None),
         '<=0.1.1': (base.SpecItem.KIND_LTE, 0, 1, 1, None, None),
+        '<=0.1.1-': (base.SpecItem.KIND_LTE, 0, 1, 1, (), None),
         '>=0.2.3-rc2': (base.SpecItem.KIND_GTE, 0, 2, 3, ('rc2',), None),
         '>0.2.3-rc2+': (base.SpecItem.KIND_GT, 0, 2, 3, ('rc2',), ()),
         '>=2.0.0': (base.SpecItem.KIND_GTE, 2, 0, 0, None, None),

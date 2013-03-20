@@ -11,7 +11,6 @@ class MatchTestCase(unittest.TestCase):
     invalid_specs = [
         '',
         '!0.1',
-        '<0.1',
         '<=0.1.4a',
         '>0.1.1.1',
         '~0.1.2-rc23,1',
@@ -20,6 +19,7 @@ class MatchTestCase(unittest.TestCase):
     valid_specs = [
         '==0.1.0',
         '<=0.1.1',
+        '<0.1',
         '>0.1.2-rc1',
         '>=0.1.2-rc1.3.4',
         '==0.1.2+build42-12.2012-01-01.12h23',
@@ -100,6 +100,20 @@ class MatchTestCase(unittest.TestCase):
 
         version = semantic_version.Version('0.1.1-rc1+4.2')
         self.assertTrue(version in spec, "%r should be in %r" % (version, spec))
+
+    def test_prerelease_check(self):
+        strict_spec = semantic_version.Spec('>=0.1.1-')
+        lax_spec = semantic_version.Spec('>=0.1.1')
+        version = semantic_version.Version('0.1.1-rc1+4.2')
+        self.assertTrue(version in lax_spec, "%r should be in %r" % (version, lax_spec))
+        self.assertFalse(version in strict_spec, "%r should not be in %r" % (version, strict_spec))
+
+    def test_build_check(self):
+        strict_spec = semantic_version.Spec('<=0.1.1-rc1+')
+        lax_spec = semantic_version.Spec('<=0.1.1-rc1')
+        version = semantic_version.Version('0.1.1-rc1+4.2')
+        self.assertTrue(version in lax_spec, "%r should be in %r" % (version, lax_spec))
+        self.assertFalse(version in strict_spec, "%r should not be in %r" % (version, strict_spec))
 
 
 if __name__ == '__main__':  # pragma: no cover

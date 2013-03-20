@@ -56,13 +56,16 @@ class DjangoFieldTestCase(unittest.TestCase):
 
         obj.full_clean()
 
+    def test_partial_spec(self):
+        obj = models.VersionModel(version='0.1.1', spec='==0,!=0.2')
+        self.assertEqual(semantic_version.Version('0.1.1'), obj.version)
+        self.assertEqual(semantic_version.Spec('==0,!=0.2'), obj.spec)
+
     def test_invalid_input(self):
         self.assertRaises(ValueError, models.VersionModel,
             version='0.1.1', spec='blah')
         self.assertRaises(ValueError, models.VersionModel,
             version='0.1', spec='==0.1.1,!=0.1.1-alpha')
-        self.assertRaises(ValueError, models.VersionModel,
-            version='0.1.1', spec='==0,!=0.2')
 
     def test_partial(self):
         obj = models.PartialVersionModel(partial='0.1.0')

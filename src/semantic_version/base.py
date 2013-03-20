@@ -58,7 +58,7 @@ def identifier_list_cmp(a, b):
 class Version(object):
 
     version_re = re.compile('^(\d+)\.(\d+)\.(\d+)(?:-([0-9a-zA-Z.-]+))?(?:\+([0-9a-zA-Z.-]+))?$')
-    partial_version_re = re.compile('^(\d+)\.(\d+)\.(\d+)(?:-([0-9a-zA-Z.-]*))?(?:\+([0-9a-zA-Z.-]*))?$')
+    partial_version_re = re.compile('^(\d+)(?:\.(\d+)(?:\.(\d+))?)?(?:-([0-9a-zA-Z.-]*))?(?:\+([0-9a-zA-Z.-]*))?$')
 
     def __init__(self, version_string, partial=False):
         major, minor, patch, prerelease, build = self.parse(version_string, partial)
@@ -70,6 +70,12 @@ class Version(object):
         self.build = build
 
         self.partial = partial
+
+    @classmethod
+    def _coerce(cls, value, allow_none=False):
+        if value is None and allow_none:
+            return value
+        return int(value)
 
     @classmethod
     def parse(cls, version_string, partial=False):
@@ -88,8 +94,8 @@ class Version(object):
         major, minor, patch, prerelease, build = match.groups()
 
         major = int(major)
-        minor = int(minor)
-        patch = int(patch)
+        minor = cls._coerce(minor, partial)
+        patch = cls._coerce(patch, partial)
 
         if prerelease is None:
             if partial and (build is None):
@@ -118,7 +124,11 @@ class Version(object):
         return iter((self.major, self.minor, self.patch, self.prerelease, self.build))
 
     def __str__(self):
-        version = '%d.%d.%d' % (self.major, self.minor, self.patch)
+        version = '%d' % self.major
+        if self.minor is not None:
+            version = '%s.%d' % (version, self.minor)
+        if self.patch is not None:
+            version = '%s.%d' % (version, self.patch)
 
         if self.prerelease or (self.partial and self.prerelease == () and self.build is None):
             version = '%s-%s' % (version, '.'.join(self.prerelease))

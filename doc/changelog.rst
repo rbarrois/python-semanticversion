@@ -1,6 +1,14 @@
 ChangeLog
 =========
 
+2.2.0 (current)
+---------------
+
+*Bugfix:*
+
+    * `#1 <https://github.com/rbarrois/python-semanticversion/issues/1>`_: Allow partial
+      versions without minor or patch level
+
 2.1.2 (22/05/2012)
 ------------------
 
