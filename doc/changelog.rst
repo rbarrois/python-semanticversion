@@ -16,6 +16,7 @@ ChangeLog
       semver.
     * Add the :func:`~semantic_version.validate` method to validate a version
       string against the SemVer rules.
+    * Full Python3 support
 
 2.1.2 (22/05/2012)
 ------------------
