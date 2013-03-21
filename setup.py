@@ -68,7 +68,7 @@ setup(
     name="semantic_version",
     version=get_version(),
     author="Raphaël Barrois",
-    author_email="raphael.barrois@polytechnique.org",
+    author_email="raphael.barrois+semver@polytechnique.org",
     description=("A library implementing the 'SemVer' scheme."),
     license="BSD",
     keywords=['semantic version', 'versioning', 'version'],
