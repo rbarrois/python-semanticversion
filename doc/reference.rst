@@ -43,6 +43,21 @@ Module-level functions
     :rtype: ``bool``
 
 
+.. function:: validate(version)
+
+    Check whether a version string complies with the `SemVer`_ rules.
+
+    .. code-block:: pycon
+
+        >>> semantic_version.validate('1.1.1')
+        True
+        >>> semantic_version.validate('1.2.3a4')
+        False
+
+    :param str version: The version string to validate
+    :rtype: ``bool``
+
+
 Representing a version (the Version class)
 ------------------------------------------
 

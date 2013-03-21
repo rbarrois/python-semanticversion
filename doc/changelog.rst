@@ -14,6 +14,8 @@ ChangeLog
     * Add the :meth:`Version.coerce <semantic_version.Version.coerce>` class method to
       :class:`~semantic_version.Version` class for mapping arbitrary version strings to
       semver.
+    * Add the :func:`~semantic_version.validate` method to validate a version
+      string against the SemVer rules.
 
 2.1.2 (22/05/2012)
 ------------------

@@ -88,6 +88,46 @@ class TopLevelTestCase(unittest.TestCase):
             self.assertTrue(base.match(spec, version),
                 "%r should accept %r" % (spec, version))
 
+    valid_strings = (
+        '1.0.0-alpha',
+        '1.0.0-alpha.1',
+        '1.0.0-beta.2',
+        '1.0.0-beta.11',
+        '1.0.0-rc.1',
+        '1.0.0-rc.1+build.1',
+        '1.0.0',
+        '1.0.0+0.3.7',
+        '1.3.7+build',
+        '1.3.7+build.2.b8f12d7',
+        '1.3.7+build.11.e0f985a',
+        '1.1.1',
+        '1.1.2',
+        '1.1.3-rc4.5',
+        '1.1.3-rc42.3-14-15.24+build.2012-04-13.223',
+        '1.1.3+build.2012-04-13.HUY.alpha-12.1',
+    )
+
+    def test_validate_valid(self):
+        for version in self.valid_strings:
+            self.assertTrue(base.validate(version),
+                "%r should be a valid version" % (version,))
+
+    invalid_strings = (
+        '1',
+        'v1',
+        '1.2.3.4',
+        '1.2',
+        '1.2a3',
+        '1.2.3a4',
+        'v12.34.5',
+        '1.2.3+4+5',
+    )
+
+    def test_validate_invalid(self):
+        for version in self.invalid_strings:
+            self.assertFalse(base.validate(version),
+                "%r should not be a valid version" % (version,))
+
 
 class VersionTestCase(unittest.TestCase):
     versions = {

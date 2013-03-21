@@ -438,3 +438,12 @@ def compare(v1, v2):
 
 def match(spec, version):
     return Spec(spec).match(Version(version))
+
+
+def validate(version_string):
+    """Validates a version string againt the SemVer specification."""
+    try:
+        Version.parse(version_string)
+        return True
+    except ValueError:
+        return False
