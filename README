@@ -12,6 +12,9 @@ Handles the full 2.0.0-rc1 version of the SemVer scheme, and provides tools to d
 The full doc is available on http://python-semanticversion.readthedocs.org/; simple usage is described below.
 
 
+The semantic_version library supports Python 2.6, 2.7, 3.2, 3.3.
+
+
 Usage
 =====
 

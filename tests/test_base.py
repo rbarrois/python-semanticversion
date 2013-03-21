@@ -5,11 +5,7 @@
 
 """Test the various functions from 'base'."""
 
-try:  # pragma: no cover
-    import unittest2 as unittest
-except ImportError:  # pragma: no cover
-    import unittest
-
+from .compat import unittest, is_python2
 
 from semantic_version import base
 
@@ -171,6 +167,8 @@ class VersionTestCase(unittest.TestCase):
             self.assertNotEqual(text, base.Version(text))
 
     partial_versions = {
+        '1.1': (1, 1, None, None, None),
+        '2': (2, None, None, None, None),
         '1.0.0-alpha': (1, 0, 0, ('alpha',), None),
         '1.0.0-alpha.1': (1, 0, 0, ('alpha', '1'), None),
         '1.0.0-beta.2': (1, 0, 0, ('beta', '2'), None),
@@ -228,6 +226,21 @@ class VersionTestCase(unittest.TestCase):
                 base.Version('0.1.0-a1+34', partial=True)
             ]))
         )
+
+    @unittest.skipIf(is_python2, "Comparisons to other objects are broken in Py2.")
+    def test_invalid_comparisons(self):
+        v = base.Version('0.1.0')
+        with self.assertRaises(TypeError):
+            v < '0.1.0'
+        with self.assertRaises(TypeError):
+            v <= '0.1.0'
+        with self.assertRaises(TypeError):
+            v > '0.1.0'
+        with self.assertRaises(TypeError):
+            v >= '0.1.0'
+
+        self.assertTrue(v != '0.1.0')
+        self.assertFalse(v == '0.1.0')
 
 
 class SpecItemTestCase(unittest.TestCase):
@@ -345,6 +358,7 @@ class SpecItemTestCase(unittest.TestCase):
 class CoerceTestCase(unittest.TestCase):
     examples = {
         # Dict of target: [list of equivalents]
+        '0.0.0': ('0', '0.0', '0.0.0', '0.0.0+', '0-', '00000000.00'),
         '0.1.0': ('0.1', '0.1+', '0.1-', '0.1.0', '0.000001.000000000000'),
         '0.1.0+2': ('0.1.0+2', '0.1.0.2'),
         '0.1.0+2.3.4': ('0.1.0+2.3.4', '0.1.0+2+3+4', '0.1.0.2+3+4'),
@@ -359,6 +373,9 @@ class CoerceTestCase(unittest.TestCase):
             for sample in samples:
                 v_sample = base.Version.coerce(sample)
                 self.assertEqual(target, v_sample)
+
+    def test_invalid(self):
+        self.assertRaises(ValueError, base.Version.coerce, 'v1')
 
 
 class SpecTestCase(unittest.TestCase):

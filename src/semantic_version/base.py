@@ -2,9 +2,13 @@
 # Copyright (c) 2012-2013 Raphaël Barrois
 # This code is distributed under the two-clause BSD License.
 
+from __future__ import unicode_literals
 
 import functools
 import re
+
+
+from .compat import base_cmp
 
 def _to_int(value):
     try:
@@ -21,7 +25,7 @@ def identifier_cmp(a, b):
 
     if a_is_int and b_is_int:
         # Numeric identifiers are compared as integers
-        return cmp(a_cmp, b_cmp)
+        return base_cmp(a_cmp, b_cmp)
     elif a_is_int:
         # Numeric identifiers have lower precedence
         return -1
@@ -29,7 +33,7 @@ def identifier_cmp(a, b):
         return 1
     else:
         # Non-numeric identifers are compared lexicographically
-        return cmp(a_cmp, b_cmp)
+        return base_cmp(a_cmp, b_cmp)
 
 
 def identifier_list_cmp(a, b):
@@ -53,7 +57,7 @@ def identifier_list_cmp(a, b):
         if cmp_res != 0:
             return cmp_res
     # alpha1.3 < alpha1.3.1
-    return cmp(len(a), len(b))
+    return base_cmp(len(a), len(b))
 
 
 class Version(object):
@@ -221,9 +225,6 @@ class Version(object):
             ', partial=True' if self.partial else '',
         )
 
-    def __hash__(self):
-        return hash((self.major, self.minor, self.patch, self.prerelease, self.build))
-
     @classmethod
     def _comparison_functions(cls, partial=False):
         """Retrieve comparison methods to apply on version components.
@@ -281,17 +282,17 @@ class Version(object):
 
         if partial:
             return [
-                cmp,  # Major is still mandatory
-                make_optional(cmp),
-                make_optional(cmp),
+                base_cmp,  # Major is still mandatory
+                make_optional(base_cmp),
+                make_optional(base_cmp),
                 make_optional(prerelease_cmp),
                 make_optional(build_cmp),
             ]
         else:
             return [
-                cmp,
-                cmp,
-                cmp,
+                base_cmp,
+                base_cmp,
+                base_cmp,
                 prerelease_cmp,
                 build_cmp,
             ]
@@ -302,14 +303,53 @@ class Version(object):
 
         field_pairs = zip(self, other)
         comparison_functions = self._comparison_functions(partial=self.partial or other.partial)
+        comparisons = zip(comparison_functions, self, other)
 
-        for cmp_fun, field_pair in zip(comparison_functions, field_pairs):
-            self_field, other_field = field_pair
+        for cmp_fun, self_field, other_field in comparisons:
             cmp_res = cmp_fun(self_field, other_field)
             if cmp_res != 0:
                 return cmp_res
 
         return 0
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+
+        return self.__cmp__(other) == 0
+
+    def __hash__(self):
+        return hash((self.major, self.minor, self.patch, self.prerelease, self.build))
+
+    def __ne__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+
+        return self.__cmp__(other) != 0
+
+    def __lt__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+
+        return self.__cmp__(other) < 0
+
+    def __le__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+
+        return self.__cmp__(other) <= 0
+
+    def __gt__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+
+        return self.__cmp__(other) > 0
+
+    def __ge__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+
+        return self.__cmp__(other) >= 0
 
 
 class SpecItem(object):
@@ -434,7 +474,7 @@ class Spec(object):
 
 
 def compare(v1, v2):
-    return cmp(Version(v1), Version(v2))
+    return base_cmp(Version(v1), Version(v2))
 
 
 def match(spec, version):

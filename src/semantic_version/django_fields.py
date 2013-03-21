@@ -2,6 +2,8 @@
 # Copyright (c) 2012-2013 Raphaël Barrois
 # This code is distributed under the two-clause BSD License.
 
+from __future__ import unicode_literals
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -31,11 +33,16 @@ class BaseSemVerField(models.CharField):
         return super(BaseSemVerField, self).run_validators(str(value))
 
 
-class VersionField(BaseSemVerField):
+# Py2 and Py3-compatible metaclass
+SemVerField = models.SubfieldBase(
+    str('SemVerField'), (BaseSemVerField, models.CharField), {})
+
+
+class VersionField(SemVerField):
     default_error_messages = {
-        'invalid': _(u"Enter a valid version number in X.Y.Z format."),
+        'invalid': _("Enter a valid version number in X.Y.Z format."),
     }
-    description = _(u"Version")
+    description = _("Version")
 
     def __init__(self, *args, **kwargs):
         self.partial = kwargs.pop('partial', False)
@@ -54,11 +61,11 @@ class VersionField(BaseSemVerField):
             return base.Version(value, partial=self.partial)
 
 
-class SpecField(BaseSemVerField):
+class SpecField(SemVerField):
     default_error_messages = {
-        'invalid': _(u"Enter a valid version number spec list in ==X.Y.Z,>=A.B.C format."),
+        'invalid': _("Enter a valid version number spec list in ==X.Y.Z,>=A.B.C format."),
     }
-    description = _(u"Version specification list")
+    description = _("Version specification list")
 
     def to_python(self, value):
         """Converts any value to a base.Spec field."""

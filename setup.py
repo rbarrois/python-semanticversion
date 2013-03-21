@@ -54,14 +54,19 @@ class test(cmd.Command):
         ex_path = sys.path
         sys.path.insert(0, os.path.join(root_dir, 'src'))
         loader = unittest.defaultTestLoader
+        suite = unittest.TestSuite()
 
-        if self.test_suite != self.DEFAULT_TEST_SUITE:
-            suite = loader.loadTestsFromName(self.test_suite)
+        if self.test_suite == self.DEFAULT_TEST_SUITE:
+            for test_module in loader.discover('.'):
+                suite.addTest(test_module)
         else:
-            suite = loader.discover(self.test_suite)
+            suite.addTest(loader.loadTestsFromName(self.test_suite))
 
-        unittest.TextTestRunner(verbosity=verbosity).run(suite)
+        result = unittest.TextTestRunner(verbosity=verbosity).run(suite)
         sys.path = ex_path
+
+        if not result.wasSuccessful():
+            sys.exit(1)
 
 
 setup(
@@ -77,12 +82,19 @@ setup(
     package_dir={'': 'src'},
     packages=['semantic_version'],
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",
         "Topic :: Software Development :: Libraries :: Python Modules",
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
+        'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     cmdclass={'test': test},
 )

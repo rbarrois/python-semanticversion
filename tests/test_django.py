@@ -2,6 +2,8 @@
 # Copyright (c) 2012-2013 Raphaël Barrois
 # This code is distributed under the two-clause BSD License.
 
+from __future__ import unicode_literals
+
 try:  # pragma: no cover
     import unittest2 as unittest
 except ImportError:  # pragma: no cover
@@ -28,7 +30,7 @@ if django_loaded:  # pragma: no cover
                 'tests.django_test_app',
             ]
         )
-    from django_test_app import models
+    from .django_test_app import models
     from django.core import serializers
 
 try:  # pragma: no cover

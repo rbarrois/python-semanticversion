@@ -63,7 +63,9 @@ class ComparisonTestCase(unittest.TestCase):
                     self.assertTrue(first_ver == second_ver, '%r != %r' % (first_ver, second_ver))
                 else:
                     self.assertTrue(first_ver > second_ver, '%r !> %r' % (first_ver, second_ver))
-                self.assertEqual(cmp(i, j), semantic_version.compare(first, second))
+
+                cmp_res = -1 if i < j else (1 if i > j else 0)
+                self.assertEqual(cmp_res, semantic_version.compare(first, second))
 
 
 if __name__ == '__main__':  # pragma: no cover
