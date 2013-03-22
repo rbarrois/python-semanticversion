@@ -1,8 +1,8 @@
 ChangeLog
 =========
 
-2.2.0 (current)
----------------
+2.2.0 (2013-03-22)
+------------------
 
 *Bugfix:*
 
@@ -18,7 +18,7 @@ ChangeLog
       string against the SemVer rules.
     * Full Python3 support
 
-2.1.2 (22/05/2012)
+2.1.2 (2012-05-22)
 ------------------
 
 *Bugfix:*
@@ -26,14 +26,14 @@ ChangeLog
     * Properly validate :class:`~semantic_version.django_fields.VersionField` and
       :class:`~semantic_version.django_fields.SpecField`.
 
-2.1.1 (22/05/2012)
+2.1.1 (2012-05-22)
 ------------------
 
 *New:*
 
     * Add introspection rules for south
 
-2.1.0 (22/05/2012)
+2.1.0 (2012-05-22)
 ------------------
 
 *New:*
@@ -43,7 +43,7 @@ ChangeLog
       :class:`~semantic_version.Version` from a list)
     * Update :func:`semantic_version.Version.__repr__`
 
-2.0.0 (22/05/2012)
+2.0.0 (2012-05-22)
 ------------------
 
 *Backwards incompatible changes:*
@@ -53,7 +53,7 @@ ChangeLog
     * Merge Spec and SpecList into :class:`~semantic_version.Spec`.
     * Remove :class:`~semantic_version.django_fields.SpecListField`
 
-1.2.0 (18/05/2012)
+1.2.0 (2012-05-18)
 ------------------
 
 *New:*
@@ -64,7 +64,7 @@ ChangeLog
             >>> SpecList('>=0.1.1', '!=0.1.3') == SpecList('>=0.1.1,!=0.1.3')
             True
 
-1.1.0 (18/05/2012)
+1.1.0 (2012-05-18)
 ------------------
 
 *New:*
@@ -74,7 +74,7 @@ ChangeLog
     * :class:`~semantic_version.SpecList` class combining many :class:`~semantic_version.Spec`
     * Add :class:`~semantic_version.django_fields.SpecListField` to store a :class:`~semantic_version.SpecList`.
 
-1.0.0 (17/05/2012)
+1.0.0 (2012-05-17)
 ------------------
 
 First public release.

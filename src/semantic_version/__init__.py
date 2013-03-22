@@ -4,7 +4,7 @@
 
 
 __author__ = "Raphaël Barrois <raphael.barrois+semver@polytechnique.org>"
-__version__ = '2.1.2'
+__version__ = '2.2.0'
 
 
 from .base import compare, match, Spec, SpecItem, Version
