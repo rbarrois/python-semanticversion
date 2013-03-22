@@ -268,7 +268,7 @@ In order to contribute to the source code:
 - Open an issue on `GitHub`_: https://github.com/rbarrois/python-semanticversion/issues
 - Fork the `repository <https://github.com/rbarrois/python-semanticversion>`_
   and submit a pull request on `GitHub`_
-- Send me a patch (mailto:raphael.barrois@polytechnique.org)
+- Or send me a patch (mailto:raphael.barrois+semver@polytechnique.org)
 
 When submitting patches or pull requests, you should respect the following rules:
 
