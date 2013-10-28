@@ -113,6 +113,17 @@ Obviously, :class:`Versions <Version>` can be compared:
     False
 
 
+It is also possible to check whether a given string is a proper semantic version string:
+
+
+.. code-block:: pycon
+
+    >>> semantic_version.validate('0.1.3')
+    True
+    >>> semantic_version.validate('0a2')
+    False
+
+
 Requirement specification
 -------------------------
 
@@ -223,6 +234,7 @@ definition or (for the empty pre-release number) if a single dash is appended
     True
     >>> Version('0.1.0-alpha') in Spec('>=0.1.0-')  # Include pre-release in checks
     False
+
 
 Including build identifiers in specifications
 """""""""""""""""""""""""""""""""""""""""""""
