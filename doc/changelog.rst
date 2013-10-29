@@ -1,6 +1,15 @@
 ChangeLog
 =========
 
+
+2.2.1 (2013-10-29)
+------------------
+
+*Bugfix:*
+
+    * `#2 <https://github.com/rbarrois/python-semanticversion/issues/2>`_: Properly expose
+      :func:`~semantic_version.validate` as a top-level module function.
+
 2.2.0 (2013-03-22)
 ------------------
 
