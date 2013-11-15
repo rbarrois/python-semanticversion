@@ -1,4 +1,4 @@
-include README
+include README.rst
 include ChangeLog
 include docs/Makefile
 recursive-include docs *.py *.rst
