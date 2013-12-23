@@ -1,21 +1,28 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2012-2013 Raphaël Barrois
 
-from django.db import models
-from semantic_version import django_fields as semver_fields
+try:
+    from django.db import models
+    django_loaded = True
+except ImportError:
+    django_loaded = False
 
 
-class VersionModel(models.Model):
-    version = semver_fields.VersionField(verbose_name='my version')
-    spec = semver_fields.SpecField(verbose_name='my spec')
+if django_loaded:
+    from semantic_version import django_fields as semver_fields
 
 
-class PartialVersionModel(models.Model):
-    partial = semver_fields.VersionField(partial=True, verbose_name='partial version')
-    optional = semver_fields.VersionField(verbose_name='optional version', blank=True, null=True)
-    optional_spec = semver_fields.SpecField(verbose_name='optional spec', blank=True, null=True)
+    class VersionModel(models.Model):
+        version = semver_fields.VersionField(verbose_name='my version')
+        spec = semver_fields.SpecField(verbose_name='my spec')
 
 
-class CoerceVersionModel(models.Model):
-    version = semver_fields.VersionField(verbose_name='my version', coerce=True)
-    partial = semver_fields.VersionField(verbose_name='partial version', coerce=True, partial=True)
+    class PartialVersionModel(models.Model):
+        partial = semver_fields.VersionField(partial=True, verbose_name='partial version')
+        optional = semver_fields.VersionField(verbose_name='optional version', blank=True, null=True)
+        optional_spec = semver_fields.SpecField(verbose_name='optional spec', blank=True, null=True)
+
+
+    class CoerceVersionModel(models.Model):
+        version = semver_fields.VersionField(verbose_name='my version', coerce=True)
+        partial = semver_fields.VersionField(verbose_name='partial version', coerce=True, partial=True)
