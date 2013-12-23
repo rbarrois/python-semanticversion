@@ -2,6 +2,14 @@ ChangeLog
 =========
 
 
+2.2.2 (2013-12-23)
+------------------
+
+*Bugfix:*
+
+    * `#5 <https://github.com/rbarrois/python-semanticversion/issues/5>`_: Fix packaging (broken
+      symlinks, old-style distutils, etc.)
+
 2.2.1 (2013-10-29)
 ------------------
 
