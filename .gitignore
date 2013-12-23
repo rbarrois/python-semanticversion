@@ -1,8 +1,14 @@
-*.pyc
+# Temporary files
 .*.swp
+*.pyc
+*.pyo
+
+# Build-related files
+docs/_build/
 .coverage
-htmlcov/
-tests/db/
+*.egg-info
+*.egg
+build/
 dist/
-doc/_build/
+htmlcov/
 MANIFEST

@@ -21,7 +21,7 @@ coverage:
 	coverage html "--include=$(PACKAGE_DIR)/*.py,tests/*.py"
 
 doc:
-	$(MAKE) -C doc html
+	$(MAKE) -C docs html
 
 
 .PHONY: all default clean coverage doc test

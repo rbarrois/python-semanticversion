@@ -51,7 +51,7 @@ root_dir = os.path.abspath(os.path.dirname(__file__))
 def get_version():
     import re
     version_re = re.compile(r"^__version__ = '([\w_.-]+)'$")
-    with open(os.path.join(root_dir, os.pardir, 'src', 'semantic_version', '__init__.py')) as f:
+    with open(os.path.join(root_dir, os.pardir, 'semantic_version', '__init__.py')) as f:
         for line in f:
             match = version_re.match(line[:-1])
             if match:
