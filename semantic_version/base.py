@@ -361,17 +361,13 @@ class SpecItem(object):
     KIND_GTE = '>='
     KIND_GT = '>'
     KIND_NEQ = '!='
+    # this kind is slightly different, because it isn't followed by a version
+    KIND_ANY = '*'
 
-    STRICT_KINDS = (
-        KIND_LT,
-        KIND_LTE,
-        KIND_EQUAL,
-        KIND_GTE,
-        KIND_GT,
-        KIND_NEQ,
-    )
+    MATCH_EQUAL = re.compile('^={0,2}$')
 
-    re_spec = re.compile(r'^(<|<=|==|>=|>|!=)(\d.*)$')
+    re_any = re.compile(r'^(\*)$')
+    re_spec = re.compile(r'^(<|<=|={0,2}|>=|>|!=)(\d.*)$')
 
     def __init__(self, requirement_string):
         kind, spec = self.parse(requirement_string)
@@ -382,13 +378,17 @@ class SpecItem(object):
     def parse(cls, requirement_string):
         if not requirement_string:
             raise ValueError("Invalid empty requirement specification: %r" % requirement_string)
+        
+        match = cls.re_any.match(requirement_string)
+        if match:
+            kind, version = match.groups() + (None,)
+        else:
+            match = cls.re_spec.match(requirement_string)
+            if not match:
+                raise ValueError("Invalid requirement specification: %r" % requirement_string)
+            kind, version = match.groups()
 
-        match = cls.re_spec.match(requirement_string)
-        if not match:
-            raise ValueError("Invalid requirement specification: %r" % requirement_string)
-
-        kind, version = match.groups()
-        spec = Version(version, partial=True)
+        spec = Version(version, partial=True) if version else None
         return (kind, spec)
 
     def match(self, version):
@@ -396,7 +396,7 @@ class SpecItem(object):
             return version < self.spec
         elif self.kind == self.KIND_LTE:
             return version <= self.spec
-        elif self.kind == self.KIND_EQUAL:
+        elif self.MATCH_EQUAL.match(self.kind):
             return version == self.spec
         elif self.kind == self.KIND_GTE:
             return version >= self.spec
@@ -404,11 +404,13 @@ class SpecItem(object):
             return version > self.spec
         elif self.kind == self.KIND_NEQ:
             return version != self.spec
+        elif self.kind == self.KIND_ANY:
+            return True
         else:  # pragma: no cover
             raise ValueError('Unexpected match kind: %r' % self.kind)
 
     def __str__(self):
-        return '%s%s' % (self.kind, self.spec)
+        return '%s%s' % (self.kind, self.spec or '')
 
     def __repr__(self):
         return '<SpecItem: %s %r>' % (self.kind, self.spec)
