@@ -7,7 +7,7 @@ python-semanticversion
 ======================
 
 This small python library provides a few tools to handle `SemVer`_ in Python.
-It follows strictly the 2.0.0-rc1 version of the SemVer scheme.
+It follows strictly the 2.0.0 version of the SemVer scheme.
 
 .. image:: https://secure.travis-ci.org/rbarrois/python-semanticversion.png?branch=master
     :target: http://travis-ci.org/rbarrois/python-semanticversion/

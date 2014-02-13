@@ -16,6 +16,12 @@ def _to_int(value):
     except ValueError:
         return value, False
 
+def _has_leading_zero(value):
+    return (value
+            and value[0] == '0'
+            and value.isdigit()
+            and value != '0')
+
 
 def identifier_cmp(a, b):
     """Compare two identifier (for pre-release/build components)."""
@@ -176,6 +182,13 @@ class Version(object):
 
         major, minor, patch, prerelease, build = match.groups()
 
+        if _has_leading_zero(major):
+            raise ValueError("Invalid leading zero in major: %r" % version_string)
+        if _has_leading_zero(minor):
+            raise ValueError("Invalid leading zero in minor: %r" % version_string)
+        if _has_leading_zero(patch):
+            raise ValueError("Invalid leading zero in patch: %r" % version_string)
+
         major = int(major)
         minor = cls._coerce(minor, partial)
         patch = cls._coerce(patch, partial)
@@ -190,6 +203,7 @@ class Version(object):
             prerelease = ()
         else:
             prerelease = tuple(prerelease.split('.'))
+            cls._validate_identifiers(prerelease, allow_leading_zeroes=False)
 
         if build is None:
             if partial:
@@ -200,8 +214,18 @@ class Version(object):
             build = ()
         else:
             build = tuple(build.split('.'))
+            cls._validate_identifiers(build, allow_leading_zeroes=True)
 
         return (major, minor, patch, prerelease, build)
+
+    @classmethod
+    def _validate_identifiers(cls, identifiers, allow_leading_zeroes=False):
+        for item in identifiers:
+            if not item:
+                raise ValueError("Invalid empty identifier %r in %r"
+                        % (item, '.'.join(identifiers)))
+            if item[0] == '0' and item.isdigit() and item != '0' and not allow_leading_zeroes:
+                raise ValueError("Invalid leading zero in identifier %r" % item)
 
     def __iter__(self):
         return iter((self.major, self.minor, self.patch, self.prerelease, self.build))
