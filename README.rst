@@ -261,17 +261,6 @@ store :class:`Version` or :class:`Spec` objects.
 More documentation is available in the :doc:`django` section.
 
 
-Contents
-========
-
-.. toctree::
-   :maxdepth: 2
-
-   reference
-   django
-   changelog
-
-
 Contributing
 ============
 
@@ -289,6 +278,19 @@ When submitting patches or pull requests, you should respect the following rules
 - The test coverage for a new feature must be 100%
 - New features and methods should be documented in the :doc:`reference` section
   and included in the :doc:`changelog`
+- Include your name in the :ref:`contributors` section
+
+
+Contents
+========
+
+.. toctree::
+   :maxdepth: 2
+
+   reference
+   django
+   changelog
+   credits
 
 
 .. _SemVer: http://semver.org/
