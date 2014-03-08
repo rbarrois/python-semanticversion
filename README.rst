@@ -280,6 +280,11 @@ When submitting patches or pull requests, you should respect the following rules
   and included in the :doc:`changelog`
 - Include your name in the :ref:`contributors` section
 
+.. note:: All files should contain the following header::
+
+          # -*- encoding: utf-8 -*-
+          # Copyright (c) 2012-2014 The python-semanticversion project
+
 
 Contents
 ========
