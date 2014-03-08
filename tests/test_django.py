@@ -18,18 +18,6 @@ except ImportError:  # pragma: no cover
     django_loaded = False
 
 if django_loaded:  # pragma: no cover
-    if not settings.configured:
-        settings.configure(
-            DATABASES={
-                'default': {
-                    'ENGINE': 'django.db.backends.sqlite3',
-                    'NAME': 'tests/db/test.sqlite',
-                }
-            },
-            INSTALLED_APPS=[
-                'tests.django_test_app',
-            ]
-        )
     from .django_test_app import models
     from django.core import serializers
 
