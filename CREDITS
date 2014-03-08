@@ -5,7 +5,7 @@ Credits
 Maintainers
 -----------
 
-The ``python-semantic_version`` project is operated and maintained by:
+The ``python-semanticversion`` project is operated and maintained by:
 
 * Raphaël Barrois <raphael.barrois+semver@polytechnique.org> (https://github.com/rbarrois)
 
@@ -31,12 +31,12 @@ add its name to the list in the :ref:`contributors` section, thereby "signing" t
 following contributor license agreement:
 
 They accept and agree to the following terms for their present end future contributions
-submitted to the ``python-semantic_version`` project:
+submitted to the ``python-semanticversion`` project:
 
 * They represent that they are legally entitled to grant this license, and that their
   contributions are their original creation
 
-* They grant the ``python-semantic_version`` project a perpetual, worldwide, non-exclusive,
+* They grant the ``python-semanticversion`` project a perpetual, worldwide, non-exclusive,
   no-charge, royalty-free, irrevocable copyright license to reproduce,
   prepare derivative works of, publicly display, sublicense and distribute their contributions
   and such derivative works.
