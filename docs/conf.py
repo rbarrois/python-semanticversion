@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'python-semanticversion'
-copyright = u'2012-2013, Raphaël Barrois'
+copyright = u'2012-2014, The python-semanticversion project'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
