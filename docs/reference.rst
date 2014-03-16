@@ -270,6 +270,10 @@ This means that::
     >>> Version('1.1.1-rc1+build4') in Spec('<=1.1.1-rc1+build2')
     False
 
+
+.. note:: python-semanticversion also accepts ``"*"`` as a version spec,
+          that matches all (valid) version strings.
+
 In order to force matches to *strictly* compare version numbers, these additional
 rules apply:
 

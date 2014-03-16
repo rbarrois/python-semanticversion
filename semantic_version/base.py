@@ -379,21 +379,13 @@ class Version(object):
 class SpecItem(object):
     """A requirement specification."""
 
+    KIND_ANY = '*'
     KIND_LT = '<'
     KIND_LTE = '<='
     KIND_EQUAL = '=='
     KIND_GTE = '>='
     KIND_GT = '>'
     KIND_NEQ = '!='
-
-    STRICT_KINDS = (
-        KIND_LT,
-        KIND_LTE,
-        KIND_EQUAL,
-        KIND_GTE,
-        KIND_GT,
-        KIND_NEQ,
-    )
 
     re_spec = re.compile(r'^(<|<=|==|>=|>|!=)(\d.*)$')
 
@@ -407,6 +399,10 @@ class SpecItem(object):
         if not requirement_string:
             raise ValueError("Invalid empty requirement specification: %r" % requirement_string)
 
+        # Special case: the 'any' version spec.
+        if requirement_string == '*':
+            return (cls.KIND_ANY, '')
+
         match = cls.re_spec.match(requirement_string)
         if not match:
             raise ValueError("Invalid requirement specification: %r" % requirement_string)
@@ -416,7 +412,9 @@ class SpecItem(object):
         return (kind, spec)
 
     def match(self, version):
-        if self.kind == self.KIND_LT:
+        if self.kind == self.KIND_ANY:
+            return True
+        elif self.kind == self.KIND_LT:
             return version < self.spec
         elif self.kind == self.KIND_LTE:
             return version <= self.spec
