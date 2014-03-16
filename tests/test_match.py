@@ -18,6 +18,9 @@ class MatchTestCase(unittest.TestCase):
     ]
 
     valid_specs = [
+        '*',
+        '0.1.0',
+        '=0.1.0',
         '==0.1.0',
         '<=0.1.1',
         '<0.1',
