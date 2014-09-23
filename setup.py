@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2012-2014 The python-semanticversion project
 
+
+import codecs
 import os
 import re
 import sys
@@ -14,8 +16,8 @@ root_dir = os.path.abspath(os.path.dirname(__file__))
 def get_version(package_name):
     version_re = re.compile(r"^__version__ = [\"']([\w_.-]+)[\"']$")
     package_components = package_name.split('.')
-    path_components = package_components + ['__init__.py']
-    with open(os.path.join(root_dir, *path_components)) as f:
+    init_path = os.path.join(root_dir, *(package_components + ['__init__.py']))
+    with codecs.open(init_path, 'r', 'utf-8') as f:
         for line in f:
             match = version_re.match(line[:-1])
             if match:
