@@ -242,6 +242,34 @@ class VersionTestCase(unittest.TestCase):
         self.assertTrue(v != '0.1.0')
         self.assertFalse(v == '0.1.0')
 
+    def test_bump_versions(self):
+        # We Test each property explicitly as the == comparator for versions
+        # does not distinguish between prerelease or builds for equality.
+
+        v = base.Version('1.0.0-pre+build')
+        v = v.next_major()
+        self.assertEqual(v.major, 2)
+        self.assertEqual(v.minor, 0)
+        self.assertEqual(v.patch, 0)
+        self.assertEqual(v.prerelease, ())
+        self.assertEqual(v.build, ())
+
+        v = base.Version('1.0.1-pre+build')
+        v = v.next_minor()
+        self.assertEqual(v.major, 1)
+        self.assertEqual(v.minor, 1)
+        self.assertEqual(v.patch, 0)
+        self.assertEqual(v.prerelease, ())
+        self.assertEqual(v.build, ())
+
+        v = base.Version('1.1.0-pre+build')
+        v = v.next_patch()
+        self.assertEqual(v.major, 1)
+        self.assertEqual(v.minor, 1)
+        self.assertEqual(v.patch, 1)
+        self.assertEqual(v.prerelease, ())
+        self.assertEqual(v.build, ())
+
 
 class SpecItemTestCase(unittest.TestCase):
     components = {

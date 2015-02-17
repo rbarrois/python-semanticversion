@@ -112,6 +112,22 @@ Obviously, :class:`Versions <Version>` can be compared:
     >>> semantic_version.Version('0.1.1') <= semantic_version.Version('0.1.1-alpha')
     False
 
+You can also get a new version that represents a bump in one of the version levels:
+
+.. code-block:: pycon
+
+    >>> v = semantic_version.Version('0.1.1-pre+build')
+    >>> new_v = v.next_major()
+    >>> str(new_v)
+    '1.0.0'
+    >>> v = semantic_version.Version('1.1.1-pre+build')
+    >>> new_v = v.next_minor()
+    >>> str(new_v)
+    '1.1.0'
+    >>> v = semantic_version.Version('1.1.1-pre+build')
+    >>> new_v = v.next_patch()
+    >>> str(new_v)
+    '1.1.2'
 
 It is also possible to check whether a given string is a proper semantic version string:
 
