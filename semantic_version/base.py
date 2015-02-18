@@ -88,6 +88,17 @@ class Version(object):
             return value
         return int(value)
 
+    def next_major(self):
+        return Version('.'.join(str(x) for x in [self.major + 1, 0, 0]))
+
+    def next_minor(self):
+        return Version(
+            '.'.join(str(x) for x in [self.major, self.minor + 1, 0]))
+
+    def next_patch(self):
+        return Version(
+            '.'.join(str(x) for x in [self.major, self.minor, self.patch + 1]))
+
     @classmethod
     def coerce(cls, version_string, partial=False):
         """Coerce an arbitrary version string into a semver-compatible one.
