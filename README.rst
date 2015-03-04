@@ -27,11 +27,11 @@ Links
 Getting started
 ===============
 
-Intall the package from `PyPI`_, using pip:
+Install the package from `PyPI`_, using pip:
 
 .. code-block:: sh
 
-    pip install semantic_version
+    pip install semantic-version
 
 Or from GitHub:
 
