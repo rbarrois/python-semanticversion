@@ -27,7 +27,7 @@ def get_version(package_name):
 
 def clean_readme(fname):
     with codecs.open(fname, 'r', 'utf-8') as f:
-        return '\n'.join(
+        return ''.join(
             re.sub(r':\w+:`([^`]+?)( <[^<>]+>)?`', r'``\1``', line)
             for line in f
         )
