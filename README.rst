@@ -1,8 +1,3 @@
-.. python-semanticversion documentation master file, created by
-   sphinx-quickstart on Wed May 16 10:41:34 2012.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 python-semanticversion
 ======================
 
@@ -27,7 +22,7 @@ Links
 Getting started
 ===============
 
-Intall the package from `PyPI`_, using pip:
+Install the package from `PyPI`_, using pip:
 
 .. code-block:: sh
 

@@ -25,6 +25,14 @@ def get_version(package_name):
     return '0.1.0'
 
 
+def clean_readme(fname):
+    with codecs.open(fname, 'r', 'utf-8') as f:
+        return '\n'.join(
+            re.sub(r':\w+:`([^`]+?)( <[^<>]+>)?`', r'``\1``', line)
+            for line in f
+        )
+
+
 PACKAGE = 'semantic_version'
 
 
@@ -34,6 +42,7 @@ setup(
     author="Raphaël Barrois",
     author_email="raphael.barrois+semver@polytechnique.org",
     description="A library implementing the 'SemVer' scheme.",
+    long_description=clean_readme('README.rst'),
     license='BSD',
     keywords=['semantic version', 'versioning', 'version'],
     url='https://github.com/rbarrois/python-semanticversion',
