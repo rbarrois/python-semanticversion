@@ -1,5 +1,7 @@
-include README.rst
+include CREDITS
 include ChangeLog
+include LICENSE
+include README.rst
 include docs/Makefile
 recursive-include docs *.py *.rst
 include docs/_static/.keep_dir
