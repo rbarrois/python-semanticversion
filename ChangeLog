@@ -2,6 +2,13 @@ ChangeLog
 =========
 
 
+2.4.1 (2015-04-01)
+------------------
+
+*Bugfix:*
+
+    * Fix packaging metadata (advertise Python 3.4 support)
+
 2.4.0 (2015-04-01)
 ------------------
 
