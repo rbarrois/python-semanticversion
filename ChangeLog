@@ -2,6 +2,14 @@ ChangeLog
 =========
 
 
+2.4.0 (2015-04-01)
+------------------
+
+*New:*
+
+    * `#16 <https://github.com/rbarrois/python-semanticversion/issues/16>`_: Add an API for bumping versions,
+      by @RickEyre.
+
 2.3.1 (2014-09-24)
 ------------------
 
