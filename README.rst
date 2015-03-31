@@ -7,7 +7,7 @@ It follows strictly the 2.0.0 version of the SemVer scheme.
 .. image:: https://secure.travis-ci.org/rbarrois/python-semanticversion.png?branch=master
     :target: http://travis-ci.org/rbarrois/python-semanticversion/
 
-semantic_version supports Python 2.6, 2.7, 3.2, 3.3, and is distributed under the two-clause BSD licence.
+semantic_version supports Python 2.6, 2.7, 3.2, 3.3, 3.4; and is distributed under the two-clause BSD licence.
 
 Links
 -----
