@@ -179,11 +179,10 @@ class SouthTestCase(unittest.TestCase):
 
 if django_loaded:
     from django.test import TestCase
-    try:
-        from django.test.runner import DiscoverRunner as TestRunner
-    except ImportError:
-        # django < 1.6
+    if django.VERSION[:2] < (1, 6):
         from django.test.simple import DjangoTestSuiteRunner as TestRunner
+    else:
+        from django.test.runner import DiscoverRunner as TestRunner
 
     class DbInteractingTestCase(TestCase):
 

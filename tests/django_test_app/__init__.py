@@ -21,7 +21,8 @@ if django_loaded:  # pragma: no cover
             },
             INSTALLED_APPS=[
                 'tests.django_test_app',
-            ]
+            ],
+            MIDDLEWARE_CLASSES=[],
         )
     # https://docs.djangoproject.com/en/dev/releases/1.7/#app-loading-changes
     if django.VERSION >= (1, 7):
