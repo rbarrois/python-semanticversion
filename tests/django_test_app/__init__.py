@@ -3,6 +3,7 @@
 # This code is distributed under the two-clause BSD License.
 
 try:  # pragma: no cover
+    import django
     from django.conf import settings
     django_loaded = True
 except ImportError:  # pragma: no cover
@@ -22,3 +23,7 @@ if django_loaded:  # pragma: no cover
                 'tests.django_test_app',
             ]
         )
+    # https://docs.djangoproject.com/en/dev/releases/1.7/#app-loading-changes
+    if django.VERSION >= (1, 7):
+        from django.apps import apps
+        apps.populate(settings.INSTALLED_APPS)

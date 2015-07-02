@@ -1,4 +1,9 @@
 language: python
+env:
+  - DJANGO_VERSION=1.4.20
+  - DJANGO_VERSION=1.6.11
+  - DJANGO_VERSION=1.7.8
+  - DJANGO_VERSION=1.8.2
 python:
   - "2.6"
   - "2.7"
@@ -6,7 +11,10 @@ python:
   - "3.3"
   - "3.4"
 script: "python setup.py test"
-install: "if [[ $TRAVIS_PYTHON_VERSION = 2.6 ]]; then pip install unittest2 --use-mirrors; fi"
+install: 
+  - "if [[ $TRAVIS_PYTHON_VERSION = 2.6 ]]; then pip install unittest2 --use-mirrors; fi"
+  - "if [[ $TRAVIS_PYTHON_VERSION -ne 2.6 ]]; then pip install Django==$DJANGO_VERSION --use-mirrors; fi"
+  - "pip install South --use-mirrors"
 notifications:
   email: false
   irc: "irc.freenode.org#xelnext"

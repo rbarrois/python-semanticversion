@@ -12,21 +12,23 @@ except ImportError:  # pragma: no cover
 import semantic_version
 
 try:  # pragma: no cover
+    import django
     from django.conf import settings
+    from .django_test_app import models
+    from django.core import serializers
     django_loaded = True
 except ImportError:  # pragma: no cover
     django_loaded = False
 
-if django_loaded:  # pragma: no cover
-    from .django_test_app import models
-    from django.core import serializers
-
-try:  # pragma: no cover
-    import south
-    import south.creator.freezer
-    import south.modelsinspector
-except ImportError:  # pragma: no cover
-    south = None
+south = None
+# south has reached end of life, and it does not work with django 1.7 and newer
+if django_loaded and django.VERSION < (1, 7):  # pragma: no cover
+    try:
+        import south
+        import south.creator.freezer
+        import south.modelsinspector
+    except ImportError:
+        pass
 
 
 @unittest.skipIf(not django_loaded, "Django not installed")
@@ -95,8 +97,10 @@ class DjangoFieldTestCase(unittest.TestCase):
         data = serializers.serialize('json', [o1, o2])
 
         obj1, obj2 = serializers.deserialize('json', data)
-        self.assertEqual(o1, obj1.object)
-        self.assertEqual(o2, obj2.object)
+        self.assertEqual(o1.version, obj1.object.version)
+        self.assertEqual(o1.spec, obj1.object.spec)
+        self.assertEqual(o2.version, obj2.object.version)
+        self.assertEqual(o2.spec, obj2.object.spec)
 
     def test_serialization_partial(self):
         o1 = models.PartialVersionModel(partial='0.1.1', optional='0.2.4-rc42',
@@ -107,8 +111,10 @@ class DjangoFieldTestCase(unittest.TestCase):
         data = serializers.serialize('json', [o1, o2])
 
         obj1, obj2 = serializers.deserialize('json', data)
-        self.assertEqual(o1, obj1.object)
-        self.assertEqual(o2, obj2.object)
+        self.assertEqual(o1.partial, obj1.object.partial)
+        self.assertEqual(o1.optional, obj1.object.optional)
+        self.assertEqual(o2.partial, obj2.object.partial)
+        self.assertEqual(o2.optional, obj2.object.optional)
 
 
 @unittest.skipIf(not django_loaded or south is None, "Couldn't import south and django")
@@ -173,17 +179,21 @@ class SouthTestCase(unittest.TestCase):
 
 if django_loaded:
     from django.test import TestCase
-    from django.test.simple import DjangoTestSuiteRunner
+    try:
+        from django.test.runner import DiscoverRunner as TestRunner
+    except ImportError:
+        # django < 1.6
+        from django.test.simple import DjangoTestSuiteRunner as TestRunner
 
     class DbInteractingTestCase(TestCase):
 
         @classmethod
         def setUpClass(cls):
-            cls.old_state = DjangoTestSuiteRunner().setup_databases()
+            cls.old_state = TestRunner().setup_databases()
 
         @classmethod
         def tearDownClass(cls):
-            DjangoTestSuiteRunner().teardown_databases(cls.old_state)
+            TestRunner().teardown_databases(cls.old_state)
 
         def test_db_interaction(self):
             o1 = models.VersionModel(version='0.1.1', spec='<0.2.4-rc42')
