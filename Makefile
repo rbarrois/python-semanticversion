@@ -23,7 +23,7 @@ install-deps: auto_dev_requirements_django$(DJANGO_VERSION).txt
 	pip freeze
 
 auto_dev_requirements_%.txt: dev_requirements_%.txt dev_requirements.txt requirements.txt
-	grep --no-filename "^[^-]" $^ | grep -v "^Django" > $@
+	grep --no-filename "^[^#-]" $^ | grep -v "^Django" > $@
 	echo "Django>=$(DJANGO_VERSION),<$(NEXT_DJANGO_VERSION)" >> $@
 
 clean:
@@ -45,6 +45,9 @@ coverage: install-deps
 	$(COVERAGE) run "--include=$(PACKAGE)/*.py,$(TESTS_DIR)/*.py" --branch setup.py test
 	$(COVERAGE) report "--include=$(PACKAGE)/*.py,$(TESTS_DIR)/*.py"
 	$(COVERAGE) html "--include=$(PACKAGE)/*.py,$(TESTS_DIR)/*.py"
+
+coverage-xml-report: coverage
+	$(COVERAGE) xml "--include=$(PACKAGE)/*.py,$(TESTS_DIR)/*.py"
 
 doc:
 	$(MAKE) -C $(DOC_DIR) html
