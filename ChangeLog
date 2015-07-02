@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+2.4.2 (2015-07-02)
+------------------
+
+*Bugfix:*
+
+    * Fix tests for Django 1.7+, thanks to @mhrivnak.
 
 2.4.1 (2015-04-01)
 ------------------
