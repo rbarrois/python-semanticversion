@@ -1,7 +1,6 @@
 # Temporary files
 .*.swp
-*.pyc
-*.pyo
+*.py[co]
 
 # Build-related files
 docs/_build/
@@ -13,3 +12,6 @@ build/
 dist/
 htmlcov/
 MANIFEST
+
+# virtualenv's
+env*/
