@@ -1,6 +1,13 @@
 ChangeLog
 =========
 
+2.4.3 (unreleased)
+------------------
+
+*Bugfix:*
+
+    * Fix handling of bumping pre-release versions, thanks to @minchinweb.
+
 2.4.2 (2015-07-02)
 ------------------
 
