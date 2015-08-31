@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2012-2014 The python-semanticversion project
+# Copyright (c) 2012-2015 The python-semanticversion project
 # This code is distributed under the two-clause BSD License.
 
 from __future__ import unicode_literals
@@ -89,15 +89,24 @@ class Version(object):
         return int(value)
 
     def next_major(self):
-        return Version('.'.join(str(x) for x in [self.major + 1, 0, 0]))
+        if self.prerelease and self.minor is 0 and self.patch is 0:
+            return Version('.'.join(str(x) for x in [self.major, self.minor, self.patch]))
+        else:
+            return Version('.'.join(str(x) for x in [self.major + 1, 0, 0]))
 
     def next_minor(self):
-        return Version(
-            '.'.join(str(x) for x in [self.major, self.minor + 1, 0]))
+        if self.prerelease and self.patch is 0:
+            return Version('.'.join(str(x) for x in [self.major, self.minor, self.patch]))
+        else:
+            return Version(
+                '.'.join(str(x) for x in [self.major, self.minor + 1, 0]))
 
     def next_patch(self):
-        return Version(
-            '.'.join(str(x) for x in [self.major, self.minor, self.patch + 1]))
+        if self.prerelease:
+            return Version('.'.join(str(x) for x in [self.major, self.minor, self.patch]))
+        else:
+            return Version(
+                '.'.join(str(x) for x in [self.major, self.minor, self.patch + 1]))
 
     @classmethod
     def coerce(cls, version_string, partial=False):
