@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# Copyright (c) 2012-2014 The python-semanticversion project
+# Copyright (c) 2012-2015 The python-semanticversion project
 # This code is distributed under the two-clause BSD License.
 
 """Test conformance to the specs."""
@@ -159,5 +159,3 @@ class FormatTests(unittest.TestCase):
 
 class PrecedenceTestCase(unittest.TestCase):
     pass
-
-

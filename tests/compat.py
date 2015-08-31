@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2012-2014 The python-semanticversion project
+# Copyright (c) 2012-2015 The python-semanticversion project
 # This code is distributed under the two-clause BSD License.
 
 import sys
@@ -11,4 +11,3 @@ try:  # pragma: no cover
     import unittest2 as unittest
 except ImportError:  # pragma: no cover
     import unittest
-
