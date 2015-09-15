@@ -247,19 +247,18 @@ definition or (for the empty pre-release number) if a single dash is appended
     False
 
 
-Including build identifiers in specifications
-"""""""""""""""""""""""""""""""""""""""""""""
+Including build metadata in specifications
+""""""""""""""""""""""""""""""""""""""""""
 
-The same rule applies for the build identifier: comparisons will include it only
-if it was included in the :class:`Spec` definition, or - for the unnumbered build
-version - if a single + is appended to the definition(``1.0.0+``, ``1.0.0-alpha+``):
+Build metadata has no ordering; thus, the only meaningful comparison including
+build metadata is equality.
 
 
 .. code-block:: pycon
 
-    >>> Version('1.0.0+build2') in Spec('<=1.0.0')   # Build identifier ignored
+    >>> Version('1.0.0+build2') in Spec('<=1.0.0')   # Build metadata ignored
     True
-    >>> Version('1.0.0+build2') in Spec('<=1.0.0+')  # Include build in checks
+    >>> Version('1.0.0+build2') in Spec('==1.0.0+build2')  # Include build in checks
     False
 
 

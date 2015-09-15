@@ -290,20 +290,14 @@ class Version(object):
                 return 0
 
         def build_cmp(a, b):
-            """Compare build components.
+            """Compare build metadata.
 
-            Special rule: a version without build component has lower
-            precedence than one with a build component.
+            Special rule: there is no ordering on build metadata.
             """
-            if a and b:
-                return identifier_list_cmp(a, b)
-            elif a:
-                # Versions with build field have higher precedence
-                return 1
-            elif b:
-                return -1
-            else:
+            if a == b:
                 return 0
+            else:
+                return NotImplemented
 
         def make_optional(orig_cmp_fun):
             """Convert a cmp-like function to consider 'None == *'."""
@@ -332,10 +326,7 @@ class Version(object):
                 build_cmp,
             ]
 
-    def __cmp__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-
+    def __compare(self, other):
         field_pairs = zip(self, other)
         comparison_functions = self._comparison_functions(partial=self.partial or other.partial)
         comparisons = zip(comparison_functions, self, other)
@@ -347,44 +338,48 @@ class Version(object):
 
         return 0
 
-    def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-
-        return self.__cmp__(other) == 0
-
     def __hash__(self):
         return hash((self.major, self.minor, self.patch, self.prerelease, self.build))
 
-    def __ne__(self, other):
+    def __cmp__(self, other):
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self.__compare(other)
+
+    def __compare_helper(self, other, condition, notimpl_target):
+        """Helper for comparison.
+
+        Allows the caller to provide:
+        - The condition
+        - The return value if the comparison is meaningless (ie versions with
+            build metadata).
+        """
         if not isinstance(other, self.__class__):
             return NotImplemented
 
-        return self.__cmp__(other) != 0
+        cmp_res = self.__cmp__(other)
+        if cmp_res is NotImplemented:
+            return notimpl_target
+
+        return condition(cmp_res)
+
+    def __eq__(self, other):
+        return self.__compare_helper(other, lambda x: x == 0, notimpl_target=False)
+
+    def __ne__(self, other):
+        return self.__compare_helper(other, lambda x: x != 0, notimpl_target=True)
 
     def __lt__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-
-        return self.__cmp__(other) < 0
+        return self.__compare_helper(other, lambda x: x < 0, notimpl_target=False)
 
     def __le__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-
-        return self.__cmp__(other) <= 0
+        return self.__compare_helper(other, lambda x: x <= 0, notimpl_target=False)
 
     def __gt__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-
-        return self.__cmp__(other) > 0
+        return self.__compare_helper(other, lambda x: x > 0, notimpl_target=False)
 
     def __ge__(self, other):
-        if not isinstance(other, self.__class__):
-            return NotImplemented
-
-        return self.__cmp__(other) >= 0
+        return self.__compare_helper(other, lambda x: x >= 0, notimpl_target=False)
 
 
 class SpecItem(object):
@@ -420,6 +415,10 @@ class SpecItem(object):
 
         kind, version = match.groups()
         spec = Version(version, partial=True)
+        if spec.build is not None and kind not in (cls.KIND_EQUAL, cls.KIND_NEQ):
+            raise ValueError(
+                    "Invalid requirement specification %r: build numbers have no ordering."
+                    % requirement_string)
         return (kind, spec)
 
     def match(self, version):

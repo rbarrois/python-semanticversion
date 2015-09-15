@@ -15,6 +15,7 @@ class MatchTestCase(unittest.TestCase):
         '<=0.1.4a',
         '>0.1.1.1',
         '~0.1.2-rc23,1',
+        '<0.1.2-rc1.3-14.15+build.2012-01-01.11h34',
     ]
 
     valid_specs = [
@@ -25,7 +26,7 @@ class MatchTestCase(unittest.TestCase):
         '>0.1.2-rc1',
         '>=0.1.2-rc1.3.4',
         '==0.1.2+build42-12.2012-01-01.12h23',
-        '<0.1.2-rc1.3-14.15+build.2012-01-01.11h34',
+        '!=0.1.2-rc1.3-14.15+build.2012-01-01.11h34',
     ]
 
     matches = {
@@ -53,11 +54,19 @@ class MatchTestCase(unittest.TestCase):
             '0.1.2',
             '0.1.2+build4',
         ],
-        '<0.1.2+': [
+        '!=0.1.2+': [
+            '0.1.2+1',
+            '0.1.2-rc1',
+        ],
+        '!=0.1.2-': [
             '0.1.1',
             '0.1.2-rc1',
-            '0.1.2-rc1.3.4',
-            '0.1.2-rc1+build4.5',
+        ],
+        '!=0.1.2+345': [
+            '0.1.1',
+            '0.1.2-rc1+345',
+            '0.1.2+346',
+            '0.2.3+345',
         ],
         '>=0.1.1': [
             '0.1.1',
@@ -72,12 +81,6 @@ class MatchTestCase(unittest.TestCase):
             '0.2.0',
             '1.0.0',
         ],
-        '>0.1.1+': [
-            '0.1.1+b2',
-            '0.1.2-rc1',
-            '1.1.1',
-            '2.0.4',
-        ],
         '<0.1.1-': [
             '0.1.1-alpha',
             '0.1.1-rc4',
@@ -87,7 +90,8 @@ class MatchTestCase(unittest.TestCase):
 
     def test_invalid(self):
         for invalid in self.invalid_specs:
-            self.assertRaises(ValueError, semantic_version.Spec, invalid)
+            with self.assertRaises(ValueError, msg="Spec(%r) should be invalid" % invalid):
+                semantic_version.Spec(invalid)
 
     def test_simple(self):
         for valid in self.valid_specs:
@@ -122,11 +126,9 @@ class MatchTestCase(unittest.TestCase):
         self.assertFalse(version in strict_spec, "%r should not be in %r" % (version, strict_spec))
 
     def test_build_check(self):
-        strict_spec = semantic_version.Spec('<=0.1.1-rc1+')
-        lax_spec = semantic_version.Spec('<=0.1.1-rc1')
+        spec = semantic_version.Spec('<=0.1.1-rc1')
         version = semantic_version.Version('0.1.1-rc1+4.2')
-        self.assertTrue(version in lax_spec, "%r should be in %r" % (version, lax_spec))
-        self.assertFalse(version in strict_spec, "%r should not be in %r" % (version, strict_spec))
+        self.assertTrue(version in spec, "%r should be in %r" % (version, spec))
 
 
 if __name__ == '__main__':  # pragma: no cover

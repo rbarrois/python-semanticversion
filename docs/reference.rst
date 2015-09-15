@@ -22,8 +22,12 @@ Module-level functions
     :param str v1: The first version to compare
     :param str v2: The second version to compare
     :raises: :exc:`ValueError`, if any version string is invalid
-    :rtype: ``int``, -1 / 0 / 1 as for a :func:`cmp` comparison
+    :rtype: ``int``, -1 / 0 / 1 as for a :func:`cmp` comparison;
+            ``NotImplemented`` if versions only differ by build metadata
 
+
+.. warning:: Since build metadata has no ordering,
+             ``compare(Version('0.1.1'), Version('0.1.1+3'))`` returns ``NotImplemented``
 
 
 .. function:: match(spec, version)
@@ -107,9 +111,9 @@ Representing a version (the Version class)
 
     .. attribute:: build
 
-        ``tuple`` of ``strings``, the build component.
+        ``tuple`` of ``strings``, the build metadata.
 
-        It contains the various dot-separated identifiers in the build component.
+        It contains the various dot-separated identifiers in the build metadata.
 
         May be ``None`` for a :attr:`partial` version number in a ``<major>``, ``<major>.<minor>``,
         ``<major>.<minor>.<patch>`` or ``<major>.<minor>.<patch>-<prerelease>`` format.
@@ -151,7 +155,7 @@ Representing a version (the Version class)
             For instance, ``Version('1.0', partial=True)`` means "any version beginning in ``1.0``".
 
             ``Version('1.0.1-alpha', partial=True)`` means "The ``1.0.1-alpha`` version or any
-            ulterior build of that same version": ``1.0.1-alpha+build3`` matches, ``1.0.1-alpha.2`` doesn't.
+            any release differing only in build metadata": ``1.0.1-alpha+build3`` matches, ``1.0.1-alpha.2`` doesn't.
 
         Examples::
 
@@ -246,7 +250,6 @@ The main issue with representing version specifications is that the usual syntax
 does not map well onto `SemVer`_ precedence rules:
 
 * A specification of ``<1.3.4`` is not expected to allow ``1.3.4-rc2``, but strict `SemVer`_ comparisons allow it ;
-* Converting the previous specification to ``<=1.3.3`` in order to avoid ``1.3.4``
   prereleases has the issue of excluding ``1.3.3+build3`` ;
 * It may be necessary to exclude either all variations on a patch-level release
   (``!=1.3.3``) or specifically one build-level release (``1.3.3-build.434``).
@@ -256,7 +259,7 @@ In order to have version specification behave naturally, the rules are the follo
 
 * If no pre-release number was included in the specification, pre-release numbers
   are ignored when deciding whether a version satisfies a specification.
-* If no build number was included in the specification, build numbers are ignored
+* If no build metadata was included in the specification, build metadata is ignored
   when deciding whether a version satisfies a specification.
 
 This means that::
@@ -267,7 +270,7 @@ This means that::
     True
     >>> Version('1.1.1-rc1+build4') in Spec('<=1.1.1-rc1')
     True
-    >>> Version('1.1.1-rc1+build4') in Spec('<=1.1.1-rc1+build2')
+    >>> Version('1.1.1-rc1+build4') in Spec('==1.1.1-rc1+build2')
     False
 
 
@@ -285,20 +288,31 @@ rules apply:
     >>> Version('1.1.1-rc1') in Spec('<1.1.1-')
     True
 
-* Setting a build separator without a build identifier (``>1.1.1+``) forces
-  satisfaction tests to include both prerelease and build identifiers::
+* Setting a build metadata separator without build metadata (``<=1.1.1+``)
+  forces matches "up to the build metadata"; use this to include/exclude a
+  release lacking build metadata while excluding/including all other builds
+  of that release
 
-    >>> Version('1.1.1+build2') in Spec('>1.1.1')
-    False
-    >>> Version('1.1.1+build2') in Spec('>1.1.1+')
+    >>> Version('1.1.1') in Spec('==1.1.1+')
     True
+    >>> Version('1.1.1+2') in Spec('==1.1.1+')
+    False
+
+
+.. warning:: As stated in the `SemVer`_ specification, the ordering of build metadata is *undefined*.
+             Thus, a :class:`Spec` string can only mention build metadata to include or exclude a specific version:
+
+             * ``==1.1.1+b1234`` includes this specific build
+             * ``!=1.1.1+b1234`` excludes it (but would match ``1.1.1+b1235``
+             * ``<1.1.1+b1`` is invalid
+
 
 .. class:: Spec(spec_string[, spec_string[, ...]])
 
     Stores a list of :class:`SpecItem` and matches any :class:`Version` against all
     contained :class:`specs <SpecItem>`.
 
-    It is build from a comma-separated list of version specifications::
+    It is built from a comma-separated list of version specifications::
 
         >>> Spec('>=1.0.0,<1.2.0,!=1.1.4')
         <Spec: (
@@ -427,16 +441,16 @@ rules apply:
 
         >>> SpecItem('>=0.1.1').match(Version('0.1.1-rc1'))  # pre-release satisfy conditions
         True
-        >>> Version('0.1.1+build2') in SpecItem('>=0.1.1')   # build version satisfy specifications
+        >>> Version('0.1.1+build2') in SpecItem('>=0.1.1')   # build metadata is ignored when checking for precedence
         True
         >>>
         >>> # Use the '-' marker to include the pre-release component in checks
         >>> SpecItem('>=0.1.1-').match(Version('0.1.1-rc1')
         False
-        >>>
-        >>> # Use the '+' marker to include the build identifier in checks
-        >>> SpecItem('<=0.1.1-alpha+').match(Version('0.1.1-alpha+build1'))
+        >>> # Use the '+' marker to include the build metadata in checks
+        >>> SpecItem('==0.1.1+').match(Version('0.1.1+b1234')
         False
+        >>>
 
 
     .. rubric:: Attributes

@@ -154,10 +154,3 @@ class FormatTests(unittest.TestCase):
         self.assertLess(Version('1.0.0-beta.2'), Version('1.0.0-beta.11'))
         self.assertLess(Version('1.0.0-beta.11'), Version('1.0.0-rc.1'))
         self.assertLess(Version('1.0.0-rc.1'), Version('1.0.0'))
-
-
-
-class PrecedenceTestCase(unittest.TestCase):
-    pass
-
-

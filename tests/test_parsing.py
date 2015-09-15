@@ -3,6 +3,7 @@
 # Copyright (c) 2012-2014 The python-semanticversion project
 # This code is distributed under the two-clause BSD License.
 
+import itertools
 import unittest
 
 import semantic_version
@@ -44,12 +45,8 @@ class ComparisonTestCase(unittest.TestCase):
         '1.0.0-beta.2',
         '1.0.0-beta.11',
         '1.0.0-rc.1',
-        '1.0.0-rc.1+build.1',
         '1.0.0',
-        '1.0.0+0.3.7',
         '1.3.7+build',
-        '1.3.7+build.2.b8f12d7',
-        '1.3.7+build.11.e0f985a',
     ]
 
     def test_comparisons(self):
@@ -67,6 +64,36 @@ class ComparisonTestCase(unittest.TestCase):
                 cmp_res = -1 if i < j else (1 if i > j else 0)
                 self.assertEqual(cmp_res, semantic_version.compare(first, second))
 
+    unordered = [
+        [
+            '1.0.0-rc.1',
+            '1.0.0-rc.1+build.1',
+        ],
+        [
+            '1.0.0',
+            '1.0.0+0.3.7',
+        ],
+        [
+            '1.3.7',
+            '1.3.7+build',
+            '1.3.7+build.2.b8f12d7',
+            '1.3.7+build.11.e0f985a',
+        ],
+    ]
+
+    def test_unordered(self):
+        for group in self.unordered:
+            for a, b in itertools.combinations(group, 2):
+                v1 = semantic_version.Version(a)
+                v2 = semantic_version.Version(b)
+                self.assertTrue(v1 == v1, "%r != %r" % (v1, v1))
+                self.assertFalse(v1 != v1, "%r != %r" % (v1, v1))
+                self.assertFalse(v1 == v2, "%r == %r" % (v1, v2))
+                self.assertTrue(v1 != v2, "%r !!= %r" % (v1, v2))
+                self.assertFalse(v1 < v2, "%r !< %r" % (v1, v2))
+                self.assertFalse(v1 <= v2, "%r !<= %r" % (v1, v2))
+                self.assertFalse(v2 > v1, "%r !> %r" % (v2, v1))
+                self.assertFalse(v2 >= v1, "%r !>= %r" % (v2, v1))
 
 if __name__ == '__main__':  # pragma: no cover
     unittest.main()
