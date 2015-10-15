@@ -392,8 +392,11 @@ class SpecItem(object):
     KIND_GTE = '>='
     KIND_GT = '>'
     KIND_NEQ = '!='
+    KIND_CARET = '^'
+    KIND_TILDE = '~'
 
-    re_spec = re.compile(r'^(<|<=|==|>=|>|!=)(\d.*)$')
+    caret = re.escape('^')
+    re_spec = re.compile(r'^(<|<=|==|>=|>|!=|{}|~)(\d.*)$'.format(caret))
 
     def __init__(self, requirement_string):
         kind, spec = self.parse(requirement_string)
@@ -436,8 +439,20 @@ class SpecItem(object):
             return version > self.spec
         elif self.kind == self.KIND_NEQ:
             return version != self.spec
+        elif self.kind == self.KIND_CARET:
+            return self.caretCompare(version)
+        elif self.kind == self.KIND_TILDE:
+            return self.tildeCompare(version)
         else:  # pragma: no cover
             raise ValueError('Unexpected match kind: %r' % self.kind)
+
+    def caretCompare(self, version):
+        max_version = version.next_major()
+        return version >= self.spec and version < max_version
+
+    def tildeCompare(self, version):
+        max_version = version.next_minor()
+        return version >= self.spec and version < max_version
 
     def __str__(self):
         return '%s%s' % (self.kind, self.spec)
