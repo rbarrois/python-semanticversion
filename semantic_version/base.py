@@ -395,8 +395,7 @@ class SpecItem(object):
     KIND_CARET = '^'
     KIND_TILDE = '~'
 
-    caret = re.escape('^')
-    re_spec = re.compile(r'^(<|<=|==|>=|>|!=|{}|~)(\d.*)$'.format(caret))
+    re_spec = re.compile(r'^(<|<=|==|>=|>|!=|\^|~)(\d.*)$')
 
     def __init__(self, requirement_string):
         kind, spec = self.parse(requirement_string)
