@@ -389,11 +389,13 @@ class SpecItem(object):
     KIND_LT = '<'
     KIND_LTE = '<='
     KIND_EQUAL = '=='
+    KIND_SHORTEQ = '='
+    KIND_EMPTY = ''
     KIND_GTE = '>='
     KIND_GT = '>'
     KIND_NEQ = '!='
 
-    re_spec = re.compile(r'^(<|<=|==|>=|>|!=)(\d.*)$')
+    re_spec = re.compile(r'^(<|<=|={,2}|>=|>|!=)(\d.*)$')
 
     def __init__(self, requirement_string):
         kind, spec = self.parse(requirement_string)
@@ -428,7 +430,7 @@ class SpecItem(object):
             return version < self.spec
         elif self.kind == self.KIND_LTE:
             return version <= self.spec
-        elif self.kind == self.KIND_EQUAL:
+        elif self.kind in [self.KIND_EQUAL, self.KIND_SHORTEQ, self.KIND_EMPTY]:
             return version == self.spec
         elif self.kind == self.KIND_GTE:
             return version >= self.spec
