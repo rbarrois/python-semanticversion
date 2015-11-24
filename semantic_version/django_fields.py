@@ -18,7 +18,7 @@ class BaseSemVerField(models.CharField):
         super(BaseSemVerField, self).__init__(*args, **kwargs)
 
     def get_prep_value(self, obj):
-        return str(obj)
+        return None if obj is None else str(obj)
 
     def get_db_prep_value(self, value, connection, prepared=False):
         if not prepared:
