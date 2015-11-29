@@ -14,7 +14,6 @@ class MatchTestCase(unittest.TestCase):
         '!0.1',
         '<=0.1.4a',
         '>0.1.1.1',
-        '~0.1.2-rc23,1',
         '<0.1.2-rc1.3-14.15+build.2012-01-01.11h34',
     ]
 
@@ -25,6 +24,7 @@ class MatchTestCase(unittest.TestCase):
         '0.1.0',
         '<=0.1.1',
         '<0.1',
+        '1',
         '>0.1.2-rc1',
         '>=0.1.2-rc1.3.4',
         '==0.1.2+build42-12.2012-01-01.12h23',
