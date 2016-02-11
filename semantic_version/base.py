@@ -398,11 +398,15 @@ class SpecItem(object):
     KIND_LT = '<'
     KIND_LTE = '<='
     KIND_EQUAL = '=='
+    KIND_SHORTEQ = '='
+    KIND_EMPTY = ''
     KIND_GTE = '>='
     KIND_GT = '>'
     KIND_NEQ = '!='
+    KIND_CARET = '^'
+    KIND_TILDE = '~'
 
-    re_spec = re.compile(r'^(<|<=|==|>=|>|!=)(\d.*)$')
+    re_spec = re.compile(r'^(<|<=|={,2}|>=|>|!=|\^|~)(\d.*)$')
 
     def __init__(self, requirement_string):
         kind, spec = self.parse(requirement_string)
@@ -437,7 +441,7 @@ class SpecItem(object):
             return version < self.spec
         elif self.kind == self.KIND_LTE:
             return version <= self.spec
-        elif self.kind == self.KIND_EQUAL:
+        elif self.kind in [self.KIND_EQUAL, self.KIND_SHORTEQ, self.KIND_EMPTY]:
             return version == self.spec
         elif self.kind == self.KIND_GTE:
             return version >= self.spec
@@ -445,8 +449,20 @@ class SpecItem(object):
             return version > self.spec
         elif self.kind == self.KIND_NEQ:
             return version != self.spec
+        elif self.kind == self.KIND_CARET:
+            return self.caretCompare(version)
+        elif self.kind == self.KIND_TILDE:
+            return self.tildeCompare(version)
         else:  # pragma: no cover
             raise ValueError('Unexpected match kind: %r' % self.kind)
+
+    def caretCompare(self, version):
+        max_version = version.next_major()
+        return version >= self.spec and version < max_version
+
+    def tildeCompare(self, version):
+        max_version = version.next_minor()
+        return version >= self.spec and version < max_version
 
     def __str__(self):
         return '%s%s' % (self.kind, self.spec)
