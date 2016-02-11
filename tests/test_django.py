@@ -30,6 +30,13 @@ if django_loaded and django.VERSION < (1, 7):  # pragma: no cover
     except ImportError:
         pass
 
+# the refresh_from_db method only came in with 1.8, so in order to make this
+# work will all supported versions we have our own function.
+def save_and_refresh(obj):
+    """Saves an object, and refreshes from the database."""
+    obj.save()
+    obj = obj.__class__.objects.get(id=obj.id)
+
 
 @unittest.skipIf(not django_loaded, "Django not installed")
 class DjangoFieldTestCase(unittest.TestCase):
@@ -47,6 +54,38 @@ class DjangoFieldTestCase(unittest.TestCase):
         self.assertEqual(obj.version, alt_obj.version)
 
         obj.full_clean()
+
+    def test_version_save(self):
+        """Test saving object with a VersionField."""
+        # first test with a null value
+        obj = models.PartialVersionModel()
+        self.assertIsNone(obj.id)
+        self.assertIsNone(obj.optional)
+        save_and_refresh(obj)
+        self.assertIsNotNone(obj.id)
+        self.assertIsNone(obj.optional_spec)
+
+        # now set to something that is not null
+        spec = semantic_version.Spec('==0,!=0.2')
+        obj.optional_spec = spec
+        save_and_refresh(obj)
+        self.assertEqual(obj.optional_spec, spec)
+
+    def test_spec_save(self):
+        """Test saving object with a SpecField."""
+        # first test with a null value
+        obj = models.PartialVersionModel()
+        self.assertIsNone(obj.id)
+        self.assertIsNone(obj.optional_spec)
+        save_and_refresh(obj)
+        self.assertIsNotNone(obj.id)
+        self.assertIsNone(obj.optional_spec)
+
+        # now set to something that is not null
+        spec = semantic_version.Spec('==0,!=0.2')
+        obj.optional_spec = spec
+        save_and_refresh(obj)
+        self.assertEqual(obj.optional_spec, spec)
 
     def test_partial_spec(self):
         obj = models.VersionModel(version='0.1.1', spec='==0,!=0.2')
