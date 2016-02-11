@@ -293,7 +293,7 @@ When submitting patches or pull requests, you should respect the following rules
 .. note:: All files should contain the following header::
 
           # -*- encoding: utf-8 -*-
-          # Copyright (c) 2012-2014 The python-semanticversion project
+          # Copyright (c) The python-semanticversion project
 
 
 Contents

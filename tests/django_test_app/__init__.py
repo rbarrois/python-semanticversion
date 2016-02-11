@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2012-2014 The python-semanticversion project
+# Copyright (c) The python-semanticversion project
 # This code is distributed under the two-clause BSD License.
 
 try:  # pragma: no cover
