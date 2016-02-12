@@ -6,7 +6,7 @@ DOC_DIR=docs
 COVERAGE = python $(shell which coverage)
 
 # Dependencies
-DJANGO_VERSION ?= 1.8
+DJANGO_VERSION ?= 1.9
 PYTHON_VERSION := $(shell python --version)
 NEXT_DJANGO_VERSION=$(shell python -c "v='$(DJANGO_VERSION)'; parts=v.split('.'); parts[-1]=str(int(parts[-1])+1); print('.'.join(parts))")
 
@@ -17,12 +17,12 @@ all: default
 default:
 
 
-install-deps: auto_dev_requirements_django$(DJANGO_VERSION).txt
+install-deps: auto_dev_requirements_django_$(DJANGO_VERSION).txt
 	pip install --upgrade pip setuptools
 	pip install --upgrade -r $<
 	pip freeze
 
-auto_dev_requirements_%.txt: dev_requirements_%.txt dev_requirements.txt requirements.txt
+auto_dev_requirements_%.txt: dev_requirements.txt requirements.txt
 	grep --no-filename "^[^#-]" $^ | grep -v "^Django" > $@
 	echo "Django>=$(DJANGO_VERSION),<$(NEXT_DJANGO_VERSION)" >> $@
 

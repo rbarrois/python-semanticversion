@@ -4,13 +4,9 @@ python:
   - "2.7"
   - "3.4"
 env:
-  - DJANGO_VERSION=1.4
   - DJANGO_VERSION=1.7
   - DJANGO_VERSION=1.8
-matrix:
-  exclude:
-    - python: 3.4
-    - env: DJANGO_VERSION=1.4
+  - DJANGO_VERSION=1.9
 
 script:
   - python setup.py test

@@ -1,3 +1,0 @@
--r dev_requirements.txt
-
-# South isn't compatible with django1.8
