@@ -277,6 +277,11 @@ This means that::
 .. note:: python-semanticversion also accepts ``"*"`` as a version spec,
           that matches all (valid) version strings.
 
+.. note:: python-semanticversion includes support for NPM-style specs:
+
+          * ``~1.2.3`` means "Any release between 1.2.3 and 1.3.0"
+          * ``^1.3.4`` means "Any release between 1.3.4 and 2.0.0"
+
 In order to force matches to *strictly* compare version numbers, these additional
 rules apply:
 
@@ -305,6 +310,7 @@ rules apply:
              * ``==1.1.1+b1234`` includes this specific build
              * ``!=1.1.1+b1234`` excludes it (but would match ``1.1.1+b1235``
              * ``<1.1.1+b1`` is invalid
+
 
 
 .. class:: Spec(spec_string[, spec_string[, ...]])

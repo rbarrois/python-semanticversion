@@ -406,7 +406,13 @@ class SpecItem(object):
     KIND_CARET = '^'
     KIND_TILDE = '~'
 
-    re_spec = re.compile(r'^(<|<=|={,2}|>=|>|!=|\^|~)(\d.*)$')
+    # Map a kind alias to its full version
+    KIND_ALIASES = {
+        KIND_SHORTEQ: KIND_EQUAL,
+        KIND_EMPTY: KIND_EQUAL,
+    }
+
+    re_spec = re.compile(r'^(<|<=||=|==|>=|>|!=|\^|~)(\d.*)$')
 
     def __init__(self, requirement_string):
         kind, spec = self.parse(requirement_string)
@@ -427,6 +433,9 @@ class SpecItem(object):
             raise ValueError("Invalid requirement specification: %r" % requirement_string)
 
         kind, version = match.groups()
+        if kind in cls.KIND_ALIASES:
+            kind = cls.KIND_ALIASES[kind]
+
         spec = Version(version, partial=True)
         if spec.build is not None and kind not in (cls.KIND_EQUAL, cls.KIND_NEQ):
             raise ValueError(
@@ -441,7 +450,7 @@ class SpecItem(object):
             return version < self.spec
         elif self.kind == self.KIND_LTE:
             return version <= self.spec
-        elif self.kind in [self.KIND_EQUAL, self.KIND_SHORTEQ, self.KIND_EMPTY]:
+        elif self.kind == self.KIND_EQUAL:
             return version == self.spec
         elif self.kind == self.KIND_GTE:
             return version >= self.spec
@@ -450,19 +459,12 @@ class SpecItem(object):
         elif self.kind == self.KIND_NEQ:
             return version != self.spec
         elif self.kind == self.KIND_CARET:
-            return self.caretCompare(version)
+            return self.spec <= version < self.spec.next_major()
+            return self.caret_compare(version)
         elif self.kind == self.KIND_TILDE:
-            return self.tildeCompare(version)
+            return self.spec <= version < self.spec.next_minor()
         else:  # pragma: no cover
             raise ValueError('Unexpected match kind: %r' % self.kind)
-
-    def caretCompare(self, version):
-        max_version = version.next_major()
-        return version >= self.spec and version < max_version
-
-    def tildeCompare(self, version):
-        max_version = version.next_minor()
-        return version >= self.spec and version < max_version
 
     def __str__(self):
         return '%s%s' % (self.kind, self.spec)

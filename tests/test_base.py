@@ -419,6 +419,10 @@ class SpecItemTestCase(unittest.TestCase):
         '>=2.0.0': (base.SpecItem.KIND_GTE, 2, 0, 0, None, None),
         '!=0.1.1+rc3': (base.SpecItem.KIND_NEQ, 0, 1, 1, (), ('rc3',)),
         '!=0.3.0': (base.SpecItem.KIND_NEQ, 0, 3, 0, None, None),
+        '=0.3.0': (base.SpecItem.KIND_EQUAL, 0, 3, 0, None, None),
+        '0.3.0': (base.SpecItem.KIND_EQUAL, 0, 3, 0, None, None),
+        '~0.1.2': (base.SpecItem.KIND_TILDE, 0, 1, 2, None, None),
+        '^0.1.3': (base.SpecItem.KIND_CARET, 0, 1, 3, None, None),
     }
 
     def test_components(self):
@@ -433,11 +437,16 @@ class SpecItemTestCase(unittest.TestCase):
             self.assertEqual(prerelease, spec.spec.prerelease)
             self.assertEqual(build, spec.spec.build)
 
-            self.assertNotEqual(spec, spec_text)
-            self.assertEqual(spec_text, str(spec))
-
     matches = {
         '==0.1.0': (
+            ['0.1.0', '0.1.0-rc1', '0.1.0+build1', '0.1.0-rc1+build2'],
+            ['0.0.1', '0.2.0', '0.1.1'],
+        ),
+        '=0.1.0': (
+            ['0.1.0', '0.1.0-rc1', '0.1.0+build1', '0.1.0-rc1+build2'],
+            ['0.0.1', '0.2.0', '0.1.1'],
+        ),
+        '0.1.0': (
             ['0.1.0', '0.1.0-rc1', '0.1.0+build1', '0.1.0-rc1+build2'],
             ['0.0.1', '0.2.0', '0.1.1'],
         ),
@@ -488,6 +497,14 @@ class SpecItemTestCase(unittest.TestCase):
         '!=0.3.4-': (
             ['0.4.0', '1.3.0', '0.3.4-alpha', '0.3.4-alpha+b1'],
             ['0.3.4', '0.3.4+b1'],
+        ),
+        '~1.1.2': (
+            ['1.1.3', '1.1.2-alpha', '1.1.2-alpha+b1'],
+            ['1.1.1', '1.2.1', '2.1.0'],
+        ),
+        '^1.1.2': (
+            ['1.1.3', '1.2.1', '1.1.2-alpha', '1.1.2-alpha+b1'],
+            ['1.1.1', '2.1.0'],
         ),
     }
 
