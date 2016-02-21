@@ -1,6 +1,15 @@
 ChangeLog
 =========
 
+
+2.5.1 (master)
+--------------
+
+*Bugfix:*
+
+    * `#35 <https://github.com/rbarrois/python-semanticversion/issues/35>`_:
+      Properly handle `^0.X.Y` in a NPM-compatible way
+
 2.5.0 (2016-02-12)
 ------------------
 

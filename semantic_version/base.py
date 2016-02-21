@@ -459,7 +459,13 @@ class SpecItem(object):
         elif self.kind == self.KIND_NEQ:
             return version != self.spec
         elif self.kind == self.KIND_CARET:
-            return self.spec <= version < self.spec.next_major()
+            if self.spec.major != 0:
+                upper = self.spec.next_major()
+            elif self.spec.minor != 0:
+                upper = self.spec.next_minor()
+            else:
+                upper = self.spec.next_patch()
+            return self.spec <= version < upper
         elif self.kind == self.KIND_TILDE:
             return self.spec <= version < self.spec.next_minor()
         else:  # pragma: no cover
