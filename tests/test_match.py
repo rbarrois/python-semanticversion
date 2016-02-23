@@ -31,6 +31,7 @@ class MatchTestCase(unittest.TestCase):
         '!=0.1.2-rc1.3-14.15+build.2012-01-01.11h34',
         '^0.1.2',
         '~0.1.2',
+        '~=0.1.2',
     ]
 
     matches = {
@@ -112,6 +113,16 @@ class MatchTestCase(unittest.TestCase):
             '0.1.2',
             '0.1.2+build4.5',
             '0.1.3-rc1.3',
+        ],
+        '~=1.4.5': (
+            '1.4.5',
+            '1.4.10-alpha',
+            '1.4.10',
+        ),
+        '~=1.4': [
+            '1.4.0',
+            '1.6.10-alpha',
+            '1.6.10',
         ],
     }
 

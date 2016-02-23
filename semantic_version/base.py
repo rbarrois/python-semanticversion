@@ -405,6 +405,7 @@ class SpecItem(object):
     KIND_NEQ = '!='
     KIND_CARET = '^'
     KIND_TILDE = '~'
+    KIND_COMPATIBLE = '~='
 
     # Map a kind alias to its full version
     KIND_ALIASES = {
@@ -412,7 +413,7 @@ class SpecItem(object):
         KIND_EMPTY: KIND_EQUAL,
     }
 
-    re_spec = re.compile(r'^(<|<=||=|==|>=|>|!=|\^|~)(\d.*)$')
+    re_spec = re.compile(r'^(<|<=||=|==|>=|>|!=|\^|~|~=)(\d.*)$')
 
     def __init__(self, requirement_string):
         kind, spec = self.parse(requirement_string)
@@ -468,6 +469,12 @@ class SpecItem(object):
             return self.spec <= version < upper
         elif self.kind == self.KIND_TILDE:
             return self.spec <= version < self.spec.next_minor()
+        elif self.kind == self.KIND_COMPATIBLE:
+            if self.spec.patch:
+                upper = self.spec.next_minor()
+            else:
+                upper = self.spec.next_major()
+            return self.spec <= version < upper
         else:  # pragma: no cover
             raise ValueError('Unexpected match kind: %r' % self.kind)
 
