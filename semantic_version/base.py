@@ -470,7 +470,7 @@ class SpecItem(object):
         elif self.kind == self.KIND_TILDE:
             return self.spec <= version < self.spec.next_minor()
         elif self.kind == self.KIND_COMPATIBLE:
-            if self.spec.patch:
+            if self.spec.patch is not None:
                 upper = self.spec.next_minor()
             else:
                 upper = self.spec.next_major()
