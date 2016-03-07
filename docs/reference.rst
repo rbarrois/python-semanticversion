@@ -277,6 +277,11 @@ This means that::
 .. note:: python-semanticversion also accepts ``"*"`` as a version spec,
           that matches all (valid) version strings.
 
+.. note:: python-semanticversion supports PyPI-style `compatible release clauses`_:
+
+          * ``~=2.2`` means "Any release between 2.2.0 and 3.0.0"
+          * ``~=1.4.5`` means "Any release between 1.4.5 and 1.5.0"
+
 .. note:: python-semanticversion includes support for NPM-style specs:
 
           * ``~1.2.3`` means "Any release between 1.2.3 and 1.3.0"
@@ -568,3 +573,4 @@ rules apply:
 
 
 .. _SemVer: http://semver.org/
+.. _`compatible release clauses`: https://www.python.org/dev/peps/pep-0440/#compatible-release
