@@ -25,7 +25,7 @@ class BaseSemVerField(models.CharField):
         return value
 
     def value_to_string(self, obj):
-        value = self.to_python(self._get_val_from_obj(obj))
+        value = self.to_python(self.value_from_object(obj))
         return str(value)
 
     def run_validators(self, value):
