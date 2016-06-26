@@ -11,7 +11,6 @@ from . import base
 
 
 class BaseSemVerField(models.CharField):
-    __metaclass__ = models.SubfieldBase
 
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('max_length', 200)
@@ -26,19 +25,14 @@ class BaseSemVerField(models.CharField):
         return value
 
     def value_to_string(self, obj):
-        value = self.to_python(self._get_val_from_obj(obj))
+        value = self.to_python(self.value_from_object(obj))
         return str(value)
 
     def run_validators(self, value):
         return super(BaseSemVerField, self).run_validators(str(value))
 
 
-# Py2 and Py3-compatible metaclass
-SemVerField = models.SubfieldBase(
-    str('SemVerField'), (BaseSemVerField, models.CharField), {})
-
-
-class VersionField(SemVerField):
+class VersionField(BaseSemVerField):
     default_error_messages = {
         'invalid': _("Enter a valid version number in X.Y.Z format."),
     }
@@ -60,8 +54,11 @@ class VersionField(SemVerField):
         else:
             return base.Version(value, partial=self.partial)
 
+    def from_db_value(self, value, expression, connection, context):
+        return self.to_python(value)
 
-class SpecField(SemVerField):
+
+class SpecField(BaseSemVerField):
     default_error_messages = {
         'invalid': _("Enter a valid version number spec list in ==X.Y.Z,>=A.B.C format."),
     }
@@ -74,6 +71,9 @@ class SpecField(SemVerField):
         if isinstance(value, base.Spec):
             return value
         return base.Spec(value)
+
+    def from_db_value(self, value, expression, connection, context):
+        return self.to_python(value)
 
 
 def add_south_rules():

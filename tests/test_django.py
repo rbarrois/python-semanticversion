@@ -42,6 +42,7 @@ def save_and_refresh(obj):
 class DjangoFieldTestCase(unittest.TestCase):
     def test_version(self):
         obj = models.VersionModel(version='0.1.1', spec='==0.1.1,!=0.1.1-alpha')
+        obj.full_clean()  #force to_python to be called
 
         self.assertEqual(semantic_version.Version('0.1.1'), obj.version)
         self.assertEqual(semantic_version.Spec('==0.1.1,!=0.1.1-alpha'), obj.spec)
@@ -89,26 +90,32 @@ class DjangoFieldTestCase(unittest.TestCase):
 
     def test_partial_spec(self):
         obj = models.VersionModel(version='0.1.1', spec='==0,!=0.2')
+        obj.full_clean()  #force to_python to be called
+
         self.assertEqual(semantic_version.Version('0.1.1'), obj.version)
         self.assertEqual(semantic_version.Spec('==0,!=0.2'), obj.spec)
 
     def test_coerce(self):
         obj = models.CoerceVersionModel(version='0.1.1a+2', partial='23')
+        obj.full_clean()  #force to_python to be called
         self.assertEqual(semantic_version.Version('0.1.1-a+2'), obj.version)
         self.assertEqual(semantic_version.Version('23', partial=True), obj.partial)
 
         obj2 = models.CoerceVersionModel(version='23', partial='0.1.2.3.4.5/6')
+        obj2.full_clean()  #force to_python to be called
         self.assertEqual(semantic_version.Version('23.0.0'), obj2.version)
         self.assertEqual(semantic_version.Version('0.1.2+3.4.5-6', partial=True), obj2.partial)
 
     def test_invalid_input(self):
-        self.assertRaises(ValueError, models.VersionModel,
-            version='0.1.1', spec='blah')
-        self.assertRaises(ValueError, models.VersionModel,
-            version='0.1', spec='==0.1.1,!=0.1.1-alpha')
+        obj = models.VersionModel(version='0.1.1', spec='blah')
+        self.assertRaises(ValueError, obj.full_clean)
+        obj =  models.VersionModel(version='0.1',
+                                   spec='==0.1.1,!=0.1.1-alpha')
+        self.assertRaises(ValueError, obj.full_clean)
 
     def test_partial(self):
         obj = models.PartialVersionModel(partial='0.1.0')
+        obj.full_clean()  #force to_python to be called
 
         self.assertEqual(semantic_version.Version('0.1.0', partial=True), obj.partial)
         self.assertIsNone(obj.optional)
@@ -132,6 +139,8 @@ class DjangoFieldTestCase(unittest.TestCase):
         o1 = models.VersionModel(version='0.1.1', spec='==0.1.1,!=0.1.1-alpha')
         o2 = models.VersionModel(version='0.4.3-rc3+build3',
             spec='<=0.1.1-rc2,!=0.1.1-rc1')
+        o1.full_clean()  #force to_python to be called
+        o2.full_clean()  #force to_python to be called
 
         data = serializers.serialize('json', [o1, o2])
 
@@ -146,6 +155,8 @@ class DjangoFieldTestCase(unittest.TestCase):
             optional_spec=None)
         o2 = models.PartialVersionModel(partial='0.4.3-rc3+build3', optional='',
             optional_spec='==0.1.1,!=0.1.1-alpha')
+        o1.full_clean()  #force to_python to be called
+        o2.full_clean()  #force to_python to be called
 
         data = serializers.serialize('json', [o1, o2])
 
@@ -236,6 +247,9 @@ if django_loaded:
         def test_db_interaction(self):
             o1 = models.VersionModel(version='0.1.1', spec='<0.2.4-rc42')
             o2 = models.VersionModel(version='0.4.3-rc3+build3', spec='==0.4.3')
+
+            o1.full_clean()  #force to_python to be called
+            o2.full_clean()  #force to_python to be called
 
             o1.save()
             o2.save()
