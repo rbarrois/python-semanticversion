@@ -102,7 +102,7 @@ def add_south_rules():
 
 try:  # pragma: no cover
     import south
-except ImportError: # pragma: no cover
+except ImportError:  # pragma: no cover
     south = None
 
 if south:  # pragma: no cover

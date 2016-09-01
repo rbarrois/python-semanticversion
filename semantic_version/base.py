@@ -10,11 +10,13 @@ import re
 
 from .compat import base_cmp
 
+
 def _to_int(value):
     try:
         return int(value), True
     except ValueError:
         return value, False
+
 
 def _has_leading_zero(value):
     return (value
@@ -133,8 +135,10 @@ class Version(object):
 
         match = base_re.match(version_string)
         if not match:
-            raise ValueError("Version string lacks a numerical component: %r"
-                    % version_string)
+            raise ValueError(
+                "Version string lacks a numerical component: %r"
+                % version_string
+            )
 
         version = version_string[:match.end()]
         if not partial:
@@ -242,8 +246,11 @@ class Version(object):
     def _validate_identifiers(cls, identifiers, allow_leading_zeroes=False):
         for item in identifiers:
             if not item:
-                raise ValueError("Invalid empty identifier %r in %r"
-                        % (item, '.'.join(identifiers)))
+                raise ValueError(
+                    "Invalid empty identifier %r in %r"
+                    % (item, '.'.join(identifiers))
+                )
+
             if item[0] == '0' and item.isdigit() and item != '0' and not allow_leading_zeroes:
                 raise ValueError("Invalid leading zero in identifier %r" % item)
 
@@ -336,7 +343,6 @@ class Version(object):
             ]
 
     def __compare(self, other):
-        field_pairs = zip(self, other)
         comparison_functions = self._comparison_functions(partial=self.partial or other.partial)
         comparisons = zip(comparison_functions, self, other)
 
@@ -440,8 +446,9 @@ class SpecItem(object):
         spec = Version(version, partial=True)
         if spec.build is not None and kind not in (cls.KIND_EQUAL, cls.KIND_NEQ):
             raise ValueError(
-                    "Invalid requirement specification %r: build numbers have no ordering."
-                    % requirement_string)
+                "Invalid requirement specification %r: build numbers have no ordering."
+                % requirement_string
+            )
         return (kind, spec)
 
     def match(self, version):
