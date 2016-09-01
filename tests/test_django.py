@@ -5,6 +5,8 @@
 from __future__ import unicode_literals
 
 import unittest
+import sys
+
 import semantic_version
 
 from .setup_django import django_loaded
@@ -213,17 +215,25 @@ class FieldMigrationTests(DjangoTestCase):
             partial=True,
             coerce=True,
         )
-        self.assertEqual(
-            field.deconstruct()[3],
-            {'coerce': True, 'partial': True, 'max_length': 200},
-        )
+        expected = {
+            'coerce': True,
+            'partial': True,
+            'max_length': 200,
+        }
+        if hasattr(sys, 'pypy_version_info'):
+            # Django under Pypy adds this extra key.
+            expected['help_text'] = u''
+
+        self.assertEqual(field.deconstruct()[3], expected)
 
     def test_spec_field(self):
         field = django_fields.SpecField()
-        self.assertEqual(
-            field.deconstruct()[3],
-            {'max_length': 200},
-        )
+        expected = {'max_length': 200}
+        if hasattr(sys, 'pypy_version_info'):
+            # Django under Pypy adds this extra key.
+            expected['help_text'] = u''
+
+        self.assertEqual(field.deconstruct()[3], expected)
 
 
 @unittest.skipIf(not django_loaded, "Django not installed")
