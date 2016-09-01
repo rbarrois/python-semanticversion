@@ -4,12 +4,7 @@ DOC_DIR=docs
 
 # Use current python binary instead of system default.
 COVERAGE = python $(shell which coverage)
-
-# Dependencies
-DJANGO_VERSION ?= 1.10
-PYTHON_VERSION := $(shell python --version)
-NEXT_DJANGO_VERSION=$(shell python -c "v='$(DJANGO_VERSION)'; parts=v.split('.'); parts[-1]=str(int(parts[-1])+1); print('.'.join(parts))")
-
+FLAKE8 = flake8
 
 all: default
 
@@ -17,30 +12,32 @@ all: default
 default:
 
 
-install-deps: auto_dev_requirements_django_$(DJANGO_VERSION).txt
-	pip install --upgrade pip setuptools
-	pip install --upgrade -r $<
-	pip freeze
-
-auto_dev_requirements_%.txt: dev_requirements.txt requirements.txt
-	grep --no-filename "^[^#-]" $^ | grep -v "^Django" > $@
-	echo "Django>=$(DJANGO_VERSION),<$(NEXT_DJANGO_VERSION)" >> $@
-
 clean:
 	find . -type f -name '*.pyc' -delete
 	find . -type f -path '*/__pycache__/*' -delete
 	find . -type d -empty -delete
-	@rm -f auto_dev_requirements_*
 	@rm -rf tmp_test/
 
 
-test: install-deps
+install-deps:
+	pip install --upgrade pip setuptools
+	pip install --upgrade -r requirements_dev.txt
+	pip freeze
+
+testall:
+	tox
+
+
+test:
 	python -W default setup.py test
 
-pylint:
-	pylint --rcfile=.pylintrc --report=no $(PACKAGE)/
+# Note: we run the linter in two runs, because our __init__.py files has specific warnings we want to exclude
+lint:
+	check-manifest
+	$(FLAKE8) --config .flake8 --exclude $(PACKAGE)/__init__.py $(PACKAGE)
+	$(FLAKE8) --config .flake8 --ignore F401 $(PACKAGE)/__init__.py
 
-coverage: install-deps
+coverage:
 	$(COVERAGE) erase
 	$(COVERAGE) run "--include=$(PACKAGE)/*.py,$(TESTS_DIR)/*.py" --branch setup.py test
 	$(COVERAGE) report "--include=$(PACKAGE)/*.py,$(TESTS_DIR)/*.py"
@@ -53,4 +50,4 @@ doc:
 	$(MAKE) -C $(DOC_DIR) html
 
 
-.PHONY: all default clean coverage doc install-deps pylint test
+.PHONY: all default clean coverage doc install-deps lint test

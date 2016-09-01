@@ -1,0 +1,3 @@
+# Common requirements for running tests
+check_manifest
+flake8
