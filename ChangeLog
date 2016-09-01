@@ -10,6 +10,10 @@ ChangeLog
     * `#43 <https://github.com/rbarrois/python-semanticversion/issues/43>`_:
       Add support for Django up to 1.10.
 
+*Removed:*
+
+    * Remove support for Django<1.7
+
 *Bugfix:*
 
     * `#35 <https://github.com/rbarrois/python-semanticversion/issues/35>`_:
