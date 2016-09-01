@@ -58,6 +58,13 @@ class VersionField(SemVerField):
         self.coerce = kwargs.pop('coerce', False)
         super(VersionField, self).__init__(*args, **kwargs)
 
+    def deconstruct(self):
+        """Handle django.db.migrations."""
+        name, path, args, kwargs = super(VersionField, self).deconstruct()
+        kwargs['partial'] = self.partial
+        kwargs['coerce'] = self.coerce
+        return name, path, args, kwargs
+
     def to_python(self, value):
         """Converts any value to a base.Version field."""
         if value is None or value == '':
@@ -83,27 +90,3 @@ class SpecField(SemVerField):
         if isinstance(value, base.Spec):
             return value
         return base.Spec(value)
-
-
-def add_south_rules():
-    from south.modelsinspector import add_introspection_rules
-
-    add_introspection_rules([
-        (
-            (VersionField,),
-            [],
-            {
-                'partial': ('partial', {'default': False}),
-                'coerce': ('coerce', {'default': False}),
-            },
-        ),
-    ], ["semantic_version\.django_fields"])
-
-
-try:  # pragma: no cover
-    import south
-except ImportError:  # pragma: no cover
-    south = None
-
-if south:  # pragma: no cover
-    add_south_rules()
