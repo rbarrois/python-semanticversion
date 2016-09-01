@@ -2,8 +2,13 @@ ChangeLog
 =========
 
 
-2.5.1 (master)
+2.6.0 (master)
 --------------
+
+*New:*
+
+    * `#43 <https://github.com/rbarrois/python-semanticversion/issues/43>`_:
+      Add support for Django up to 1.10.
 
 *Bugfix:*
 

@@ -4,18 +4,32 @@
 
 from __future__ import unicode_literals
 
+import django
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from . import base
 
 
-class BaseSemVerField(models.CharField):
-    __metaclass__ = models.SubfieldBase
+class SemVerField(models.CharField):
 
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('max_length', 200)
-        super(BaseSemVerField, self).__init__(*args, **kwargs)
+        super(SemVerField, self).__init__(*args, **kwargs)
+
+    if django.VERSION[:2] < (1, 8):
+        def contribute_to_class(self, cls, name, **kwargs):
+            """Emulate SubFieldBase for Django < 1.8"""
+            super(SemVerField, self).contribute_to_class(cls, name, **kwargs)
+            from django.db.models.fields import subclassing
+            setattr(cls, self.name, subclassing.Creator(self))
+
+    def from_db_value(self, value, expression, connection, context):
+        """Convert from the database format.
+
+        This should be the inverse of self.get_prep_value()
+        """
+        return self.to_python(value)
 
     def get_prep_value(self, obj):
         return None if obj is None else str(obj)
@@ -30,12 +44,7 @@ class BaseSemVerField(models.CharField):
         return str(value)
 
     def run_validators(self, value):
-        return super(BaseSemVerField, self).run_validators(str(value))
-
-
-# Py2 and Py3-compatible metaclass
-SemVerField = models.SubfieldBase(
-    str('SemVerField'), (BaseSemVerField, models.CharField), {})
+        return super(SemVerField, self).run_validators(str(value))
 
 
 class VersionField(SemVerField):

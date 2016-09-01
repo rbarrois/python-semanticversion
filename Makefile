@@ -6,7 +6,7 @@ DOC_DIR=docs
 COVERAGE = python $(shell which coverage)
 
 # Dependencies
-DJANGO_VERSION ?= 1.9
+DJANGO_VERSION ?= 1.10
 PYTHON_VERSION := $(shell python --version)
 NEXT_DJANGO_VERSION=$(shell python -c "v='$(DJANGO_VERSION)'; parts=v.split('.'); parts[-1]=str(int(parts[-1])+1); print('.'.join(parts))")
 
