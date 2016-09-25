@@ -2,7 +2,7 @@
 -e .
 -r requirements_test.txt
 
-Django
+Django>=1.8
 
 coverage
 wheel
