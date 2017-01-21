@@ -11,6 +11,9 @@ import re
 from .compat import base_cmp
 
 
+MAJOR, MINOR, PATCH = 'major', 'minor', 'patch'
+
+
 def _to_int(value):
     try:
         return int(value), True
