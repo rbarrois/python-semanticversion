@@ -138,6 +138,15 @@ You can also get a new version that represents a bump in one of the version leve
     >>> str(new_v)
     '1.1.2'
 
+A parameterized convenience wrapper is available:
+
+.. code-block:: pycon
+
+    >>> v = semantic_version.Version('1.1.1-pre+build')
+    >>> new_v = v.next_version('minor')
+    >>> str(new_v)
+    '1.2.0'
+
 It is also possible to check whether a given string is a proper semantic version string:
 
 
