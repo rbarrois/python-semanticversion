@@ -271,7 +271,8 @@ class Version(object):
         return version
 
     def __repr__(self):
-        return 'Version(%r%s)' % (
+        return '%s(%r%s)' % (
+            self.__class__.__name__,
             str(self),
             ', partial=True' if self.partial else '',
         )
