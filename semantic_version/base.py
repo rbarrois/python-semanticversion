@@ -40,7 +40,7 @@ def identifier_cmp(a, b):
     elif b_is_int:
         return 1
     else:
-        # Non-numeric identifers are compared lexicographically
+        # Non-numeric identifiers are compared lexicographically
         return base_cmp(a_cmp, b_cmp)
 
 
