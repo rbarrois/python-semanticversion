@@ -467,6 +467,8 @@ class SpecItem(object):
         elif self.kind == self.KIND_NEQ:
             return version != self.spec
         elif self.kind == self.KIND_CARET:
+            if version.prerelease:
+                return False
             if self.spec.major != 0:
                 upper = self.spec.next_major()
             elif self.spec.minor != 0:
