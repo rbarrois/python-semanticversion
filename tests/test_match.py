@@ -108,6 +108,11 @@ class MatchTestCase(unittest.TestCase):
             '0.1.2+build4.5',
             '0.1.4',
         ],
+        '^0.1.2-beta.1': [
+            '0.1.2-beta.2',
+            '0.1.2-rc.1',
+            '0.1.2',
+        ],
         '~0.1.2': [
             '0.1.2',
             '0.1.2+build4.5',

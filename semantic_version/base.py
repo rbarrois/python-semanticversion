@@ -467,14 +467,33 @@ class SpecItem(object):
         elif self.kind == self.KIND_NEQ:
             return version != self.spec
         elif self.kind == self.KIND_CARET:
-            if version.prerelease:
+            if not self.spec.prerelease and version.prerelease:
+                # if the spec doesn't explicitly specify a pre-release component, no need
+                # to consider any pre-release versions
                 return False
+
             if self.spec.major != 0:
                 upper = self.spec.next_major()
+                if self.spec.prerelease:
+                    next_release_upper = upper.next_major()
             elif self.spec.minor != 0:
                 upper = self.spec.next_minor()
+                if self.spec.prerelease:
+                    next_release_upper = upper.next_minor()
             else:
                 upper = self.spec.next_patch()
+                if self.spec.prerelease:
+                    next_release_upper = upper.next_patch()
+
+            if self.spec.prerelease and version.prerelease:
+                # comparing prereleases only within the upper bound
+                return self.spec <= version < upper
+
+            if self.spec.prerelease and not version.prerelease:
+                # non-prerelease versions are compared to the next release upper bound
+                return self.spec <= version < next_release_upper
+
+            # regular releases compared to other regular releases
             return self.spec <= version < upper
         elif self.kind == self.KIND_TILDE:
             return self.spec <= version < self.spec.next_minor()
