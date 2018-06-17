@@ -21,13 +21,19 @@ matrix:
       env: TOXENV=py35-django18
       env: TOXENV=py35-django19
       env: TOXENV=py35-django110
-
+    - python: "3.6"
+      env: TOXENV=py36-django17
+      env: TOXENV=py36-django18
+      env: TOXENV=py36-django19
+      env: TOXENV=py36-django110
     # Pypy
     - python: "pypy"
       env: TOXENV=py27-django110
 
     # Linting
     - python: "3.5"
+      env: TOXENV=lint
+    - python: "3.6"
       env: TOXENV=lint
 
 notifications:
