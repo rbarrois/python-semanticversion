@@ -91,13 +91,13 @@ class Version(object):
         return int(value)
 
     def next_major(self):
-        if self.prerelease and self.minor is 0 and self.patch is 0:
+        if self.prerelease and self.minor == 0 and self.patch == 0:
             return Version('.'.join(str(x) for x in [self.major, self.minor, self.patch]))
         else:
             return Version('.'.join(str(x) for x in [self.major + 1, 0, 0]))
 
     def next_minor(self):
-        if self.prerelease and self.patch is 0:
+        if self.prerelease and self.patch == 0:
             return Version('.'.join(str(x) for x in [self.major, self.minor, self.patch]))
         else:
             return Version(
