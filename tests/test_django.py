@@ -214,19 +214,11 @@ class FieldMigrationTests(DjangoTestCase):
             'partial': True,
             'max_length': 200,
         }
-        if hasattr(sys, 'pypy_version_info'):
-            # Django under Pypy adds this extra key.
-            expected['help_text'] = u''
-
         self.assertEqual(field.deconstruct()[3], expected)
 
     def test_spec_field(self):
         field = django_fields.SpecField()
         expected = {'max_length': 200}
-        if hasattr(sys, 'pypy_version_info'):
-            # Django under Pypy adds this extra key.
-            expected['help_text'] = u''
-
         self.assertEqual(field.deconstruct()[3], expected)
 
 
