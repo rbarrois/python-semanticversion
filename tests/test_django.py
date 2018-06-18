@@ -139,18 +139,12 @@ class DjangoFieldTestCase(unittest.TestCase):
         self.assertEqual(Version('23.0.0'), obj2.version)
         self.assertEqual(Version('0.1.2+3.4.5-6', partial=True), obj2.partial)
 
-    @unittest.skipIf(django.VERSION[:2] < (1, 8), "Django<1.8 casts values on setattr")
     def test_invalid_input(self):
         v = models.VersionModel(version='0.1.1', spec='blah')
         self.assertRaises(ValueError, v.full_clean)
 
         v2 = models.VersionModel(version='0.1', spec='==0.1.1,!=0.1.1-alpha')
         self.assertRaises(ValueError, v2.full_clean)
-
-    @unittest.skipUnless(django.VERSION[:2] < (1, 8), "Django>=1.8 doesn't mangle setattr")
-    def test_invalid_input_full_clean(self):
-        self.assertRaises(ValueError, models.VersionModel, version='0.1.1', spec='blah')
-        self.assertRaises(ValueError, models.VersionModel, version='0.1', spec='==0.1.1,!=0.1.1-alpha')
 
     def test_partial(self):
         obj = models.PartialVersionModel(partial=Version('0.1.0'))
@@ -244,8 +238,7 @@ class FullMigrateTests(TransactionTestCase):
         call_command('migrate', verbosity=0)
         with connection.cursor() as cursor:
             table_list = connection.introspection.get_table_list(cursor)
-            if django.VERSION[:2] >= (1, 8):
-                table_list = [t.name for t in connection.introspection.get_table_list(cursor)]
+            table_list = [t.name for t in connection.introspection.get_table_list(cursor)]
             self.assertIn('django_test_app_versionmodel', table_list)
 
 

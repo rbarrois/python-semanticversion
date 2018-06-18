@@ -4,7 +4,6 @@
 
 from __future__ import unicode_literals
 
-import django
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -16,13 +15,6 @@ class SemVerField(models.CharField):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('max_length', 200)
         super(SemVerField, self).__init__(*args, **kwargs)
-
-    if django.VERSION[:2] < (1, 8):
-        def contribute_to_class(self, cls, name, **kwargs):
-            """Emulate SubFieldBase for Django < 1.8"""
-            super(SemVerField, self).contribute_to_class(cls, name, **kwargs)
-            from django.db.models.fields import subclassing
-            setattr(cls, self.name, subclassing.Creator(self))
 
     def from_db_value(self, value, expression, connection, context):
         """Convert from the database format.
@@ -40,7 +32,7 @@ class SemVerField(models.CharField):
         return value
 
     def value_to_string(self, obj):
-        value = self.to_python(self._get_val_from_obj(obj))
+        value = self.to_python(self.value_from_object(obj))
         return str(value)
 
     def run_validators(self, value):
