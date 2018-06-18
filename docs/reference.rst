@@ -122,6 +122,55 @@ Representing a version (the Version class)
     .. rubric:: Methods
 
 
+    .. method:: next_major(self)
+
+        Return the next major version, i.e the smallest version strictly greater
+        than the current one with minor and patch set to 0 and no prerelease/build.
+
+        .. code-block:: pycon
+
+            >>> Version('1.0.2').next_major()
+            Version('2.0.0')
+            >>> Version('1.0.0+b3').next_major()
+            Version('2.0.0')
+            >>> Version('1.0.0-alpha').next_major()
+            Version('1.0.0')
+
+    .. method:: next_minor(self)
+
+        Return the next minor version, i.e the smallest version strictly greater
+        than the current one, with a patch level of ``0``.
+
+        .. code-block:: pycon
+
+            >>> Version('1.0.2').next_minor()
+            Version('1.1.0')
+            >>> Version('1.0.0+b3').next_minor()
+            Version('1.1.0')
+            >>> Version('1.1.2-alpha').next_minor()
+            Version('1.2.0')
+            >>> Version('1.1.0-alpha').next_minor()
+            Version('1.1.0')
+
+    .. method:: next_patch(self):
+
+        Return the next patch version, i.e the smallest version strictly
+        greater than the current one with empty :attr:`prerelease` and :attr:`build`.
+
+        .. code-block:: pycon
+
+            >>> Version('1.0.2').next_patch()
+            Version('1.0.3')
+            >>> Version('1.0.2+b3').next_patch()
+            Version('1.0.3')
+            >>> Version('1.0.2-alpha').next_patch()
+            Version('1.0.2')
+
+        .. warning:: The next patch version of a version with a non-empty
+                     :attr:`prerelease` is the version without that
+                     :attr:`prerelease` component: it's the smallest "pure"
+                     patch version strictly greater than that version.
+
     .. method:: __iter__(self)
 
         Iterates over the version components (:attr:`major`, :attr:`minor`,
