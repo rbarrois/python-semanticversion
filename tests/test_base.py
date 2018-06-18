@@ -393,6 +393,50 @@ class VersionTestCase(unittest.TestCase):
         self.assertEqual(v.prerelease, ())
         self.assertEqual(v.build, ())
 
+    def test_bump_version(self):
+
+        v = base.Version('1.0.0+build')
+        self.assertEqual(v.next_major(), v.next_version(base.MAJOR))
+        v = base.Version('1.0.0+build')
+        self.assertEqual(v.next_minor(), v.next_version(base.MINOR))
+        v = base.Version('1.0.0+build')
+        self.assertEqual(v.next_patch(), v.next_version(base.PATCH))
+
+        v = base.Version('1.1.0+build')
+        self.assertEqual(v.next_major(), v.next_version(base.MAJOR))
+        v = base.Version('1.1.0+build')
+        self.assertEqual(v.next_minor(), v.next_version(base.MINOR))
+        v = base.Version('1.1.0+build')
+        self.assertEqual(v.next_patch(), v.next_version(base.PATCH))
+
+        v = base.Version('1.0.1+build')
+        self.assertEqual(v.next_major(), v.next_version(base.MAJOR))
+        v = base.Version('1.0.1+build')
+        self.assertEqual(v.next_minor(), v.next_version(base.MINOR))
+        v = base.Version('1.0.1+build')
+        self.assertEqual(v.next_patch(), v.next_version(base.PATCH))
+
+        v = base.Version('1.0.0-pre+build')
+        self.assertEqual(v.next_major(), v.next_version(base.MAJOR))
+        v = base.Version('1.0.0-pre+build')
+        self.assertEqual(v.next_minor(), v.next_version(base.MINOR))
+        v = base.Version('1.0.0-pre+build')
+        self.assertEqual(v.next_patch(), v.next_version(base.PATCH))
+
+        v = base.Version('1.1.0-pre+build')
+        self.assertEqual(v.next_major(), v.next_version(base.MAJOR))
+        v = base.Version('1.1.0-pre+build')
+        self.assertEqual(v.next_minor(), v.next_version(base.MINOR))
+        v = base.Version('1.1.0-pre+build')
+        self.assertEqual(v.next_patch(), v.next_version(base.PATCH))
+
+        v = base.Version('1.0.1-pre+build')
+        self.assertEqual(v.next_major(), v.next_version(base.MAJOR))
+        v = base.Version('1.0.1-pre+build')
+        self.assertEqual(v.next_minor(), v.next_version(base.MINOR))
+        v = base.Version('1.0.1-pre+build')
+        self.assertEqual(v.next_patch(), v.next_version(base.PATCH))
+
 
 class SpecItemTestCase(unittest.TestCase):
     invalids = [

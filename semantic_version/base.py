@@ -11,6 +11,9 @@ import re
 from .compat import base_cmp
 
 
+MAJOR, MINOR, PATCH = 'major', 'minor', 'patch'
+
+
 def _to_int(value):
     try:
         return int(value), True
@@ -109,6 +112,15 @@ class Version(object):
         else:
             return Version(
                 '.'.join(str(x) for x in [self.major, self.minor, self.patch + 1]))
+
+    def next_version(self, version_level):
+        """Increment the given version level"""
+        if version_level not in (MAJOR, MINOR, PATCH):
+            raise ValueError(
+                'Version level must be one of {}, {} or {}'
+                    .format(MAJOR, MINOR, PATCH)
+            )
+        return getattr(self, 'next_{}'.format(version_level))()
 
     @classmethod
     def coerce(cls, version_string, partial=False):
