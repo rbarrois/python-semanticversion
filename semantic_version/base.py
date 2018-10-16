@@ -206,11 +206,11 @@ class Version(object):
 
         major, minor, patch, prerelease, build = match.groups()
 
-        if _has_leading_zero(major):
+        if not coerce and _has_leading_zero(major):
             raise ValueError("Invalid leading zero in major: %r" % version_string)
-        if _has_leading_zero(minor):
+        if not coerce and _has_leading_zero(minor):
             raise ValueError("Invalid leading zero in minor: %r" % version_string)
-        if _has_leading_zero(patch):
+        if not coerce and _has_leading_zero(patch):
             raise ValueError("Invalid leading zero in patch: %r" % version_string)
 
         major = int(major)
