@@ -413,6 +413,7 @@ class SpecItem(object):
     KIND_CARET = '^'
     KIND_TILDE = '~'
     KIND_COMPATIBLE = '~='
+    KIND_COMPATIBLE_RUBY = '~>'
 
     # Map a kind alias to its full version
     KIND_ALIASES = {
@@ -420,7 +421,7 @@ class SpecItem(object):
         KIND_EMPTY: KIND_EQUAL,
     }
 
-    re_spec = re.compile(r'^(<|<=||=|==|>=|>|!=|\^|~|~=)(\d.*)$')
+    re_spec = re.compile(r'^(<|<=||=|==|>=|>|!=|\^|~|~=|~>)(\d.*)$')
 
     def __init__(self, requirement_string):
         kind, spec = self.parse(requirement_string)
@@ -477,7 +478,7 @@ class SpecItem(object):
             return self.spec <= version < upper
         elif self.kind == self.KIND_TILDE:
             return self.spec <= version < self.spec.next_minor()
-        elif self.kind == self.KIND_COMPATIBLE:
+        elif self.kind in [self.KIND_COMPATIBLE, self.KIND_COMPATIBLE_RUBY]:
             if self.spec.patch is not None:
                 upper = self.spec.next_minor()
             else:

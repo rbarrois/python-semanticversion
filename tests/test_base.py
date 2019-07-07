@@ -423,6 +423,8 @@ class SpecItemTestCase(unittest.TestCase):
         '0.3.0': (base.SpecItem.KIND_EQUAL, 0, 3, 0, None, None),
         '~0.1.2': (base.SpecItem.KIND_TILDE, 0, 1, 2, None, None),
         '^0.1.3': (base.SpecItem.KIND_CARET, 0, 1, 3, None, None),
+        '~=0.1.2': (base.SpecItem.KIND_COMPATIBLE, 0, 1, 2, None, None),
+        '~>0.1.2': (base.SpecItem.KIND_COMPATIBLE_RUBY, 0, 1, 2, None, None),
     }
 
     def test_components(self):
@@ -525,6 +527,18 @@ class SpecItemTestCase(unittest.TestCase):
         '~=1.4': (
             ['1.4.0', '1.6.10-alpha', '1.6.10'],
             ['1.3.0', '2.0.0'],
+        ),
+        '~>3.0.3': (
+            ['3.0.3', '3.0.10', '3.0.4'],
+            ['3.0.2', '2.0.4', '3.1.0', '3.1.1'],
+        ),
+        '~>3.0': (
+            ['3.0.3', '3.1.10', '3.1.4'],
+            ['2.0.4', '2.0.0'],
+        ),
+        '~>1.1': (
+            ['1.1.0', '1.1.1', '1.2.1', '1.2.0', '1.3.2'],
+            ['1.0.0', '2.0.0', '0.9.1'],
         ),
     }
 
