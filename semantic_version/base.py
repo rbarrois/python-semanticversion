@@ -560,10 +560,10 @@ def match(spec, version):
     return Spec(spec).match(Version(version))
 
 
-def validate(version_string):
-    """Validates a version string againt the SemVer specification."""
+def validate(version_string, partial=False):
+    """Validates a version string against the SemVer specification."""
     try:
-        Version.parse(version_string)
+        Version.parse(version_string, partial)
         return True
     except ValueError:
         return False
