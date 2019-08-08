@@ -24,7 +24,6 @@ def _has_leading_zero(value):
             and value.isdigit()
             and value != '0')
 
-
 def identifier_cmp(a, b):
     """Compare two identifier (for pre-release/build components)."""
 
@@ -40,8 +39,11 @@ def identifier_cmp(a, b):
     elif b_is_int:
         return 1
     else:
-        # Non-numeric identifiers are compared lexicographically
-        return base_cmp(a_cmp, b_cmp)
+        # Non-numeric identifiers are compared by a natural comparison
+        # adapted from https://stackoverflow.com/questions/8408125/python-natural-comparison-between-strings
+        convert = lambda text: int(text) if text.isdigit() else text.lower()
+        alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ]
+        return base_cmp(alphanum_key(a_cmp), alphanum_key(b_cmp))
 
 
 def identifier_list_cmp(a, b):
