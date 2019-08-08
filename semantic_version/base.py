@@ -24,6 +24,7 @@ def _has_leading_zero(value):
             and value.isdigit()
             and value != '0')
 
+
 def identifier_cmp(a, b):
     """Compare two identifier (for pre-release/build components)."""
 
