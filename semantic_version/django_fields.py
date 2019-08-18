@@ -2,7 +2,6 @@
 # Copyright (c) The python-semanticversion project
 # This code is distributed under the two-clause BSD License.
 
-from __future__ import unicode_literals
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -14,7 +13,7 @@ class SemVerField(models.CharField):
 
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('max_length', 200)
-        super(SemVerField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def from_db_value(self, value, expression, connection, context):
         """Convert from the database format.
@@ -36,7 +35,7 @@ class SemVerField(models.CharField):
         return str(value)
 
     def run_validators(self, value):
-        return super(SemVerField, self).run_validators(str(value))
+        return super().run_validators(str(value))
 
 
 class VersionField(SemVerField):
@@ -48,11 +47,11 @@ class VersionField(SemVerField):
     def __init__(self, *args, **kwargs):
         self.partial = kwargs.pop('partial', False)
         self.coerce = kwargs.pop('coerce', False)
-        super(VersionField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def deconstruct(self):
         """Handle django.db.migrations."""
-        name, path, args, kwargs = super(VersionField, self).deconstruct()
+        name, path, args, kwargs = super().deconstruct()
         kwargs['partial'] = self.partial
         kwargs['coerce'] = self.coerce
         return name, path, args, kwargs

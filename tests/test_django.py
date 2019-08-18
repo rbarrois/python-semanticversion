@@ -2,8 +2,6 @@
 # Copyright (c) The python-semanticversion project
 # This code is distributed under the two-clause BSD License.
 
-from __future__ import unicode_literals
-
 import unittest
 import sys
 

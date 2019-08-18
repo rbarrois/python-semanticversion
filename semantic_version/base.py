@@ -2,13 +2,8 @@
 # Copyright (c) The python-semanticversion project
 # This code is distributed under the two-clause BSD License.
 
-from __future__ import unicode_literals
-
 import functools
 import re
-
-
-from .compat import base_cmp
 
 
 def _to_int(value):
@@ -23,6 +18,17 @@ def _has_leading_zero(value):
             and value[0] == '0'
             and value.isdigit()
             and value != '0')
+
+
+def base_cmp(x, y):
+    if x == y:
+        return 0
+    elif x > y:
+        return 1
+    elif x < y:
+        return -1
+    else:
+        return NotImplemented
 
 
 def identifier_cmp(a, b):
@@ -68,7 +74,7 @@ def identifier_list_cmp(a, b):
     return base_cmp(len(a), len(b))
 
 
-class Version(object):
+class Version:
 
     version_re = re.compile(r'^(\d+)\.(\d+)\.(\d+)(?:-([0-9a-zA-Z.-]+))?(?:\+([0-9a-zA-Z.-]+))?$')
     partial_version_re = re.compile(r'^(\d+)(?:\.(\d+)(?:\.(\d+))?)?(?:-([0-9a-zA-Z.-]*))?(?:\+([0-9a-zA-Z.-]*))?$')
@@ -82,8 +88,7 @@ class Version(object):
             patch=None,
             prerelease=None,
             build=None,
-            partial=False,
-    ):
+            partial=False):
         has_text = version_string is not None
         has_parts = not (major is minor is patch is prerelease is build is None)
         if not has_text ^ has_parts:
@@ -467,7 +472,7 @@ class Version(object):
         return self.__compare_helper(other, lambda x: x >= 0, notimpl_target=False)
 
 
-class SpecItem(object):
+class SpecItem:
     """A requirement specification."""
 
     KIND_ANY = '*'
@@ -570,7 +575,7 @@ class SpecItem(object):
         return hash((self.kind, self.spec))
 
 
-class Spec(object):
+class Spec:
     def __init__(self, *specs_strings):
         subspecs = [self.parse(spec) for spec in specs_strings]
         self.specs = sum(subspecs, ())

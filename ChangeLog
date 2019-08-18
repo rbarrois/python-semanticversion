@@ -9,6 +9,10 @@ ChangeLog
     * Allow creation of a ``Version`` directly from parsed components, as keyword arguments
       (``Version(major=1, minor=2, patch=3)``)
 
+*Removed:*
+
+    * Remove support for Python2 (End of life 4 months after this release)
+
 
 2.6.0 (2016-09-25)
 ------------------

@@ -5,7 +5,7 @@
 
 """Test the various functions from 'base'."""
 
-from .compat import unittest, is_python2
+import unittest
 
 from semantic_version import base
 
@@ -226,7 +226,6 @@ class VersionTestCase(unittest.TestCase):
             ]))
         )
 
-    @unittest.skipIf(is_python2, "Comparisons to other objects are broken in Py2.")
     def test_invalid_comparisons(self):
         v = base.Version('0.1.0')
         with self.assertRaises(TypeError):

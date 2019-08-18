@@ -13,9 +13,18 @@ if django_loaded:
     from django.conf import settings
     if not settings.configured:
         settings.configure(
-            DATABASES={'default': {'ENGINE': 'django.db.backends.sqlite3'}},
-            INSTALLED_APPS=['tests.django_test_app'],
+            DATABASES={
+                'default': {
+                    'ENGINE': 'django.db.backends.sqlite3',
+                    'NAME': 'tests/db/test.sqlite',
+                }
+            },
+            INSTALLED_APPS=[
+                'tests.django_test_app',
+            ],
             MIDDLEWARE_CLASSES=[],
         )
     django.setup()
+    from django.apps import apps
+    apps.populate(settings.INSTALLED_APPS)
 

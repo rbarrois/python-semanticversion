@@ -5,7 +5,7 @@
 
 """Test conformance to the specs."""
 
-from .compat import unittest, is_python2
+import unittest
 
 import semantic_version
 
