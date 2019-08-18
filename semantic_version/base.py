@@ -113,24 +113,52 @@ class Version(object):
         return int(value)
 
     def next_major(self):
-        if self.prerelease and self.minor == 0 and self.patch == 0:
-            return Version('.'.join(str(x) for x in [self.major, self.minor, self.patch]))
+        if self.prerelease and self.minor == self.patch == 0:
+            return Version(
+                major=self.major,
+                minor=0,
+                patch=0,
+                partial=self.partial,
+            )
         else:
-            return Version('.'.join(str(x) for x in [self.major + 1, 0, 0]))
+            return Version(
+                major=self.major + 1,
+                minor=0,
+                patch=0,
+                partial=self.partial,
+            )
 
     def next_minor(self):
         if self.prerelease and self.patch == 0:
-            return Version('.'.join(str(x) for x in [self.major, self.minor, self.patch]))
+            return Version(
+                major=self.major,
+                minor=self.minor,
+                patch=0,
+                partial=self.partial,
+            )
         else:
             return Version(
-                '.'.join(str(x) for x in [self.major, self.minor + 1, 0]))
+                major=self.major,
+                minor=self.minor + 1,
+                patch=0,
+                partial=self.partial,
+            )
 
     def next_patch(self):
         if self.prerelease:
-            return Version('.'.join(str(x) for x in [self.major, self.minor, self.patch]))
+            return Version(
+                major=self.major,
+                minor=self.minor,
+                patch=self.patch,
+                partial=self.partial,
+            )
         else:
             return Version(
-                '.'.join(str(x) for x in [self.major, self.minor, self.patch + 1]))
+                major=self.major,
+                minor=self.minor,
+                patch=self.patch + 1,
+                partial=self.partial,
+            )
 
     @classmethod
     def coerce(cls, version_string, partial=False):
