@@ -149,6 +149,22 @@ It is also possible to check whether a given string is a proper semantic version
     False
 
 
+Finally, one may create a :class:`Version` with named components instead:
+
+.. code-block:: pycon
+
+    >>> semantic_version.Version(major=0, minor=1, patch=2)
+    Version('0.1.2')
+
+In that case, ``major``, ``minor`` and ``patch`` are mandatory, and must be integers.
+``prerelease`` and ``patch``, if provided, must be tuples of strings:
+
+.. code-block:: pycon
+
+    >>> semantic_version.Version(major=0, minor=1, patch=2, prerelease=('alpha', '2'))
+    Version('0.1.2-alpha.2')
+
+
 Requirement specification
 -------------------------
 

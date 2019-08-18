@@ -76,6 +76,16 @@ Representing a version (the Version class)
         >>> str(Version('1.1.1'))
         '1.1.1'
 
+.. class:: Version(major: int, minor: int, patch: int, prereleases: tuple, build: tuple[, partial=False])
+
+    Constructed from named components:
+
+        .. code-block:: pycon
+
+            >>> Version(major=1, minor=2, patch=3)
+            Version('1.2.3')
+
+
 
     .. rubric:: Attributes
 

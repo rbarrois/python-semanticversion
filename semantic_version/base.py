@@ -73,8 +73,30 @@ class Version(object):
     version_re = re.compile(r'^(\d+)\.(\d+)\.(\d+)(?:-([0-9a-zA-Z.-]+))?(?:\+([0-9a-zA-Z.-]+))?$')
     partial_version_re = re.compile(r'^(\d+)(?:\.(\d+)(?:\.(\d+))?)?(?:-([0-9a-zA-Z.-]*))?(?:\+([0-9a-zA-Z.-]*))?$')
 
-    def __init__(self, version_string, partial=False):
-        major, minor, patch, prerelease, build = self.parse(version_string, partial)
+    def __init__(
+            self,
+            version_string=None,
+            *,
+            major=None,
+            minor=None,
+            patch=None,
+            prerelease=None,
+            build=None,
+            partial=False,
+    ):
+        has_text = version_string is not None
+        has_parts = not (major is minor is patch is prerelease is build is None)
+        if not has_text ^ has_parts:
+            raise ValueError("Call either Version('1.2.3') or Version(major=1, ...).")
+
+        if has_text:
+            major, minor, patch, prerelease, build = self.parse(version_string, partial)
+        else:
+            # Convenience: allow to omit prerelease/build.
+            if not partial:
+                prerelease = prerelease or ()
+                build = build or ()
+            self._validate_kwargs(major, minor, patch, prerelease, build, partial)
 
         self.major = major
         self.minor = minor
@@ -253,6 +275,25 @@ class Version(object):
 
             if item[0] == '0' and item.isdigit() and item != '0' and not allow_leading_zeroes:
                 raise ValueError("Invalid leading zero in identifier %r" % item)
+
+    @classmethod
+    def _validate_kwargs(cls, major, minor, patch, prerelease, build, partial):
+        if (
+                major != int(major)
+                or minor != cls._coerce(minor, partial)
+                or patch != cls._coerce(patch, partial)
+                or prerelease is None and not partial
+                or build is None and not partial
+        ):
+            raise ValueError(
+                "Invalid kwargs to Version(major=%r, minor=%r, patch=%r, "
+                "prerelease=%r, build=%r, partial=%r" % (
+                    major, minor, patch, prerelease, build, partial
+                ))
+        if prerelease is not None:
+            cls._validate_identifiers(prerelease, allow_leading_zeroes=False)
+        if build is not None:
+            cls._validate_identifiers(build, allow_leading_zeroes=True)
 
     def __iter__(self):
         return iter((self.major, self.minor, self.patch, self.prerelease, self.build))

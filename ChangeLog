@@ -1,6 +1,14 @@
 ChangeLog
 =========
 
+2.7.0 (unreleased)
+------------------
+
+*New:*
+
+    * Allow creation of a ``Version`` directly from parsed components, as keyword arguments
+      (``Version(major=1, minor=2, patch=3)``)
+
 
 2.6.0 (2016-09-25)
 ------------------

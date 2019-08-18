@@ -28,6 +28,15 @@ class ParsingTestCase(unittest.TestCase):
         '0.1.2-rc1.3-14.15+build.2012-01-01.11h34',
     ]
 
+    valid_fields = [
+        ('0.1.1', [0, 1, 1, (), ()]),
+        ('0.1.1', [0, 1, 1, None, None]),
+        ('0.1.2-rc1', [0, 1, 2, ('rc1',), ()]),
+        ('0.1.2-rc1.3.4', [0, 1, 2, ('rc1', '3', '4'), ()]),
+        ('0.1.2+build42-12.2012-01-01.12h23', [0, 1, 2, (), ('build42-12', '2012-01-01', '12h23')]),
+        ('0.1.2-rc1.3-14.15+build.2012-01-01.11h34', [0, 1, 2, ('rc1', '3-14', '15'), ('build', '2012-01-01', '11h34')]),
+    ]
+
     def test_invalid(self):
         for invalid in self.invalids:
             self.assertRaises(ValueError, semantic_version.Version, invalid)
@@ -36,6 +45,18 @@ class ParsingTestCase(unittest.TestCase):
         for valid in self.valids:
             version = semantic_version.Version(valid)
             self.assertEqual(valid, str(version))
+
+    def test_kwargs(self):
+        for text, fields in self.valid_fields:
+            major, minor, patch, prerelease, build = fields
+            version = semantic_version.Version(
+                major=major,
+                minor=minor,
+                patch=patch,
+                prerelease=prerelease,
+                build=build,
+            )
+            self.assertEqual(text, str(version))
 
 
 class ComparisonTestCase(unittest.TestCase):
