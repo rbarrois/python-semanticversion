@@ -31,10 +31,12 @@ class ComparisonTestCase(unittest.TestCase):
         ]
 
         for a, b, expected in cases:
-            result = base.identifier_cmp(a, b)
-            self.assertEqual(expected, result,
-                "identifier_cmp(%r, %r) returned %d instead of %d" % (
-                    a, b, result, expected))
+            with self.subTest(a=a, b=b):
+                result = base.identifier_cmp(a, b)
+                self.assertEqual(
+                    expected, result,
+                    "identifier_cmp(%r, %r) returned %d instead of %d" % (
+                        a, b, result, expected))
 
     def test_identifier_list_cmp(self):
         cases = [
@@ -50,10 +52,12 @@ class ComparisonTestCase(unittest.TestCase):
         ]
 
         for a, b, expected in cases:
-            result = base.identifier_list_cmp(a, b)
-            self.assertEqual(expected, result,
-                "identifier_list_cmp(%r, %r) returned %d instead of %d" % (
-                    a, b, result, expected))
+            with self.subTest(a=a, b=b):
+                result = base.identifier_list_cmp(a, b)
+                self.assertEqual(
+                    expected, result,
+                    "identifier_list_cmp(%r, %r) returned %d instead of %d" % (
+                        a, b, result, expected))
 
 
 class TopLevelTestCase(unittest.TestCase):
@@ -69,9 +73,11 @@ class TopLevelTestCase(unittest.TestCase):
 
     def test_compare(self):
         for a, b, expected in self.versions:
-            result = base.compare(a, b)
-            self.assertEqual(expected, result,
-                "compare(%r, %r) should be %r instead of %r" % (a, b, expected, result))
+            with self.subTest(a=a, b=b):
+                result = base.compare(a, b)
+                self.assertEqual(
+                    expected, result,
+                    "compare(%r, %r) should be %r instead of %r" % (a, b, expected, result))
 
     matches = (
         ('>=0.1.1', '0.1.2'),
@@ -82,8 +88,10 @@ class TopLevelTestCase(unittest.TestCase):
 
     def test_match(self):
         for spec, version in self.matches:
-            self.assertTrue(base.match(spec, version),
-                "%r should accept %r" % (spec, version))
+            with self.subTest(spec=spec, version=version):
+                self.assertTrue(
+                    base.match(spec, version),
+                    "%r should accept %r" % (spec, version))
 
     valid_strings = (
         '1.0.0-alpha',
@@ -106,8 +114,10 @@ class TopLevelTestCase(unittest.TestCase):
 
     def test_validate_valid(self):
         for version in self.valid_strings:
-            self.assertTrue(base.validate(version),
-                "%r should be a valid version" % (version,))
+            with self.subTest(version=version):
+                self.assertTrue(
+                    base.validate(version),
+                    "%r should be a valid version" % (version,))
 
     invalid_strings = (
         '1',
@@ -122,8 +132,10 @@ class TopLevelTestCase(unittest.TestCase):
 
     def test_validate_invalid(self):
         for version in self.invalid_strings:
-            self.assertFalse(base.validate(version),
-                "%r should not be a valid version" % (version,))
+            with self.subTest(version=version):
+                self.assertFalse(
+                    base.validate(version),
+                    "%r should not be a valid version" % (version,))
 
 
 class VersionTestCase(unittest.TestCase):
@@ -150,21 +162,25 @@ class VersionTestCase(unittest.TestCase):
 
     def test_parsing(self):
         for text, expected_fields in self.versions.items():
-            version = base.Version(text)
-            actual_fields = (version.major, version.minor, version.patch,
-                version.prerelease, version.build)
-            self.assertEqual(expected_fields, actual_fields)
+            with self.subTest(text=text):
+                version = base.Version(text)
+                actual_fields = (
+                    version.major, version.minor, version.patch,
+                    version.prerelease, version.build)
+                self.assertEqual(expected_fields, actual_fields)
 
     def test_str(self):
         for text in self.versions:
-            version = base.Version(text)
-            self.assertEqual(text, str(version))
-            self.assertEqual("Version('%s')" % text, repr(version))
+            with self.subTest(text=text):
+                version = base.Version(text)
+                self.assertEqual(text, str(version))
+                self.assertEqual("Version('%s')" % text, repr(version))
 
     def test_compare_to_self(self):
         for text in self.versions:
-            self.assertEqual(base.Version(text), base.Version(text))
-            self.assertNotEqual(text, base.Version(text))
+            with self.subTest(text=text):
+                self.assertEqual(base.Version(text), base.Version(text))
+                self.assertNotEqual(text, base.Version(text))
 
     partial_versions = {
         '1.1': (1, 1, None, None, None),
@@ -192,24 +208,28 @@ class VersionTestCase(unittest.TestCase):
 
     def test_parsing_partials(self):
         for text, expected_fields in self.partial_versions.items():
-            version = base.Version(text, partial=True)
-            actual_fields = (version.major, version.minor, version.patch,
-                version.prerelease, version.build)
-            self.assertEqual(expected_fields, actual_fields)
-            self.assertTrue(version.partial, "%r should have partial=True" % version)
+            with self.subTest(text=text):
+                version = base.Version(text, partial=True)
+                actual_fields = (
+                    version.major, version.minor, version.patch,
+                    version.prerelease, version.build)
+                self.assertEqual(expected_fields, actual_fields)
+                self.assertTrue(version.partial, "%r should have partial=True" % version)
 
     def test_str_partials(self):
         for text in self.partial_versions:
-            version = base.Version(text, partial=True)
-            self.assertEqual(text, str(version))
-            self.assertEqual("Version('%s', partial=True)" % text, repr(version))
+            with self.subTest(text=text):
+                version = base.Version(text, partial=True)
+                self.assertEqual(text, str(version))
+                self.assertEqual("Version('%s', partial=True)" % text, repr(version))
 
     def test_compare_partial_to_self(self):
         for text in self.partial_versions:
-            self.assertEqual(
-                base.Version(text, partial=True),
-                base.Version(text, partial=True))
-            self.assertNotEqual(text, base.Version(text, partial=True))
+            with self.subTest(text=text):
+                self.assertEqual(
+                    base.Version(text, partial=True),
+                    base.Version(text, partial=True))
+                self.assertNotEqual(text, base.Version(text, partial=True))
 
     def test_hash(self):
         self.assertEqual(1,
@@ -402,8 +422,9 @@ class SpecItemTestCase(unittest.TestCase):
 
     def test_invalids(self):
         for invalid in self.invalids:
-            with self.assertRaises(ValueError, msg="SpecItem(%r) should be invalid" % invalid):
-                _v = base.SpecItem(invalid)
+            with self.subTest(invalid=invalid):
+                with self.assertRaises(ValueError, msg="SpecItem(%r) should be invalid" % invalid):
+                    base.SpecItem(invalid)
 
     components = {
         '==0.1.0': (base.SpecItem.KIND_EQUAL, 0, 1, 0, None, None),
@@ -426,15 +447,16 @@ class SpecItemTestCase(unittest.TestCase):
 
     def test_components(self):
         for spec_text, components in self.components.items():
-            kind, major, minor, patch, prerelease, build = components
-            spec = base.SpecItem(spec_text)
+            with self.subTest(spec_text=spec_text):
+                kind, major, minor, patch, prerelease, build = components
+                spec = base.SpecItem(spec_text)
 
-            self.assertEqual(kind, spec.kind)
-            self.assertEqual(major, spec.spec.major)
-            self.assertEqual(minor, spec.spec.minor)
-            self.assertEqual(patch, spec.spec.patch)
-            self.assertEqual(prerelease, spec.spec.prerelease)
-            self.assertEqual(build, spec.spec.build)
+                self.assertEqual(kind, spec.kind)
+                self.assertEqual(major, spec.spec.major)
+                self.assertEqual(minor, spec.spec.minor)
+                self.assertEqual(patch, spec.spec.patch)
+                self.assertEqual(prerelease, spec.spec.prerelease)
+                self.assertEqual(build, spec.spec.build)
 
     matches = {
         '==0.1.0': (
@@ -533,13 +555,16 @@ class SpecItemTestCase(unittest.TestCase):
             matching, failing = versions
 
             for version_text in matching:
-                version = base.Version(version_text)
-                self.assertTrue(spec.match(version), "%r should match %r" % (version, spec))
+                with self.subTest(spec=spec_text, version=version_text):
+                    version = base.Version(version_text)
+                    self.assertTrue(spec.match(version), "%r should match %r" % (version, spec))
 
             for version_text in failing:
-                version = base.Version(version_text)
-                self.assertFalse(spec.match(version),
-                    "%r should not match %r" % (version, spec))
+                with self.subTest(spec=spec_text, excluded=version_text):
+                    version = base.Version(version_text)
+                    self.assertFalse(
+                        spec.match(version),
+                        "%r should not match %r" % (version, spec))
 
     def test_equality(self):
         spec1 = base.SpecItem('==0.1.0')
@@ -573,8 +598,9 @@ class CoerceTestCase(unittest.TestCase):
         for equivalent, samples in self.examples.items():
             target = base.Version(equivalent)
             for sample in samples:
-                v_sample = base.Version.coerce(sample)
-                self.assertEqual(target, v_sample)
+                with self.subTest(target=equivalent, sample=sample):
+                    v_sample = base.Version.coerce(sample)
+                    self.assertEqual(target, v_sample)
 
     def test_invalid(self):
         self.assertRaises(ValueError, base.Version.coerce, 'v1')
@@ -588,14 +614,15 @@ class SpecTestCase(unittest.TestCase):
 
     def test_parsing(self):
         for spec_list_text, specs in self.examples.items():
-            spec_list = base.Spec(spec_list_text)
+            with self.subTest(spec=spec_list_text):
+                spec_list = base.Spec(spec_list_text)
 
-            self.assertEqual(spec_list_text, str(spec_list))
-            self.assertNotEqual(spec_list_text, spec_list)
-            self.assertEqual(specs, [str(spec) for spec in spec_list])
+                self.assertEqual(spec_list_text, str(spec_list))
+                self.assertNotEqual(spec_list_text, spec_list)
+                self.assertCountEqual(specs, [str(spec) for spec in spec_list])
 
-            for spec_text in specs:
-                self.assertTrue(repr(base.SpecItem(spec_text)) in repr(spec_list))
+                for spec_text in specs:
+                    self.assertIn(str(base.SpecItem(spec_text)), repr(spec_list))
 
     split_examples = {
         ('>=0.1.1', '<0.1.2', '!=0.1.1+build1'): ['>=0.1.1', '<0.1.2', '!=0.1.1+build1'],
@@ -604,14 +631,15 @@ class SpecTestCase(unittest.TestCase):
 
     def test_parsing_split(self):
         for spec_list_texts, specs in self.split_examples.items():
-            spec_list = base.Spec(*spec_list_texts)
+            with self.subTest(spec=spec_list_texts):
+                spec_list = base.Spec(*spec_list_texts)
 
-            self.assertEqual(','.join(spec_list_texts), str(spec_list))
-            self.assertEqual(specs, [str(spec) for spec in spec_list])
-            self.assertEqual(spec_list, base.Spec(','.join(spec_list_texts)))
+                self.assertEqual(','.join(spec_list_texts), str(spec_list))
+                self.assertCountEqual(specs, [str(spec) for spec in spec_list])
+                self.assertEqual(spec_list, base.Spec(','.join(spec_list_texts)))
 
-            for spec_text in specs:
-                self.assertTrue(repr(base.SpecItem(spec_text)) in repr(spec_list))
+                for spec_text in specs:
+                    self.assertIn(str(base.SpecItem(spec_text)), repr(spec_list))
 
     matches = {
         # At least 0.1.1 including pre-releases, less than 0.1.2 excluding pre-releases
@@ -635,25 +663,32 @@ class SpecTestCase(unittest.TestCase):
             matching, failing = versions
 
             for version_text in matching:
-                version = base.Version(version_text)
-                self.assertTrue(version in spec_list,
-                    "%r should be in %r" % (version, spec_list))
-                self.assertTrue(spec_list.match(version),
-                    "%r should match %r" % (version, spec_list))
+                with self.subTest(spec=spec_list_text, matching=version_text):
+                    version = base.Version(version_text)
+                    self.assertTrue(
+                        version in spec_list,
+                        "%r should be in %r" % (version, spec_list))
+                    self.assertTrue(
+                        spec_list.match(version),
+                        "%r should match %r" % (version, spec_list))
 
             for version_text in failing:
-                version = base.Version(version_text)
-                self.assertFalse(version in spec_list,
-                    "%r should not be in %r" % (version, spec_list))
-                self.assertFalse(spec_list.match(version),
-                    "%r should not match %r" % (version, spec_list))
+                with self.subTest(spec=spec_list_text, excluded=version_text):
+                    version = base.Version(version_text)
+                    self.assertFalse(
+                        version in spec_list,
+                        "%r should not be in %r" % (version, spec_list))
+                    self.assertFalse(
+                        spec_list.match(version),
+                        "%r should not match %r" % (version, spec_list))
 
     def test_equality(self):
         for spec_list_text in self.examples:
-            slist1 = base.Spec(spec_list_text)
-            slist2 = base.Spec(spec_list_text)
-            self.assertEqual(slist1, slist2)
-            self.assertFalse(slist1 == spec_list_text)
+            with self.subTest(spec=spec_list_text):
+                slist1 = base.Spec(spec_list_text)
+                slist2 = base.Spec(spec_list_text)
+                self.assertEqual(slist1, slist2)
+                self.assertFalse(slist1 == spec_list_text)
 
     def test_filter_empty(self):
         s = base.Spec('>=0.1.1')

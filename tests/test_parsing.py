@@ -39,24 +39,27 @@ class ParsingTestCase(unittest.TestCase):
 
     def test_invalid(self):
         for invalid in self.invalids:
-            self.assertRaises(ValueError, semantic_version.Version, invalid)
+            with self.subTest(version=invalid):
+                self.assertRaises(ValueError, semantic_version.Version, invalid)
 
     def test_simple(self):
         for valid in self.valids:
-            version = semantic_version.Version(valid)
-            self.assertEqual(valid, str(version))
+            with self.subTest(version=valid):
+                version = semantic_version.Version(valid)
+                self.assertEqual(valid, str(version))
 
     def test_kwargs(self):
         for text, fields in self.valid_fields:
-            major, minor, patch, prerelease, build = fields
-            version = semantic_version.Version(
-                major=major,
-                minor=minor,
-                patch=patch,
-                prerelease=prerelease,
-                build=build,
-            )
-            self.assertEqual(text, str(version))
+            with self.subTest(version=text):
+                major, minor, patch, prerelease, build = fields
+                version = semantic_version.Version(
+                    major=major,
+                    minor=minor,
+                    patch=patch,
+                    prerelease=prerelease,
+                    build=build,
+                )
+                self.assertEqual(text, str(version))
 
 
 class ComparisonTestCase(unittest.TestCase):
@@ -75,15 +78,16 @@ class ComparisonTestCase(unittest.TestCase):
             first_ver = semantic_version.Version(first)
             for j, second in enumerate(self.order):
                 second_ver = semantic_version.Version(second)
-                if i < j:
-                    self.assertTrue(first_ver < second_ver, '%r !< %r' % (first_ver, second_ver))
-                elif i == j:
-                    self.assertTrue(first_ver == second_ver, '%r != %r' % (first_ver, second_ver))
-                else:
-                    self.assertTrue(first_ver > second_ver, '%r !> %r' % (first_ver, second_ver))
+                with self.subTest(first=first, second=second):
+                    if i < j:
+                        self.assertTrue(first_ver < second_ver, '%r !< %r' % (first_ver, second_ver))
+                    elif i == j:
+                        self.assertTrue(first_ver == second_ver, '%r != %r' % (first_ver, second_ver))
+                    else:
+                        self.assertTrue(first_ver > second_ver, '%r !> %r' % (first_ver, second_ver))
 
-                cmp_res = -1 if i < j else (1 if i > j else 0)
-                self.assertEqual(cmp_res, semantic_version.compare(first, second))
+                    cmp_res = -1 if i < j else (1 if i > j else 0)
+                    self.assertEqual(cmp_res, semantic_version.compare(first, second))
 
     unordered = [
         [
@@ -105,16 +109,18 @@ class ComparisonTestCase(unittest.TestCase):
     def test_unordered(self):
         for group in self.unordered:
             for a, b in itertools.combinations(group, 2):
-                v1 = semantic_version.Version(a)
-                v2 = semantic_version.Version(b)
-                self.assertTrue(v1 == v1, "%r != %r" % (v1, v1))
-                self.assertFalse(v1 != v1, "%r != %r" % (v1, v1))
-                self.assertFalse(v1 == v2, "%r == %r" % (v1, v2))
-                self.assertTrue(v1 != v2, "%r !!= %r" % (v1, v2))
-                self.assertFalse(v1 < v2, "%r !< %r" % (v1, v2))
-                self.assertFalse(v1 <= v2, "%r !<= %r" % (v1, v2))
-                self.assertFalse(v2 > v1, "%r !> %r" % (v2, v1))
-                self.assertFalse(v2 >= v1, "%r !>= %r" % (v2, v1))
+                with self.subTest(a=a, b=b):
+                    v1 = semantic_version.Version(a)
+                    v2 = semantic_version.Version(b)
+                    self.assertTrue(v1 == v1, "%r != %r" % (v1, v1))
+                    self.assertFalse(v1 != v1, "%r != %r" % (v1, v1))
+                    self.assertFalse(v1 == v2, "%r == %r" % (v1, v2))
+                    self.assertTrue(v1 != v2, "%r !!= %r" % (v1, v2))
+                    self.assertFalse(v1 < v2, "%r !< %r" % (v1, v2))
+                    self.assertFalse(v1 <= v2, "%r !<= %r" % (v1, v2))
+                    self.assertFalse(v2 > v1, "%r !> %r" % (v2, v1))
+                    self.assertFalse(v2 >= v1, "%r !>= %r" % (v2, v1))
+
 
 if __name__ == '__main__':  # pragma: no cover
     unittest.main()

@@ -128,24 +128,27 @@ class MatchTestCase(unittest.TestCase):
 
     def test_invalid(self):
         for invalid in self.invalid_specs:
-            with self.assertRaises(ValueError, msg="Spec(%r) should be invalid" % invalid):
-                semantic_version.Spec(invalid)
+            with self.subTest(spec=invalid):
+                with self.assertRaises(ValueError, msg="Spec(%r) should be invalid" % invalid):
+                    semantic_version.Spec(invalid)
 
     def test_simple(self):
         for valid in self.valid_specs:
-            spec = semantic_version.SpecItem(valid)
-            normalized = str(spec)
-            self.assertEqual(spec, semantic_version.SpecItem(normalized))
+            with self.subTest(spec=valid):
+                spec = semantic_version.SpecItem(valid)
+                normalized = str(spec)
+                self.assertEqual(spec, semantic_version.SpecItem(normalized))
 
     def test_match(self):
-        for spec_txt, versions in self.matches.items():
-            spec = semantic_version.Spec(spec_txt)
-            self.assertNotEqual(spec, spec_txt)
-            for version_txt in versions:
-                version = semantic_version.Version(version_txt)
-                self.assertTrue(spec.match(version), "%r does not match %r" % (version, spec))
-                self.assertTrue(semantic_version.match(spec_txt, version_txt))
-                self.assertTrue(version in spec, "%r not in %r" % (version, spec))
+        for spec_text, versions in self.matches.items():
+            for version_text in versions:
+                with self.subTest(spec=spec_text, version=version_text):
+                    spec = semantic_version.Spec(spec_text)
+                    self.assertNotEqual(spec, spec_text)
+                    version = semantic_version.Version(version_text)
+                    self.assertTrue(spec.match(version), "%r does not match %r" % (version, spec))
+                    self.assertTrue(semantic_version.match(spec_text, version_text))
+                    self.assertTrue(version in spec, "%r not in %r" % (version, spec))
 
     def test_contains(self):
         spec = semantic_version.Spec('<=0.1.1')
