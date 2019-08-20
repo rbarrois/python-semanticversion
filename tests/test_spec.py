@@ -17,7 +17,7 @@ class FormatTests(unittest.TestCase):
     """Tests proper version validation."""
 
     def test_major_minor_patch(self):
-        ### SPEC:
+        # SPEC:
         # A normal version number MUST take the form X.Y.Z
 
         with self.assertRaises(ValueError):
@@ -29,7 +29,7 @@ class FormatTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             Version('1.2.3.4')
 
-        ### SPEC:
+        # SPEC:
         # Where X, Y, and Z are non-negative integers,
 
         with self.assertRaises(ValueError):
@@ -42,8 +42,7 @@ class FormatTests(unittest.TestCase):
         self.assertEqual(2, v.minor)
         self.assertEqual(3, v.patch)
 
-
-        ### Spec:
+        # SPEC:
         # And MUST NOT contain leading zeroes
         with self.assertRaises(ValueError):
             Version('1.2.01')
@@ -58,7 +57,7 @@ class FormatTests(unittest.TestCase):
         self.assertEqual(0, v.patch)
 
     def test_prerelease(self):
-        ### SPEC:
+        # SPEC:
         # A pre-release version MAY be denoted by appending a hyphen and a
         # series of dot separated identifiers immediately following the patch
         # version.
@@ -69,7 +68,7 @@ class FormatTests(unittest.TestCase):
         v = Version('1.2.3-23')
         self.assertEqual(('23',), v.prerelease)
 
-        ### SPEC:
+        # SPEC:
         # Identifiers MUST comprise only ASCII alphanumerics and hyphen.
         # Identifiers MUST NOT be empty
         with self.assertRaises(ValueError):
@@ -77,7 +76,7 @@ class FormatTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             Version('1.2.3-..')
 
-        ### SPEC:
+        # SPEC:
         # Numeric identifiers MUST NOT include leading zeroes.
 
         with self.assertRaises(ValueError):
@@ -89,7 +88,7 @@ class FormatTests(unittest.TestCase):
         self.assertEqual(('0a', '0', '000zz'), v.prerelease)
 
     def test_build(self):
-        ### SPEC:
+        # SPEC:
         # Build metadata MAY be denoted by appending a plus sign and a series of
         # dot separated identifiers immediately following the patch or
         # pre-release version
@@ -99,7 +98,7 @@ class FormatTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             Version('1.2.3 +4')
 
-        ### SPEC:
+        # SPEC:
         # Identifiers MUST comprise only ASCII alphanumerics and hyphen.
         # Identifiers MUST NOT be empty
         with self.assertRaises(ValueError):
@@ -112,7 +111,7 @@ class FormatTests(unittest.TestCase):
         self.assertEqual(('0', '0a', '01'), v.build)
 
     def test_precedence(self):
-        ### SPEC:
+        # SPEC:
         # Precedence is determined by the first difference when comparing from
         # left to right as follows: Major, minor, and patch versions are always
         # compared numerically.
@@ -121,13 +120,13 @@ class FormatTests(unittest.TestCase):
         self.assertLess(Version('2.0.0'), Version('2.1.0'))
         self.assertLess(Version('2.1.0'), Version('2.1.1'))
 
-        ### SPEC:
+        # SPEC:
         # When major, minor, and patch are equal, a pre-release version has
         # lower precedence than a normal version.
         # Example: 1.0.0-alpha < 1.0.0
         self.assertLess(Version('1.0.0-alpha'), Version('1.0.0'))
 
-        ### SPEC:
+        # SPEC:
         # Precedence for two pre-release versions with the same major, minor,
         # and patch version MUST be determined by comparing each dot separated
         # identifier from left to right until a difference is found as follows:
@@ -146,7 +145,8 @@ class FormatTests(unittest.TestCase):
         # smaller set, if all of the preceding identifiers are equal.
         self.assertLess(Version('1.0.0-a.b.c'), Version('1.0.0-a.b.c.0'))
 
-        # Example: 1.0.0-alpha < 1.0.0-alpha.1 < 1.0.0-alpha.beta < 1.0.0-beta < 1.0.0-beta.2 < 1.0.0-beta.11 < 1.0.0-rc.1 < 1.0.0.
+        # Example: 1.0.0-alpha < 1.0.0-alpha.1 < 1.0.0-alpha.beta
+        # < 1.0.0-beta < 1.0.0-beta.2 < 1.0.0-beta.11 < 1.0.0-rc.1 < 1.0.0.
         self.assertLess(Version('1.0.0-alpha'), Version('1.0.0-alpha.1'))
         self.assertLess(Version('1.0.0-alpha.1'), Version('1.0.0-alpha.beta'))
         self.assertLess(Version('1.0.0-alpha.beta'), Version('1.0.0-beta'))

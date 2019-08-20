@@ -9,6 +9,7 @@ import unittest
 
 from semantic_version import base
 
+
 class ComparisonTestCase(unittest.TestCase):
     def test_identifier_cmp(self):
         cases = [
@@ -232,14 +233,17 @@ class VersionTestCase(unittest.TestCase):
                 self.assertNotEqual(text, base.Version(text, partial=True))
 
     def test_hash(self):
-        self.assertEqual(1,
+        self.assertEqual(
+            1,
             len(set([base.Version('0.1.0'), base.Version('0.1.0')])))
 
-        self.assertEqual(2,
+        self.assertEqual(
+            2,
             len(set([base.Version('0.1.0'), base.Version('0.1.0', partial=True)])))
 
         # A fully-defined 'partial' version isn't actually partial.
-        self.assertEqual(1,
+        self.assertEqual(
+            1,
             len(set([
                 base.Version('0.1.0-a1+34'),
                 base.Version('0.1.0-a1+34', partial=True)
@@ -432,7 +436,6 @@ class SpecItemTestCase(unittest.TestCase):
         '==0.1.2+build3.14': (base.SpecItem.KIND_EQUAL, 0, 1, 2, (), ('build3', '14')),
         '<=0.1.1': (base.SpecItem.KIND_LTE, 0, 1, 1, None, None),
         '<0.1.1': (base.SpecItem.KIND_LT, 0, 1, 1, None, None),
-        '<=0.1.1': (base.SpecItem.KIND_LTE, 0, 1, 1, None, None),
         '!=0.1.1+': (base.SpecItem.KIND_NEQ, 0, 1, 1, (), ()),
         '<=0.1.1-': (base.SpecItem.KIND_LTE, 0, 1, 1, (), None),
         '>=0.2.3-rc2': (base.SpecItem.KIND_GTE, 0, 2, 3, ('rc2',), None),
@@ -487,9 +490,9 @@ class SpecItemTestCase(unittest.TestCase):
             ['0.1.0', '0.0.0'],
             ['0.1.1', '0.1.1-zzz+999', '1.2.0', '0.1.1+build3'],
         ),
-        '<=0.1.1': (
-            ['0.1.1+build4', '0.1.1-alpha', '0.1.0'],
-            ['0.2.3', '1.1.1', '0.1.2'],
+        '<=0.1.2': (
+            ['0.1.2+build4', '0.1.2-alpha', '0.1.0'],
+            ['0.2.3', '1.1.1', '0.1.3'],
         ),
         '<0.1.1-': (
             ['0.1.0', '0.1.1-alpha', '0.1.1-alpha+4'],
@@ -578,7 +581,8 @@ class SpecItemTestCase(unittest.TestCase):
         self.assertEqual(base.SpecItem.KIND_EQUAL, spec.kind)
 
     def test_hash(self):
-        self.assertEqual(1,
+        self.assertEqual(
+            1,
             len(set([base.SpecItem('==0.1.0'), base.SpecItem('==0.1.0')])))
 
 
@@ -755,7 +759,8 @@ class SpecTestCase(unittest.TestCase):
         self.assertFalse('ii' in base.Spec('>=0.1.1'))
 
     def test_hash(self):
-        self.assertEqual(1,
+        self.assertEqual(
+            1,
             len(set([base.Spec('>=0.1.1'), base.Spec('>=0.1.1')])))
 
 

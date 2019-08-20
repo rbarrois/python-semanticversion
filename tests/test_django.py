@@ -3,7 +3,6 @@
 # This code is distributed under the two-clause BSD License.
 
 import unittest
-import sys
 
 import semantic_version
 
@@ -14,8 +13,6 @@ if django_loaded:  # pragma: no cover
     from semantic_version import django_fields
     from .django_test_app import models
 
-    import django
-    from django.conf import settings
     from django.core import serializers
     from django.core.management import call_command
     from django.db import connection
@@ -168,7 +165,8 @@ class DjangoFieldTestCase(unittest.TestCase):
 
     def test_serialization(self):
         o1 = models.VersionModel(version=Version('0.1.1'), spec=Spec('==0.1.1,!=0.1.1-alpha'))
-        o2 = models.VersionModel(version=Version('0.4.3-rc3+build3'),
+        o2 = models.VersionModel(
+            version=Version('0.4.3-rc3+build3'),
             spec=Spec('<=0.1.1-rc2,!=0.1.1-rc1'))
 
         data = serializers.serialize('json', [o1, o2])

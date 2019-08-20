@@ -32,9 +32,13 @@ test:
 	python -W default setup.py test
 
 # Note: we run the linter in two runs, because our __init__.py files has specific warnings we want to exclude
-lint:
+lint: check-manifest flake8
+
+check-manifest:
 	check-manifest
-	$(FLAKE8) --config .flake8 --exclude $(PACKAGE)/__init__.py $(PACKAGE)
+
+flake8:
+	$(FLAKE8) --config .flake8 --exclude $(PACKAGE)/__init__.py $(PACKAGE) $(TESTS_DIR)
 	$(FLAKE8) --config .flake8 --ignore F401 $(PACKAGE)/__init__.py
 
 coverage:

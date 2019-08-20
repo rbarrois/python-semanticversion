@@ -27,4 +27,3 @@ if django_loaded:
     django.setup()
     from django.apps import apps
     apps.populate(settings.INSTALLED_APPS)
-
