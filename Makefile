@@ -38,7 +38,7 @@ check-manifest:
 	check-manifest
 
 flake8:
-	$(FLAKE8) --config .flake8 --exclude $(PACKAGE)/__init__.py $(PACKAGE) $(TESTS_DIR)
+	$(FLAKE8) --config .flake8 --exclude $(PACKAGE)/__init__.py $(PACKAGE) $(TESTS_DIR) setup.py
 	$(FLAKE8) --config .flake8 --ignore F401 $(PACKAGE)/__init__.py
 
 coverage:
