@@ -429,6 +429,8 @@ class Version:
         return 0
 
     def __hash__(self):
+        # We don't include 'partial', since this is strictly equivalent to having
+        # at least a field being `None`.
         return hash((self.major, self.minor, self.patch, self.prerelease, self.build))
 
     def __cmp__(self, other):
