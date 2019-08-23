@@ -19,7 +19,7 @@ clean:
 	@rm -rf tmp_test/
 
 
-install-deps:
+update:
 	pip install --upgrade pip setuptools
 	pip install --upgrade -r requirements_dev.txt
 	pip freeze
