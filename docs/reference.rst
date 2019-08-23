@@ -181,6 +181,20 @@ Representing a version (the Version class)
                      :attr:`prerelease` component: it's the smallest "pure"
                      patch version strictly greater than that version.
 
+    .. method:: truncate(self, level='patch']):
+
+        Returns a similar level, but truncated at the provided level.
+
+        .. code-block:: pycon
+
+            >>> Version('1.0.2-rc1+b43.24').truncate()
+            Version('1.0.2')
+            >>> Version('1.0.2-rc1+b43.24').truncate('minor')
+            Version('1.0.0')
+            >>> Version('1.0.2-rc1+b43.24').truncate('prerelease')
+            Version('1.0.2-rc1')
+
+
     .. method:: __iter__(self)
 
         Iterates over the version components (:attr:`major`, :attr:`minor`,

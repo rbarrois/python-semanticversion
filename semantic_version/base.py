@@ -165,6 +165,42 @@ class Version:
                 partial=self.partial,
             )
 
+    def truncate(self, level='patch'):
+        """Return a new Version object, truncated up to the selected level."""
+        if level == 'build':
+            return self
+        elif level == 'prerelease':
+            return Version(
+                major=self.major,
+                minor=self.minor,
+                patch=self.patch,
+                prerelease=self.prerelease,
+                partial=self.partial,
+            )
+        elif level == 'patch':
+            return Version(
+                major=self.major,
+                minor=self.minor,
+                patch=self.patch,
+                partial=self.partial,
+            )
+        elif level == 'minor':
+            return Version(
+                major=self.major,
+                minor=self.minor,
+                patch=None if self.partial else 0,
+                partial=self.partial,
+            )
+        elif level == 'major':
+            return Version(
+                major=self.major,
+                minor=None if self.partial else 0,
+                patch=None if self.partial else 0,
+                partial=self.partial,
+            )
+        else:
+            raise ValueError("Invalid truncation level `%s`." % level)
+
     @classmethod
     def coerce(cls, version_string, partial=False):
         """Coerce an arbitrary version string into a semver-compatible one.
