@@ -18,6 +18,11 @@ ChangeLog
 
     * Remove support for Python2 (End of life 4 months after this release)
 
+*Refactor:*
+
+    * Switch spec computation to a two-step process: convert the spec to a combination
+      of simple comparisons with clear semantics, then use those.
+
 
 2.6.0 (2016-09-25)
 ------------------

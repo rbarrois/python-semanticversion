@@ -59,10 +59,13 @@ Import it in your code:
 
 .. currentmodule:: semantic_version
 
-This module provides two classes to handle semantic versions:
+This module provides classes to handle semantic versions:
 
 - :class:`Version` represents a version number (``0.1.1-alpha+build.2012-05-15``)
-- :class:`Spec` represents a requirement specification (``>=0.1.1,<0.3.0``)
+- :class:`BaseSpec`-derived classes represent requirement specifications (``>=0.1.1,<0.3.0``):
+
+  - :class:`NativeSpec` describes a natural description syntax
+  - :class:`NpmSpec` is used for NPM-style range descriptions.
 
 Versions
 --------
@@ -168,12 +171,12 @@ In that case, ``major``, ``minor`` and ``patch`` are mandatory, and must be inte
 Requirement specification
 -------------------------
 
-The :class:`Spec` object describes a range of accepted versions:
+The :class:`NativeSpec` object describes a range of accepted versions:
 
 
 .. code-block:: pycon
 
-    >>> s = Spec('>=0.1.1')  # At least 0.1.1
+    >>> s = NativeSpec('>=0.1.1')  # At least 0.1.1
     >>> s.match(Version('0.1.1'))
     True
     >>> s.match(Version('0.1.1-alpha1'))  # pre-release satisfy version spec
@@ -185,42 +188,28 @@ Simpler test syntax is also available using the ``in`` keyword:
 
 .. code-block:: pycon
 
-    >>> s = Spec('==0.1.1')
+    >>> s = NativeSpec('==0.1.1')
     >>> Version('0.1.1-alpha1') in s
     True
     >>> Version('0.1.2') in s
     False
 
 
-Combining specifications can be expressed in two ways:
-
-- Components separated by commas in a single string:
+Combining specifications can be expressed as follows:
 
   .. code-block:: pycon
 
-      >>> Spec('>=0.1.1,<0.3.0')
-
-- Components given as different arguments:
-
-  .. code-block:: pycon
-
-      >>> Spec('>=0.1.1', '<0.3.0')
-
-- A mix of both versions:
-
-  .. code-block:: pycon
-
-      >>> Spec('>=0.1.1', '!=0.2.4-alpha,<0.3.0')
+      >>> NativeSpec('>=0.1.1,<0.3.0')
 
 
 Using a specification
 """""""""""""""""""""
 
-The :func:`Spec.filter` method filters an iterable of :class:`Version`:
+The :func:`NativeSpec.filter` method filters an iterable of :class:`Version`:
 
 .. code-block:: pycon
 
-    >>> s = Spec('>=0.1.0,<0.4.0')
+    >>> s = NativeSpec('>=0.1.0,<0.4.0')
     >>> versions = (Version('0.%d.0' % i) for i in range(6))
     >>> for v in s.filter(versions):
     ...     print v
@@ -233,7 +222,7 @@ It is also possible to select the 'best' version from such iterables:
 
 .. code-block:: pycon
 
-    >>> s = Spec('>=0.1.0,<0.4.0')
+    >>> s = NativeSpec('>=0.1.0,<0.4.0')
     >>> versions = (Version('0.%d.0' % i) for i in range(6))
     >>> s.select(versions)
     Version('0.3.0')
@@ -259,22 +248,21 @@ version-like string into a valid semver version:
 Including pre-release identifiers in specifications
 """""""""""""""""""""""""""""""""""""""""""""""""""
 
-When testing a :class:`Version` against a :class:`Spec`, comparisons are only
-performed for components defined in the :class:`Spec`; thus, a pre-release
-version (``1.0.0-alpha``), while not strictly equal to the non pre-release
-version (``1.0.0``), satisfies the ``==1.0.0`` :class:`Spec`.
+When testing a :class:`Version` against a :class:`NativeSpec`, comparisons are
+adjusted for common user expectations; thus, a pre-release version (``1.0.0-alpha``)
+will not satisfy the ``==1.0.0`` :class:`NativeSpec`.
 
-Pre-release identifiers will only be compared if included in the :class:`Spec`
+Pre-release identifiers will only be compared if included in the :class:`BaseSpec`
 definition or (for the empty pre-release number) if a single dash is appended
 (``1.0.0-``):
 
 
 .. code-block:: pycon
 
-    >>> Version('0.1.0-alpha') in Spec('>=0.1.0')  # No pre-release identifier
-    True
-    >>> Version('0.1.0-alpha') in Spec('>=0.1.0-')  # Include pre-release in checks
+    >>> Version('0.1.0-alpha') in NativeSpec('<0.1.0')  # No pre-release identifier
     False
+    >>> Version('0.1.0-alpha') in NativeSpec('<0.1.0-')  # Include pre-release in checks
+    True
 
 
 Including build metadata in specifications
@@ -286,9 +274,9 @@ build metadata is equality.
 
 .. code-block:: pycon
 
-    >>> Version('1.0.0+build2') in Spec('<=1.0.0')   # Build metadata ignored
+    >>> Version('1.0.0+build2') in NativeSpec('<=1.0.0')   # Build metadata ignored
     True
-    >>> Version('1.0.0+build2') in Spec('==1.0.0+build2')  # Include build in checks
+    >>> Version('1.0.0+build1') in NativeSpec('==1.0.0+build2')  # Include build in checks
     False
 
 
@@ -296,7 +284,7 @@ Using with Django
 =================
 
 The :mod:`semantic_version.django_fields` module provides django fields to
-store :class:`Version` or :class:`Spec` objects.
+store :class:`Version` or :class:`BaseSpec` objects.
 
 More documentation is available in the :doc:`django` section.
 

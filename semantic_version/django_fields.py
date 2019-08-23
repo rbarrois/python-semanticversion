@@ -74,10 +74,21 @@ class SpecField(SemVerField):
     }
     description = _("Version specification list")
 
+    def __init__(self, *args, **kwargs):
+        self.syntax = kwargs.pop('syntax', base.DEFAULT_SYNTAX)
+        super().__init__(*args, **kwargs)
+
+    def deconstruct(self):
+        """Handle django.db.migrations."""
+        name, path, args, kwargs = super().deconstruct()
+        if self.syntax != base.DEFAULT_SYNTAX:
+            kwargs['syntax'] = self.syntax
+        return name, path, args, kwargs
+
     def to_python(self, value):
         """Converts any value to a base.Spec field."""
         if value is None or value == '':
             return value
-        if isinstance(value, base.Spec):
+        if isinstance(value, base.BaseSpec):
             return value
-        return base.Spec(value)
+        return base.BaseSpec.parse(value, syntax=self.syntax)

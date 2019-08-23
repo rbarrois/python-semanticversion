@@ -4,7 +4,7 @@
 
 import unittest
 
-import semantic_version
+from semantic_version import Version, NativeSpec
 
 from .setup_django import django_loaded
 
@@ -58,22 +58,21 @@ def save_and_refresh(obj):
     obj = obj.__class__.objects.get(id=obj.id)
 
 
-Version = semantic_version.Version
-Spec = semantic_version.Spec
-
-
 @unittest.skipIf(not django_loaded, "Django not installed")
 class DjangoFieldTestCase(unittest.TestCase):
     def test_version(self):
-        obj = models.VersionModel(version=Version('0.1.1'), spec=Spec('==0.1.1,!=0.1.1-alpha'))
+        obj = models.VersionModel(
+            version=Version('0.1.1'),
+            spec=SimpleSpec('==0.1.1,!=0.1.1-alpha'),
+        )
 
         self.assertEqual(Version('0.1.1'), obj.version)
-        self.assertEqual(Spec('==0.1.1,!=0.1.1-alpha'), obj.spec)
+        self.assertEqual(SimpleSpec('==0.1.1,!=0.1.1-alpha'), obj.spec)
 
         alt_obj = models.VersionModel(version=obj.version, spec=obj.spec)
 
         self.assertEqual(Version('0.1.1'), alt_obj.version)
-        self.assertEqual(Spec('==0.1.1,!=0.1.1-alpha'), alt_obj.spec)
+        self.assertEqual(SimpleSpec('==0.1.1,!=0.1.1-alpha'), alt_obj.spec)
         self.assertEqual(obj.spec, alt_obj.spec)
         self.assertEqual(obj.version, alt_obj.version)
 
@@ -83,7 +82,7 @@ class DjangoFieldTestCase(unittest.TestCase):
         obj.full_clean()
 
         self.assertEqual(Version('0.1.1'), obj.version)
-        self.assertEqual(Spec('==0.1.1,!=0.1.1-alpha'), obj.spec)
+        self.assertEqual(SimpleSpec('==0.1.1,!=0.1.1-alpha'), obj.spec)
 
     def test_version_save(self):
         """Test saving object with a VersionField."""
@@ -93,13 +92,13 @@ class DjangoFieldTestCase(unittest.TestCase):
         self.assertIsNone(obj.optional)
         save_and_refresh(obj)
         self.assertIsNotNone(obj.id)
-        self.assertIsNone(obj.optional_spec)
+        self.assertIsNone(obj.optional)
 
         # now set to something that is not null
-        spec = Spec('==0,!=0.2')
-        obj.optional_spec = spec
+        version = Version('1.2.3')
+        obj.optional = version
         save_and_refresh(obj)
-        self.assertEqual(obj.optional_spec, spec)
+        self.assertEqual(obj.optional, version)
 
     def test_spec_save(self):
         """Test saving object with a SpecField."""
@@ -112,7 +111,7 @@ class DjangoFieldTestCase(unittest.TestCase):
         self.assertIsNone(obj.optional_spec)
 
         # now set to something that is not null
-        spec = Spec('==0,!=0.2')
+        spec = SimpleSpec('==0,!=0.2')
         obj.optional_spec = spec
         save_and_refresh(obj)
         self.assertEqual(obj.optional_spec, spec)
@@ -121,7 +120,7 @@ class DjangoFieldTestCase(unittest.TestCase):
         obj = models.VersionModel(version='0.1.1', spec='==0,!=0.2')
         obj.full_clean()
         self.assertEqual(Version('0.1.1'), obj.version)
-        self.assertEqual(Spec('==0,!=0.2'), obj.spec)
+        self.assertEqual(SimpleSpec('==0,!=0.2'), obj.spec)
 
     def test_coerce_clean(self):
         obj = models.CoerceVersionModel(version='0.1.1a+2', partial='23')
@@ -164,10 +163,14 @@ class DjangoFieldTestCase(unittest.TestCase):
         obj.full_clean()
 
     def test_serialization(self):
-        o1 = models.VersionModel(version=Version('0.1.1'), spec=Spec('==0.1.1,!=0.1.1-alpha'))
+        o1 = models.VersionModel(
+            version=Version('0.1.1'),
+            spec=SimpleSpec('==0.1.1,!=0.1.1-alpha'),
+        )
         o2 = models.VersionModel(
             version=Version('0.4.3-rc3+build3'),
-            spec=Spec('<=0.1.1-rc2,!=0.1.1-rc1'))
+            spec=SimpleSpec('<=0.1.1-rc2,!=0.1.1-rc1'),
+        )
 
         data = serializers.serialize('json', [o1, o2])
 
@@ -186,7 +189,7 @@ class DjangoFieldTestCase(unittest.TestCase):
         o2 = models.PartialVersionModel(
             partial=Version('0.4.3-rc3+build3', partial=True),
             optional='',
-            optional_spec=Spec('==0.1.1,!=0.1.1-alpha'),
+            optional_spec=SimpleSpec('==0.1.1,!=0.1.1-alpha'),
         )
 
         data = serializers.serialize('json', [o1, o2])
@@ -234,8 +237,8 @@ class FullMigrateTests(TransactionTestCase):
 class DbInteractingTestCase(DjangoTestCase):
 
     def test_db_interaction(self):
-        o1 = models.VersionModel(version=Version('0.1.1'), spec=Spec('<0.2.4-rc42'))
-        o2 = models.VersionModel(version=Version('0.4.3-rc3+build3'), spec=Spec('==0.4.3'))
+        o1 = models.VersionModel(version=Version('0.1.1'), spec=SimpleSpec('<0.2.4-rc42'))
+        o2 = models.VersionModel(version=Version('0.4.3-rc3+build3'), spec=SimpleSpec('==0.4.3'))
 
         o1.save()
         o2.save()
