@@ -14,6 +14,7 @@ if django_loaded:
     class VersionModel(models.Model):
         version = semver_fields.VersionField(verbose_name='my version')
         spec = semver_fields.SpecField(verbose_name='my spec')
+        npm_spec = semver_fields.SpecField(syntax='npm', blank=True, verbose_name='npm spec')
 
     class PartialVersionModel(models.Model):
         partial = semver_fields.VersionField(partial=True, verbose_name='partial version')

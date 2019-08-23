@@ -4,7 +4,7 @@
 
 import unittest
 
-from semantic_version import Version, NativeSpec
+from semantic_version import Version, SimpleSpec, NpmSpec
 
 from .setup_django import django_loaded
 
@@ -64,25 +64,29 @@ class DjangoFieldTestCase(unittest.TestCase):
         obj = models.VersionModel(
             version=Version('0.1.1'),
             spec=SimpleSpec('==0.1.1,!=0.1.1-alpha'),
+            npm_spec=NpmSpec('1.2 - 2.3'),
         )
 
         self.assertEqual(Version('0.1.1'), obj.version)
         self.assertEqual(SimpleSpec('==0.1.1,!=0.1.1-alpha'), obj.spec)
+        self.assertEqual(NpmSpec('1.2 - 2.3'), obj.npm_spec)
 
-        alt_obj = models.VersionModel(version=obj.version, spec=obj.spec)
+        alt_obj = models.VersionModel(version=obj.version, spec=obj.spec, npm_spec=obj.npm_spec)
 
         self.assertEqual(Version('0.1.1'), alt_obj.version)
         self.assertEqual(SimpleSpec('==0.1.1,!=0.1.1-alpha'), alt_obj.spec)
         self.assertEqual(obj.spec, alt_obj.spec)
+        self.assertEqual(obj.npm_spec, alt_obj.npm_spec)
         self.assertEqual(obj.version, alt_obj.version)
 
     def test_version_clean(self):
         """Calling .full_clean() should convert str to Version/Spec objects."""
-        obj = models.VersionModel(version='0.1.1', spec='==0.1.1,!=0.1.1-alpha')
+        obj = models.VersionModel(version='0.1.1', spec='==0.1.1,!=0.1.1-alpha', npm_spec='1.x')
         obj.full_clean()
 
         self.assertEqual(Version('0.1.1'), obj.version)
         self.assertEqual(SimpleSpec('==0.1.1,!=0.1.1-alpha'), obj.spec)
+        self.assertEqual(NpmSpec('1.x'), obj.npm_spec)
 
     def test_version_save(self):
         """Test saving object with a VersionField."""
@@ -166,10 +170,12 @@ class DjangoFieldTestCase(unittest.TestCase):
         o1 = models.VersionModel(
             version=Version('0.1.1'),
             spec=SimpleSpec('==0.1.1,!=0.1.1-alpha'),
+            npm_spec=NpmSpec('1.2 - 2.3'),
         )
         o2 = models.VersionModel(
             version=Version('0.4.3-rc3+build3'),
             spec=SimpleSpec('<=0.1.1-rc2,!=0.1.1-rc1'),
+            npm_spec=NpmSpec('1.2 - 2.3'),
         )
 
         data = serializers.serialize('json', [o1, o2])
@@ -177,8 +183,10 @@ class DjangoFieldTestCase(unittest.TestCase):
         obj1, obj2 = serializers.deserialize('json', data)
         self.assertEqual(o1.version, obj1.object.version)
         self.assertEqual(o1.spec, obj1.object.spec)
+        self.assertEqual(o1.npm_spec, obj1.object.npm_spec)
         self.assertEqual(o2.version, obj2.object.version)
         self.assertEqual(o2.spec, obj2.object.spec)
+        self.assertEqual(o2.npm_spec, obj2.object.npm_spec)
 
     def test_serialization_partial(self):
         o1 = models.PartialVersionModel(
@@ -218,6 +226,11 @@ class FieldMigrationTests(DjangoTestCase):
     def test_spec_field(self):
         field = django_fields.SpecField()
         expected = {'max_length': 200}
+        self.assertEqual(field.deconstruct()[3], expected)
+
+    def test_nondefault_spec_field(self):
+        field = django_fields.SpecField(syntax='npm')
+        expected = {'max_length': 200, 'syntax': 'npm'}
         self.assertEqual(field.deconstruct()[3], expected)
 
 

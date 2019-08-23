@@ -280,6 +280,22 @@ build metadata is equality.
     False
 
 
+NPM-based ranges
+----------------
+
+The :class:`NpmSpec` class handles NPM-style ranges:
+
+.. code-block:: pycon
+
+    >>> Version('1.2.3') in NpmSpec('1.2.2 - 1.4')
+    True
+    >>> Version('1.2.3') in NpmSpec('<1.x || >=1.2.3')
+    True
+
+Refer to https://docs.npmjs.com/misc/semver.html for a detailed description of NPM
+range syntax.
+
+
 Using with Django
 =================
 

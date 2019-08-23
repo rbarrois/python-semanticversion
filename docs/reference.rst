@@ -512,6 +512,22 @@ rules apply:
         :rtype: ``(*spec)`` tuple
 
 
+.. class:: NpmSpec(spec_string)
+
+    .. versionadded:: 2.8
+
+    A NPM-compliant version matching engine, based on the https://docs.npmjs.com/misc/semver.html specification.
+
+    .. code-block:: pycon
+
+        >>> Version('0.1.2') in NpmSpec('0.1.0-alpha.2 .. 0.2.4')
+        True
+        >>> Version('0.1.2') in NpmSpec('>=0.1.1 <0.1.3 || 2.x')
+        True
+        >>> Version('2.3.4') in NpmSpec('>=0.1.1 <0.1.3 || 2.x')
+        True
+
+
 .. class:: SpecItem(spec_string)
 
     .. note:: This class belong to the private python-semanticversion API.
