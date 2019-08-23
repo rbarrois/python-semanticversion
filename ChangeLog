@@ -10,6 +10,10 @@ ChangeLog
       (``Version(major=1, minor=2, patch=3)``)
     * Add ``Version.truncate()`` to build a truncated copy of a ``Version``
 
+*Bugfix:*
+
+    * Fix inconsistent behaviour regarding versions with a prerelease specification.
+
 *Removed:*
 
     * Remove support for Python2 (End of life 4 months after this release)

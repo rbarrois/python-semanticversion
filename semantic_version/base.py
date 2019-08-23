@@ -441,7 +441,7 @@ class Version:
                 base_cmp,  # Major is still mandatory
                 make_optional(base_cmp),
                 make_optional(base_cmp),
-                make_optional(prerelease_cmp),
+                prerelease_cmp,
                 make_optional(build_cmp),
             ]
         else:
@@ -568,6 +568,8 @@ class SpecItem:
         if self.kind == self.KIND_ANY:
             return True
         elif self.kind == self.KIND_LT:
+            if version.prerelease and self.spec.prerelease is None:
+                version = Version(major=version.major, minor=version.minor, patch=version.patch)
             return version < self.spec
         elif self.kind == self.KIND_LTE:
             return version <= self.spec
@@ -578,6 +580,8 @@ class SpecItem:
         elif self.kind == self.KIND_GT:
             return version > self.spec
         elif self.kind == self.KIND_NEQ:
+            if version.prerelease and version.truncate() == self.spec.truncate() and self.spec.prerelease is None:
+                return False
             return version != self.spec
         elif self.kind == self.KIND_CARET:
             if self.spec.major != 0:

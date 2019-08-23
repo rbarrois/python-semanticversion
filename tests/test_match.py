@@ -47,22 +47,13 @@ class MatchTestCase(unittest.TestCase):
             '1.0.0',
         ],
         '==0.1.2': [
-            '0.1.2-rc1',
-            '0.1.2-rc1.3.4',
             '0.1.2+build42-12.2012-01-01.12h23',
-            '0.1.2-rc1.3-14.15+build.2012-01-01.11h34',
         ],
         '=0.1.2': [
-            '0.1.2-rc1',
-            '0.1.2-rc1.3.4',
             '0.1.2+build42-12.2012-01-01.12h23',
-            '0.1.2-rc1.3-14.15+build.2012-01-01.11h34',
         ],
         '0.1.2': [
-            '0.1.2-rc1',
-            '0.1.2-rc1.3.4',
             '0.1.2+build42-12.2012-01-01.12h23',
-            '0.1.2-rc1.3-14.15+build.2012-01-01.11h34',
         ],
         '<=0.1.2': [
             '0.1.1',
@@ -146,9 +137,9 @@ class MatchTestCase(unittest.TestCase):
                     spec = semantic_version.Spec(spec_text)
                     self.assertNotEqual(spec, spec_text)
                     version = semantic_version.Version(version_text)
+                    self.assertIn(version, spec)
                     self.assertTrue(spec.match(version), "%r does not match %r" % (version, spec))
                     self.assertTrue(semantic_version.match(spec_text, version_text))
-                    self.assertTrue(version in spec, "%r not in %r" % (version, spec))
 
     def test_contains(self):
         spec = semantic_version.Spec('<=0.1.1')
@@ -164,7 +155,7 @@ class MatchTestCase(unittest.TestCase):
         strict_spec = semantic_version.Spec('>=0.1.1-')
         lax_spec = semantic_version.Spec('>=0.1.1')
         version = semantic_version.Version('0.1.1-rc1+4.2')
-        self.assertTrue(version in lax_spec, "%r should be in %r" % (version, lax_spec))
+        self.assertFalse(version in lax_spec, "%r should not be in %r" % (version, lax_spec))
         self.assertFalse(version in strict_spec, "%r should not be in %r" % (version, strict_spec))
 
     def test_build_check(self):

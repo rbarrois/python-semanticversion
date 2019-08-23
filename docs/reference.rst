@@ -330,8 +330,8 @@ does not map well onto `SemVer`_ precedence rules:
 
 In order to have version specification behave naturally, the rules are the following:
 
-* If no pre-release number was included in the specification, pre-release numbers
-  are ignored when deciding whether a version satisfies a specification.
+* If no pre-release number was included in the specification, versions with a pre-release
+  numbers are excluded from matching that specification.
 * If no build metadata was included in the specification, build metadata is ignored
   when deciding whether a version satisfies a specification.
 
