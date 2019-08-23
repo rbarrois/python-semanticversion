@@ -4,6 +4,7 @@
 
 import functools
 import re
+import warnings
 
 
 def _to_int(value):
@@ -534,7 +535,13 @@ class SpecItem:
 
     re_spec = re.compile(r'^(<|<=||=|==|>=|>|!=|\^|~|~=)(\d.*)$')
 
-    def __init__(self, requirement_string):
+    def __init__(self, requirement_string, _warn=True):
+        if _warn:
+            warnings.warn(
+                "The `SpecItem` class will be removed in 3.0.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         kind, spec = self.parse(requirement_string)
         self.kind = kind
         self.spec = spec
@@ -568,11 +575,11 @@ class SpecItem:
     @classmethod
     def from_matcher(cls, matcher):
         if matcher == Always():
-            return cls('*')
+            return cls('*', _warn=False)
         elif matcher == Never():
-            return cls('<0.0.0-')
+            return cls('<0.0.0-', _warn=False)
         elif isinstance(matcher, Range):
-            return cls('%s%s' % (matcher.operator, matcher.target))
+            return cls('%s%s' % (matcher.operator, matcher.target), _warn=False)
 
     def match(self, version):
         return self._clause.match(version)
@@ -1002,17 +1009,9 @@ class Range(Matcher):
 
 
 @BaseSpec.register_syntax
-class Spec(BaseSpec):
+class SimpleSpec(BaseSpec):
 
     SYNTAX = 'simple'
-
-    def __init__(self, expression, *legacy_extras):
-        expression = ','.join((expression,) + legacy_extras)
-        super().__init__(expression)
-
-    def __iter__(self):
-        for clause in self.clause:
-            yield SpecItem.from_matcher(clause)
 
     @classmethod
     def _parse_to_clause(cls, expression):
@@ -1181,6 +1180,36 @@ class Spec(BaseSpec):
                     return Range(Range.OP_LT, target.next_minor())
                 else:
                     return Range(Range.OP_LTE, target)
+
+
+class LegacySpec(SimpleSpec):
+    def __init__(self, *expressions):
+        warnings.warn(
+            "The Spec() class will be removed in 3.1; use SimpleSpec() instead.",
+            PendingDeprecationWarning,
+            stacklevel=2,
+        )
+
+        if len(expressions) > 1:
+            warnings.warn(
+                "Passing 2+ arguments to SimpleSpec will be removed in 3.0; concatenate them with ',' instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        expression = ','.join(expressions)
+        super().__init__(expression)
+
+    def __iter__(self):
+        warnings.warn(
+            "Iterating over the components of a SimpleSpec object will be removed in 3.0.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        for clause in self.clause:
+            yield SpecItem.from_matcher(clause)
+
+
+Spec = LegacySpec
 
 
 @BaseSpec.register_syntax

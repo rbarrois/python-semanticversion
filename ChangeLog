@@ -10,10 +10,16 @@ ChangeLog
       (``Version(major=1, minor=2, patch=3)``)
     * Add ``Version.truncate()`` to build a truncated copy of a ``Version``
     * Add ``NpmSpec(...)``, following strict NPM matching rules (https://docs.npmjs.com/misc/semver)
+    * Add ``Spec.parse('xxx', syntax='<syntax>')`` for simpler multi-syntax support
 
 *Bugfix:*
 
     * Fix inconsistent behaviour regarding versions with a prerelease specification.
+
+*Deprecated:*
+
+    * Deprecate the ``Spec`` class (Removed in 3.1); use the ``SimpleSpec`` class instead
+    * Deprecate the internal ``SpecItem`` class (Removed in 3.0).
 
 *Removed:*
 

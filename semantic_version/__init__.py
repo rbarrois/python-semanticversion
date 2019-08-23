@@ -3,7 +3,7 @@
 # This code is distributed under the two-clause BSD License.
 
 
-from .base import compare, match, validate, NativeSpec, NpmSpec, Spec, SpecItem, Version
+from .base import compare, match, validate, SimpleSpec, NpmSpec, Spec, SpecItem, Version
 
 
 __author__ = "Raphaël Barrois <raphael.barrois+semver@polytechnique.org>"

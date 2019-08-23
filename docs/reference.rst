@@ -319,110 +319,21 @@ Version specifications (the Spec class)
 Version specifications describe a 'range' of accepted versions:
 older than, equal, similar to, …
 
-The main issue with representing version specifications is that the usual syntax
-does not map well onto `SemVer`_ precedence rules:
+python-semanticversion supports different syntaxes for describing version range:
 
-* A specification of ``<1.3.4`` is not expected to allow ``1.3.4-rc2``, but strict `SemVer`_ comparisons allow it ;
-  prereleases has the issue of excluding ``1.3.3+build3`` ;
-* It may be necessary to exclude either all variations on a patch-level release
-  (``!=1.3.3``) or specifically one build-level release (``1.3.3+build.434``).
+- ``'simple'`` (through :class:`SimpleSpec`): A python-semantic specific syntax, which supports common patterns, and some NPM-inspired extensions;
+- ``'npm'`` (through :class:`NpmSpec`): The NPM syntax, based on https://docs.npmjs.com/misc/semver.html
 
 
-In order to have version specification behave naturally, the rules are the following:
+.. class:: BaseSpec(spec_string)
 
-* If no pre-release number was included in the specification, versions with a pre-release
-  numbers are excluded from matching that specification.
-* If no build metadata was included in the specification, build metadata is ignored
-  when deciding whether a version satisfies a specification.
-
-This means that::
-
-    >>> Version('1.1.1-rc1') in Spec('<1.1.1')
-    False
-    >>> Version('1.1.1-rc1') in Spec('<1.1.1-rc4')
-    True
-    >>> Version('1.1.1-rc1+build4') in Spec('<=1.1.1-rc1')
-    True
-    >>> Version('1.1.1-rc1+build4') in Spec('==1.1.1-rc1+build2')
-    False
-
-
-.. note:: python-semanticversion also accepts ``"*"`` as a version spec,
-          that matches all (valid) version strings.
-
-.. note:: python-semanticversion supports PyPI-style `compatible release clauses`_:
-
-          * ``~=2.2`` means "Any release between 2.2.0 and 3.0.0"
-          * ``~=1.4.5`` means "Any release between 1.4.5 and 1.5.0"
-
-.. note:: python-semanticversion includes support for NPM-style specs:
-
-          * ``~1.2.3`` means "Any release between 1.2.3 and 1.3.0"
-          * ``^1.3.4`` means "Any release between 1.3.4 and 2.0.0"
-
-In order to force matches to *strictly* compare version numbers, these additional
-rules apply:
-
-* Setting a pre-release separator without a pre-release identifier (``<=1.1.1-``)
-  forces match to take into account pre-release version::
-
-    >>> Version('1.1.1-rc1') in Spec('<1.1.1')
-    False
-    >>> Version('1.1.1-rc1') in Spec('<1.1.1-')
-    True
-
-* Setting a build metadata separator without build metadata (``<=1.1.1+``)
-  forces matches "up to the build metadata"; use this to include/exclude a
-  release lacking build metadata while excluding/including all other builds
-  of that release::
-
-    >>> Version('1.1.1') in Spec('==1.1.1+')
-    True
-    >>> Version('1.1.1+2') in Spec('==1.1.1+')
-    False
-
-
-.. warning:: As stated in the `SemVer`_ specification, the ordering of build metadata is *undefined*.
-             Thus, a :class:`Spec` string can only mention build metadata to include or exclude a specific version:
-
-             * ``==1.1.1+b1234`` includes this specific build
-             * ``!=1.1.1+b1234`` excludes it (but would match ``1.1.1+b1235``
-             * ``<1.1.1+b1`` is invalid
-
-
-
-.. class:: Spec(spec_string[, spec_string[, ...]])
-
-    Stores a list of :class:`SpecItem` and matches any :class:`Version` against all
-    contained :class:`specs <SpecItem>`.
-
-    It is built from a comma-separated list of version specifications::
-
-        >>> Spec('>=1.0.0,<1.2.0,!=1.1.4')
-        <Spec: (
-            <SpecItem: >= Version('1.0.0', partial=True)>,
-            <SpecItem: < Version('1.2.0', partial=True)>,
-            <SpecItem: != Version('1.1.4', partial=True)>
-        )>
-
-    Version specifications may also be passed in separated arguments::
-
-        >>> Spec('>=1.0.0', '<1.2.0', '!=1.1.4,!=1.1.13')
-        <Spec: (
-            <SpecItem: >= Version('1.0.0', partial=True)>,
-            <SpecItem: < Version('1.2.0', partial=True)>,
-            <SpecItem: != Version('1.1.4', partial=True)>,
-            <SpecItem: != Version('1.1.13', partial=True)>,
-        )>
+    Converts an expression describing a range of versions into a set of clauses,
+    and matches any :class:`Version` against those clauses.
 
 
     .. rubric:: Attributes
 
-
-    .. attribute:: specs
-
-        Tuple of :class:`SpecItem`, the included specifications.
-
+    This class has no public attributes.
 
     .. rubric:: Methods
 
@@ -484,15 +395,6 @@ rules apply:
             >>> str(Spec('>=0.1.1,!=0.1.2'))
             '>=0.1.1,!=0.1.2'
 
-    .. method:: __iter__(self)
-
-        Returns an iterator over the contained specs::
-
-            >>> for spec in Spec('>=0.1.1,!=0.1.2'):
-            ...     print spec
-            >=0.1.1
-            !=0.1.2
-
     .. method:: __hash__(self)
 
         Provides a hash based solely on the hash of contained specs.
@@ -503,18 +405,99 @@ rules apply:
     .. rubric:: Class methods
 
 
-    .. classmethod:: parse(self, specs_string)
+    .. classmethod:: parse(self, expression, syntax='simple')
 
-        Retrieve a ``(*specs)`` tuple from a string.
+        Retrieve a :class:`BaseSpec` object tuple from a string.
 
         :param str requirement_string: The textual description of the specifications
+        :param str syntax: The identifier of the syntax to use for parsing
         :raises: :exc:`ValueError`: if the ``requirement_string`` is invalid.
-        :rtype: ``(*spec)`` tuple
+        :rtype: :class:`BaseSpec` subclass
 
+        .. versionchanged:: 2.7
+            This method used to return a tuple of :class:`SpecItem` objects.
+
+
+.. class:: SimpleSpec(spec_string)
+
+    .. versionadded:: 2.7
+        Previously reachable through :class:`Spec`.
+
+    Applies the python-semanticversion range specification:
+
+    The main issue with representing version specifications is that the usual syntax
+    does not map well onto `SemVer`_ precedence rules:
+
+    * A specification of ``<1.3.4`` is not expected to allow ``1.3.4-rc2``, but strict `SemVer`_ comparisons allow it ;
+      prereleases has the issue of excluding ``1.3.3+build3`` ;
+    * It may be necessary to exclude either all variations on a patch-level release
+      (``!=1.3.3``) or specifically one build-level release (``1.3.3+build.434``).
+
+
+    In order to have version specification behave naturally, the rules are the following:
+
+    * If no pre-release number was included in the specification, versions with a pre-release
+      numbers are excluded from matching that specification.
+    * If no build metadata was included in the specification, build metadata is ignored
+      when deciding whether a version satisfies a specification.
+
+    This means that::
+
+        >>> Version('1.1.1-rc1') in Spec('<1.1.1')
+        False
+        >>> Version('1.1.1-rc1') in Spec('<1.1.1-rc4')
+        True
+        >>> Version('1.1.1-rc1+build4') in Spec('<=1.1.1-rc1')
+        True
+        >>> Version('1.1.1-rc1+build4') in Spec('==1.1.1-rc1+build2')
+        False
+
+
+    .. note:: python-semanticversion also accepts ``"*"`` as a version spec,
+              that matches all (valid) version strings.
+
+    .. note:: python-semanticversion supports PyPI-style `compatible release clauses`_:
+
+              * ``~=2.2`` means "Any release between 2.2.0 and 3.0.0"
+              * ``~=1.4.5`` means "Any release between 1.4.5 and 1.5.0"
+
+    .. note:: python-semanticversion includes support for NPM-style specs:
+
+              * ``~1.2.3`` means "Any release between 1.2.3 and 1.3.0"
+              * ``^1.3.4`` means "Any release between 1.3.4 and 2.0.0"
+
+    In order to force matches to *strictly* compare version numbers, these additional
+    rules apply:
+
+    * Setting a pre-release separator without a pre-release identifier (``<=1.1.1-``)
+      forces match to take into account pre-release version::
+
+        >>> Version('1.1.1-rc1') in Spec('<1.1.1')
+        False
+        >>> Version('1.1.1-rc1') in Spec('<1.1.1-')
+        True
+
+    * Setting a build metadata separator without build metadata (``<=1.1.1+``)
+      forces matches "up to the build metadata"; use this to include/exclude a
+      release lacking build metadata while excluding/including all other builds
+      of that release::
+
+        >>> Version('1.1.1') in Spec('==1.1.1+')
+        True
+        >>> Version('1.1.1+2') in Spec('==1.1.1+')
+        False
+
+
+    .. warning:: As stated in the `SemVer`_ specification, the ordering of build metadata is *undefined*.
+                 Thus, a :class:`Spec` string can only mention build metadata to include or exclude a specific version:
+
+                 * ``==1.1.1+b1234`` includes this specific build
+                 * ``!=1.1.1+b1234`` excludes it (but would match ``1.1.1+b1235``
+                 * ``<1.1.1+b1`` is invalid
 
 .. class:: NpmSpec(spec_string)
 
-    .. versionadded:: 2.8
+    .. versionadded:: 2.7
 
     A NPM-compliant version matching engine, based on the https://docs.npmjs.com/misc/semver.html specification.
 
@@ -528,7 +511,55 @@ rules apply:
         True
 
 
+.. class:: Spec(spec_string)
+
+    .. deprecated:: 2.7
+        The alias from :class:`Spec` to :class:`SimpleSpec` will be removed in 3.1.
+
+    Alias to :class:`LegacySpec`, for backwards compatibility.
+
+
+.. class:: LegacySpec(spec_string)
+
+    .. deprecated:: 2.7
+        The :class:`LegacySpec` class will be removed in 3.0; use :class:`SimpleSpec` instead.
+
+    A :class:`LegacySpec` class has the exact same behaviour as :class:`SimpleSpec`, with
+    backwards-compatible features:
+
+    It accepts version specifications passed in as separated arguments::
+
+        >>> Spec('>=1.0.0', '<1.2.0', '!=1.1.4,!=1.1.13')
+        <Spec: (
+            <SpecItem: >= Version('1.0.0', partial=True)>,
+            <SpecItem: < Version('1.2.0', partial=True)>,
+            <SpecItem: != Version('1.1.4', partial=True)>,
+            <SpecItem: != Version('1.1.13', partial=True)>,
+        )>
+
+    Its keeps a list of :class:`SpecItem` objects, based on the initial expression
+    components.
+
+    .. method:: __iter__(self)
+
+        Returns an iterator over the contained specs::
+
+            >>> for spec in Spec('>=0.1.1,!=0.1.2'):
+            ...     print spec
+            >=0.1.1
+            !=0.1.2
+
+    .. rubric:: Attributes
+
+    .. attribute:: specs
+
+        Tuple of :class:`SpecItem`, the included specifications.
+
+
 .. class:: SpecItem(spec_string)
+
+    .. deprecated:: 2.7
+        This class will be removed in 3.0.
 
     .. note:: This class belong to the private python-semanticversion API.
 
