@@ -681,6 +681,7 @@ class BaseSpec:
         return None
 
     def __contains__(self, version):
+        """Whether `version in self`."""
         if isinstance(version, Version):
             return self.match(version)
         return False
