@@ -325,7 +325,7 @@ does not map well onto `SemVer`_ precedence rules:
 * A specification of ``<1.3.4`` is not expected to allow ``1.3.4-rc2``, but strict `SemVer`_ comparisons allow it ;
   prereleases has the issue of excluding ``1.3.3+build3`` ;
 * It may be necessary to exclude either all variations on a patch-level release
-  (``!=1.3.3``) or specifically one build-level release (``1.3.3-build.434``).
+  (``!=1.3.3``) or specifically one build-level release (``1.3.3+build.434``).
 
 
 In order to have version specification behave naturally, the rules are the following:
@@ -374,7 +374,7 @@ rules apply:
 * Setting a build metadata separator without build metadata (``<=1.1.1+``)
   forces matches "up to the build metadata"; use this to include/exclude a
   release lacking build metadata while excluding/including all other builds
-  of that release
+  of that release::
 
     >>> Version('1.1.1') in Spec('==1.1.1+')
     True
