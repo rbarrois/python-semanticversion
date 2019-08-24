@@ -22,6 +22,7 @@ ChangeLog
 
     * Deprecate the ``Spec`` class (Removed in 3.1); use the ``SimpleSpec`` class instead
     * Deprecate the internal ``SpecItem`` class (Removed in 3.0).
+    * Deprecate the ``partial=True`` form of ``Version``; use ``SimpleSpec`` instead.
 
 *Removed:*
 

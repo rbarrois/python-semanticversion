@@ -2,6 +2,7 @@
 # Copyright (c) The python-semanticversion project
 # This code is distributed under the two-clause BSD License.
 
+import warnings
 
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -46,6 +47,12 @@ class VersionField(SemVerField):
 
     def __init__(self, *args, **kwargs):
         self.partial = kwargs.pop('partial', False)
+        if self.partial:
+            warnings.warn(
+                "Use of `partial=True` will be removed in 3.0.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         self.coerce = kwargs.pop('coerce', False)
         super().__init__(*args, **kwargs)
 

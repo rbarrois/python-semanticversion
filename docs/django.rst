@@ -18,6 +18,9 @@ with their :attr:`~django.db.models.CharField.max_length` defaulting to 200.
 
     .. attribute:: partial
 
+        .. deprecated:: 2.7
+            Support for partial versions will be removed in 3.0.
+
         Boolean; whether :attr:`~semantic_version.Version.partial` versions are allowed.
 
     .. attribute:: coerce

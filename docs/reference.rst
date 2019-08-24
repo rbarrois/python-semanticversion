@@ -95,6 +95,10 @@ Representing a version (the Version class)
         ``bool``, whether this is a 'partial' or a complete version number.
         Partial version number may lack :attr:`minor` or :attr:`patch` version numbers.
 
+        .. deprecated:: 2.7
+            The ability to define a partial version will be removed in version 3.0.
+            Use :class:`SimpleSpec` instead: ``SimpleSpec('1.x.x')``.
+
     .. attribute:: major
 
         ``int``, the major version number

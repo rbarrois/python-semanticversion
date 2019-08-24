@@ -103,14 +103,6 @@ If the provided version string is invalid, a :exc:`ValueError` will be raised:
         raise ValueError('Invalid version string: %r' % version_string)
     ValueError: Invalid version string: '0.1'
 
-In order to define "relaxed" version strings, you must pass in ``partial=True``:
-
-.. code-block:: pycon
-
-    >>> v = semantic_version.Version('0.1', partial=True)
-    >>> list(v)
-    [0, 1, None, None, None]
-
 
 Obviously, :class:`Versions <Version>` can be compared:
 

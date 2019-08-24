@@ -91,6 +91,12 @@ class Version:
             prerelease=None,
             build=None,
             partial=False):
+        if partial:
+            warnings.warn(
+                "Partial versions will be removed in 3.0; use SimpleSpec('1.x.x') instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         has_text = version_string is not None
         has_parts = not (major is minor is patch is prerelease is build is None)
         if not has_text ^ has_parts:
