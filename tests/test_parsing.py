@@ -120,9 +120,9 @@ class ComparisonTestCase(unittest.TestCase):
                     self.assertFalse(v1 == v2, "%r == %r" % (v1, v2))
                     self.assertTrue(v1 != v2, "%r !!= %r" % (v1, v2))
                     self.assertFalse(v1 < v2, "%r !< %r" % (v1, v2))
-                    self.assertFalse(v1 <= v2, "%r !<= %r" % (v1, v2))
+                    self.assertTrue(v1 <= v2, "%r !<= %r" % (v1, v2))
                     self.assertFalse(v2 > v1, "%r !> %r" % (v2, v1))
-                    self.assertFalse(v2 >= v1, "%r !>= %r" % (v2, v1))
+                    self.assertTrue(v2 >= v1, "%r !>= %r" % (v2, v1))
 
 
 if __name__ == '__main__':  # pragma: no cover

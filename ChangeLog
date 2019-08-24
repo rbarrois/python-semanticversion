@@ -11,6 +11,8 @@ ChangeLog
     * Add ``Version.truncate()`` to build a truncated copy of a ``Version``
     * Add ``NpmSpec(...)``, following strict NPM matching rules (https://docs.npmjs.com/misc/semver)
     * Add ``Spec.parse('xxx', syntax='<syntax>')`` for simpler multi-syntax support
+    * Add ``Version().precedence_key``, for use in ``sort(versions, key=lambda v: v.precedence_key)`` calls.
+      The contents of this attribute is an implementation detail.
 
 *Bugfix:*
 

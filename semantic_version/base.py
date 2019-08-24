@@ -7,13 +7,6 @@ import re
 import warnings
 
 
-def _to_int(value):
-    try:
-        return int(value), True
-    except ValueError:
-        return value, False
-
-
 def _has_leading_zero(value):
     return (value
             and value[0] == '0'
@@ -21,58 +14,66 @@ def _has_leading_zero(value):
             and value != '0')
 
 
-def base_cmp(x, y):
-    if x == y:
-        return 0
-    elif x > y:
-        return 1
-    elif x < y:
-        return -1
-    else:
+class MaxIdentifier:
+    __slots__ = []
+
+    def __repr__(self):
+        return 'MaxIdentifier()'
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__)
+
+
+@functools.total_ordering
+class NumericIdentifier:
+    __slots__ = ['value']
+
+    def __init__(self, value):
+        self.value = int(value)
+
+    def __repr__(self):
+        return 'NumericIdentifier(%r)' % self.value
+
+    def __eq__(self, other):
+        if isinstance(other, NumericIdentifier):
+            return self.value == other.value
         return NotImplemented
 
-
-def identifier_cmp(a, b):
-    """Compare two identifier (for pre-release/build components)."""
-
-    a_cmp, a_is_int = _to_int(a)
-    b_cmp, b_is_int = _to_int(b)
-
-    if a_is_int and b_is_int:
-        # Numeric identifiers are compared as integers
-        return base_cmp(a_cmp, b_cmp)
-    elif a_is_int:
-        # Numeric identifiers have lower precedence
-        return -1
-    elif b_is_int:
-        return 1
-    else:
-        # Non-numeric identifiers are compared lexicographically
-        return base_cmp(a_cmp, b_cmp)
+    def __lt__(self, other):
+        if isinstance(other, MaxIdentifier):
+            return True
+        elif isinstance(other, AlphaIdentifier):
+            return True
+        elif isinstance(other, NumericIdentifier):
+            return self.value < other.value
+        else:
+            return NotImplemented
 
 
-def identifier_list_cmp(a, b):
-    """Compare two identifier list (pre-release/build components).
+@functools.total_ordering
+class AlphaIdentifier:
+    __slots__ = ['value']
 
-    The rule is:
-        - Identifiers are paired between lists
-        - They are compared from left to right
-        - If all first identifiers match, the longest list is greater.
+    def __init__(self, value):
+        self.value = value.encode('ascii')
 
-    >>> identifier_list_cmp(['1', '2'], ['1', '2'])
-    0
-    >>> identifier_list_cmp(['1', '2a'], ['1', '2b'])
-    -1
-    >>> identifier_list_cmp(['1'], ['1', '2'])
-    -1
-    """
-    identifier_pairs = zip(a, b)
-    for id_a, id_b in identifier_pairs:
-        cmp_res = identifier_cmp(id_a, id_b)
-        if cmp_res != 0:
-            return cmp_res
-    # alpha1.3 < alpha1.3.1
-    return base_cmp(len(a), len(b))
+    def __repr__(self):
+        return 'AlphaIdentifier(%r)' % self.value
+
+    def __eq__(self, other):
+        if isinstance(other, AlphaIdentifier):
+            return self.value == other.value
+        return NotImplemented
+
+    def __lt__(self, other):
+        if isinstance(other, MaxIdentifier):
+            return True
+        elif isinstance(other, NumericIdentifier):
+            return False
+        elif isinstance(other, AlphaIdentifier):
+            return self.value < other.value
+        else:
+            return NotImplemented
 
 
 class Version:
@@ -388,127 +389,77 @@ class Version:
             ', partial=True' if self.partial else '',
         )
 
-    @classmethod
-    def _comparison_functions(cls, partial=False):
-        """Retrieve comparison methods to apply on version components.
-
-        This is a private API.
-
-        Args:
-            partial (bool): whether to provide 'partial' or 'strict' matching.
-
-        Returns:
-            5-tuple of cmp-like functions.
-        """
-
-        def prerelease_cmp(a, b):
-            """Compare prerelease components.
-
-            Special rule: a version without prerelease component has higher
-            precedence than one with a prerelease component.
-            """
-            if a and b:
-                return identifier_list_cmp(a, b)
-            elif a:
-                # Versions with prerelease field have lower precedence
-                return -1
-            elif b:
-                return 1
-            else:
-                return 0
-
-        def build_cmp(a, b):
-            """Compare build metadata.
-
-            Special rule: there is no ordering on build metadata.
-            """
-            if a == b:
-                return 0
-            else:
-                return NotImplemented
-
-        def make_optional(orig_cmp_fun):
-            """Convert a cmp-like function to consider 'None == *'."""
-            @functools.wraps(orig_cmp_fun)
-            def alt_cmp_fun(a, b):
-                if a is None or b is None:
-                    return 0
-                return orig_cmp_fun(a, b)
-
-            return alt_cmp_fun
-
-        if partial:
-            return [
-                base_cmp,  # Major is still mandatory
-                make_optional(base_cmp),
-                make_optional(base_cmp),
-                prerelease_cmp,
-                make_optional(build_cmp),
-            ]
-        else:
-            return [
-                base_cmp,
-                base_cmp,
-                base_cmp,
-                prerelease_cmp,
-                build_cmp,
-            ]
-
-    def __compare(self, other):
-        comparison_functions = self._comparison_functions(partial=self.partial or other.partial)
-        comparisons = zip(comparison_functions, self, other)
-
-        for cmp_fun, self_field, other_field in comparisons:
-            cmp_res = cmp_fun(self_field, other_field)
-            if cmp_res != 0:
-                return cmp_res
-
-        return 0
-
     def __hash__(self):
         # We don't include 'partial', since this is strictly equivalent to having
         # at least a field being `None`.
         return hash((self.major, self.minor, self.patch, self.prerelease, self.build))
 
+    @property
+    def precedence_key(self):
+        if self.prerelease:
+            prerelease_key = tuple(
+                NumericIdentifier(part) if part.isdecimal() else AlphaIdentifier(part)
+                for part in self.prerelease
+            )
+        else:
+            prerelease_key = (
+                MaxIdentifier(),
+            )
+
+        return (
+            self.major,
+            self.minor,
+            self.patch,
+            prerelease_key,
+        )
+
     def __cmp__(self, other):
         if not isinstance(other, self.__class__):
             return NotImplemented
-        return self.__compare(other)
-
-    def __compare_helper(self, other, condition, notimpl_target):
-        """Helper for comparison.
-
-        Allows the caller to provide:
-        - The condition
-        - The return value if the comparison is meaningless (ie versions with
-            build metadata).
-        """
-        if not isinstance(other, self.__class__):
+        if self < other:
+            return -1
+        elif self > other:
+            return 1
+        elif self == other:
+            return 0
+        else:
             return NotImplemented
 
-        cmp_res = self.__cmp__(other)
-        if cmp_res is NotImplemented:
-            return notimpl_target
-
-        return condition(cmp_res)
-
     def __eq__(self, other):
-        return self.__compare_helper(other, lambda x: x == 0, notimpl_target=False)
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return (
+            self.major == other.major
+            and self.minor == other.minor
+            and self.patch == other.patch
+            and (self.prerelease or ()) == (other.prerelease or ())
+            and (self.build or ()) == (other.build or ())
+        )
 
     def __ne__(self, other):
-        return self.__compare_helper(other, lambda x: x != 0, notimpl_target=True)
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return tuple(self) != tuple(other)
 
     def __lt__(self, other):
-        return self.__compare_helper(other, lambda x: x < 0, notimpl_target=False)
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self.precedence_key < other.precedence_key
 
     def __le__(self, other):
-        return self.__compare_helper(other, lambda x: x <= 0, notimpl_target=False)
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self.precedence_key <= other.precedence_key
 
     def __gt__(self, other):
-        return self.__compare_helper(other, lambda x: x > 0, notimpl_target=False)
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self.precedence_key > other.precedence_key
 
     def __ge__(self, other):
-        return self.__compare_helper(other, lambda x: x >= 0, notimpl_target=False)
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self.precedence_key >= other.precedence_key
 
 
 class SpecItem:
@@ -600,7 +551,7 @@ class SpecItem:
 
 
 def compare(v1, v2):
-    return base_cmp(Version(v1), Version(v2))
+    return Version(v1).__cmp__(Version(v2))
 
 
 def match(spec, version):

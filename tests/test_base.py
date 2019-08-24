@@ -10,57 +10,6 @@ import unittest
 from semantic_version import base
 
 
-class ComparisonTestCase(unittest.TestCase):
-    def test_identifier_cmp(self):
-        cases = [
-            # Integers
-            ('1', '1', 0),
-            ('1', '2', -1),
-            ('11', '2', 1),
-            ('3333', '40', 1),
-
-            # Text
-            ('aa', 'ab', -1),
-            ('aa', 'aa', 0),
-            ('ab', 'aa', 1),
-            ('aaa', 'ab', -1),
-
-            # Mixed
-            ('10', '1a', -1),
-            ('1a', '10', 1),
-            ('ab1', '42', 1),
-        ]
-
-        for a, b, expected in cases:
-            with self.subTest(a=a, b=b):
-                result = base.identifier_cmp(a, b)
-                self.assertEqual(
-                    expected, result,
-                    "identifier_cmp(%r, %r) returned %d instead of %d" % (
-                        a, b, result, expected))
-
-    def test_identifier_list_cmp(self):
-        cases = [
-            # Same length
-            (['1', '2', '3'], ['1', '2', '3'], 0),
-            (['1', '2', '3'], ['1', '3', '2'], -1),
-            (['1', '2', '4'], ['1', '2', '3'], 1),
-
-            # Mixed lengths
-            (['1', 'a'], ['1', 'a', '0'], -1),
-            (['1', 'a', '0'], ['1', 'a'], 1),
-            (['1', 'b'], ['1', 'a', '1000'], 1),
-        ]
-
-        for a, b, expected in cases:
-            with self.subTest(a=a, b=b):
-                result = base.identifier_list_cmp(a, b)
-                self.assertEqual(
-                    expected, result,
-                    "identifier_list_cmp(%r, %r) returned %d instead of %d" % (
-                        a, b, result, expected))
-
-
 class TopLevelTestCase(unittest.TestCase):
     """Test module-level functions."""
 

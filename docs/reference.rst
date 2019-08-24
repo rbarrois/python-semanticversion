@@ -128,6 +128,13 @@ Representing a version (the Version class)
         May be ``None`` for a :attr:`partial` version number in a ``<major>``, ``<major>.<minor>``,
         ``<major>.<minor>.<patch>`` or ``<major>.<minor>.<patch>-<prerelease>`` format.
 
+    .. attribute:: precedence_key
+
+        Read-only attribute; suited for use in ``sort(versions, key=lambda v: v.precedence_key)``.
+        The actual value of the attribute is considered an implementation detail; the only
+        guarantee is that ordering versions by their precedence_key will comply with semver precedence rules.
+
+        Note that the :attr:`~Version.build` isn't included in the precedence_key computatin.
 
     .. rubric:: Methods
 
