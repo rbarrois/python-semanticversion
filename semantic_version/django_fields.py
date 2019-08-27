@@ -16,7 +16,7 @@ class SemVerField(models.CharField):
         kwargs.setdefault('max_length', 200)
         super(SemVerField, self).__init__(*args, **kwargs)
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection, *args):
         """Convert from the database format.
 
         This should be the inverse of self.get_prep_value()
