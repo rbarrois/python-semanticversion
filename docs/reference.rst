@@ -326,15 +326,18 @@ Representing a version (the Version class)
 Version specifications (the Spec class)
 ---------------------------------------
 
+The `SemVer`_ specification doesn't provide a standard description of version ranges.
+And simply using a naive implementation leads to unexpected situations: ``>=1.2.0,<1.3.0`` isn't expected to match
+version ``1.3.0-rc.1``, yet a strict application of `SemVer`_ precedence rules would include it.
 
-Version specifications describe a 'range' of accepted versions:
-older than, equal, similar to, …
+In order to solve this problem, each `SemVer`_-based package management platform has designed its own rules.
+python-semanticversion provides a couple of implementations of those range definition syntaxes:
 
-python-semanticversion supports different syntaxes for describing version range:
-
-- ``'simple'`` (through :class:`SimpleSpec`): A python-semantic specific syntax, which supports common patterns, and some NPM-inspired extensions;
+- ``'simple'`` (through :class:`SimpleSpec`): A python-semanticversion specific syntax, which supports simple / intuitive patterns, and some NPM-inspired extensions;
 - ``'npm'`` (through :class:`NpmSpec`): The NPM syntax, based on https://docs.npmjs.com/misc/semver.html
+- More might be added in the future.
 
+Each of those ``Spec`` classes provides a shared set of methods to work with versions:
 
 .. class:: BaseSpec(spec_string)
 
@@ -436,75 +439,69 @@ python-semanticversion supports different syntaxes for describing version range:
 
     Applies the python-semanticversion range specification:
 
-    The main issue with representing version specifications is that the usual syntax
-    does not map well onto `SemVer`_ precedence rules:
-
     * A specification of ``<1.3.4`` is not expected to allow ``1.3.4-rc2``, but strict `SemVer`_ comparisons allow it ;
-      prereleases has the issue of excluding ``1.3.3+build3`` ;
     * It may be necessary to exclude either all variations on a patch-level release
       (``!=1.3.3``) or specifically one build-level release (``1.3.3+build.434``).
 
 
-    In order to have version specification behave naturally, the rules are the following:
+    .. rubric:: Specification structure:
 
-    * If no pre-release number was included in the specification, versions with a pre-release
-      numbers are excluded from matching that specification.
-    * If no build metadata was included in the specification, build metadata is ignored
-      when deciding whether a version satisfies a specification.
+    In order to have version specification behave naturally, the :class:`SimpleSpec` syntax uses the following rules:
 
-    This means that::
+    * A specification expression is a list of clauses separated by a comma (``,``);
+    * A version is matched by an expression if, and only if, it matches every clause in the expression;
+    * A clause of ``*`` matches every valid version;
 
-        >>> Version('1.1.1-rc1') in Spec('<1.1.1')
-        False
-        >>> Version('1.1.1-rc1') in Spec('<1.1.1-rc4')
-        True
-        >>> Version('1.1.1-rc1+build4') in Spec('<=1.1.1-rc1')
-        True
-        >>> Version('1.1.1-rc1+build4') in Spec('==1.1.1-rc1+build2')
-        False
+    .. rubric:: Equality clauses
 
+    * A clause of ``==0.1.2`` will match version ``0.1.2`` and any version differing only through its build number (``0.1.2+b42`` matches);
+    * A clause of ``==0.1.2+b42`` will only match that specific version: ``0.1.2+b43`` and ``0.1.2`` are excluded;
+    * A clause of ``==0.1.2+`` will only match that specific version: ``0.1.2+b42`` is excluded;
+    * A clause of ``!=0.1.2`` will prevent all versions with the same major/minor/patch combination: ``0.1.2-rc.1`` and ``0.1.2+b42`` are excluded'
+    * A clause of ``!=0.1.2-`` will only prevent build variations of that version: ``0.1.2-rc.1`` is included, but not ``0.1.2+b42``;
+    * A clause of ``!=0.1.2+`` will exclude only that exact version: ``0.1.2-rc.1`` and ``0.1.2+b42`` are included;
+    * Only a ``==`` or ``!=`` clause may contain build-level metadata: ``==1.2.3+b42`` is valid, ``>=1.2.3+b42`` isn't.
 
-    .. note:: python-semanticversion also accepts ``"*"`` as a version spec,
-              that matches all (valid) version strings.
+    .. rubric:: Comparison clauses
 
-    .. note:: python-semanticversion supports PyPI-style `compatible release clauses`_:
+    * A clause of ``<0.1.2`` will match versions strictly below ``0.1.2``, excluding prereleases of ``0.1.2``: ``0.1.2-rc.1`` is excluded;
+    * A clause of ``<0.1.2-`` will match versions strictly below ``0.1.2``, including prereleases of ``0.1.2``: ``0.1.2-rc.1`` is included;
+    * A clause of ``<0.1.2-rc.3`` will match versions strictly below ``0.1.2-rc.3``, including prereleases: ``0.1.2-rc.2`` is included;
+    * A clause of ``<=XXX`` will match versions that match ``<XXX`` or ``==XXX``
+    * A clause of ``>0.1.2`` will match versions strictly above ``0.1.2``, including all prereleases of ``0.1.3``.
+    * A clause of ``>0.1.2-rc.3`` will match versions strictly above ``0.1.2-rc.3``, including matching prereleases of ``0.1.2``: ``0.1.2-rc.10`` is included;
+    * A clause of ``<=XXX`` will match versions that match ``>XXX`` or ``==XXX``
+
+    .. rubric:: Extensions
+
+    Additionnally, python-semanticversion supports extensions from specific packaging platforms:
+
+    PyPI-style `compatible release clauses`_:
 
               * ``~=2.2`` means "Any release between 2.2.0 and 3.0.0"
               * ``~=1.4.5`` means "Any release between 1.4.5 and 1.5.0"
 
-    .. note:: python-semanticversion includes support for NPM-style specs:
+    NPM-style specs:
 
               * ``~1.2.3`` means "Any release between 1.2.3 and 1.3.0"
               * ``^1.3.4`` means "Any release between 1.3.4 and 2.0.0"
 
-    In order to force matches to *strictly* compare version numbers, these additional
-    rules apply:
+    Some examples:
 
-    * Setting a pre-release separator without a pre-release identifier (``<=1.1.1-``)
-      forces match to take into account pre-release version::
+    .. code-block:: pycon
 
-        >>> Version('1.1.1-rc1') in Spec('<1.1.1')
-        False
-        >>> Version('1.1.1-rc1') in Spec('<1.1.1-')
+        >>> Version('0.1.2-rc.1') in SimpleSpec('*')
         True
-
-    * Setting a build metadata separator without build metadata (``<=1.1.1+``)
-      forces matches "up to the build metadata"; use this to include/exclude a
-      release lacking build metadata while excluding/including all other builds
-      of that release::
-
-        >>> Version('1.1.1') in Spec('==1.1.1+')
-        True
-        >>> Version('1.1.1+2') in Spec('==1.1.1+')
-        False
-
-
-    .. warning:: As stated in the `SemVer`_ specification, the ordering of build metadata is *undefined*.
-                 Thus, a :class:`Spec` string can only mention build metadata to include or exclude a specific version:
-
-                 * ``==1.1.1+b1234`` includes this specific build
-                 * ``!=1.1.1+b1234`` excludes it (but would match ``1.1.1+b1235``
-                 * ``<1.1.1+b1`` is invalid
+        >>> SimpleSpec('<0.1.2').filter([Version('0.1.2-rc.1'), Version('0.1.1'), Version('0.1.2+b42')])
+        [Version('0.1.1')]
+        >>> SimpleSpec('<0.1.2-').filter([Version('0.1.2-rc.1'), Version('0.1.1'), Version('0.1.2+b42')])
+        [Version('0.1.2-rc.1'), Version('0.1.1')]
+        >>> SimpleSpec('>=0.1.2,!=0.1.3,!=0.1.4-rc.1',!=0.1.5+b42).filter([
+                Version('0.1.2'), Version('0.1.3'), Version('0.1.3-beta'),
+                Version('0.1.4'), Version('0.1.5'), Version('0.1.5+b42'),
+                Version('2.0.1-rc.1'),
+            ])
+        [Version('0.1.2'), Version('0.1.4'), Version('0.1.5'), Version('2.0.1-rc.1')]
 
 .. class:: NpmSpec(spec_string)
 
