@@ -49,9 +49,11 @@ setup(
     url='https://github.com/rbarrois/python-semanticversion',
     download_url='http://pypi.python.org/pypi/semantic_version/',
     packages=['semantic_version'],
+    python_requires=">=3.4",
     setup_requires=[
         'setuptools>=0.8',
     ],
+    zip_safe=False,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',

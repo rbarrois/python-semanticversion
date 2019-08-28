@@ -10,3 +10,5 @@ tox
 
 Sphinx
 sphinx_rtd_theme
+
+zest.releaser[recommended]
