@@ -4,6 +4,17 @@ ChangeLog
 2.7.0 (unreleased)
 ------------------
 
+This release brings a couple of significant changes:
+
+- Allow to define several range description syntaxes (``SimpleSpec``, ``NpmSpec``, ...)
+- Fix bugs and unexpected behaviours in the ``SimpleSpec`` implementation.
+
+Backwards compatibility has been kept, but users should adjust their code for the new features:
+
+- Use ``SimpleSpec`` instead of ``Spec``
+- Replace calls to ``Version('1.2', partial=True)`` with ``SimpleSpec('~1.2')``
+- ``iter(some_spec)`` is deprecated.
+
 *New:*
 
     * Allow creation of a ``Version`` directly from parsed components, as keyword arguments
