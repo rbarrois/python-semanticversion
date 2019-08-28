@@ -1186,7 +1186,7 @@ class NpmSpec(BaseSpec):
         PART = r'[a-zA-Z0-9.-]*'
         NPM_SPEC_BLOCK = re.compile(r"""
             ^(?:v)?                     # Strip optional initial v
-            (?P<op><|<=|>=|>|=|^|~|)    # Operator, can be empty
+            (?P<op><|<=|>=|>|=|\^|~|)   # Operator, can be empty
             (?P<major>{nb})(?:\.(?P<minor>{nb})(?:\.(?P<patch>{nb}))?)?
             (?:-(?P<prerel>{part}))?    # Optional re-release
             (?:\+(?P<build>{part}))?    # Optional build
@@ -1316,13 +1316,17 @@ class NpmSpec(BaseSpec):
                 raise ValueError("Invalid NPM spec: %r" % simple)
 
             if prefix == cls.PREFIX_CARET:
-                if target.major:  # ^1.2.4 => >=1.2.4 <2.0.0
-                    high = target.next_major()
+                if target.major:  # ^1.2.4 => >=1.2.4 <2.0.0 ; ^1.x => >=1.0.0 <2.0.0
+                    high = target.truncate().next_major()
                 elif target.minor:  # ^0.1.2 => >=0.1.2 <0.2.0
-                    high = target.next_minor()
+                    high = target.truncate().next_minor()
+                elif minor is None:  # ^0.x => >=0.0.0 <1.0.0
+                    high = target.truncate().next_major()
+                elif patch is None:  # ^0.2.x => >=0.2.0 <0.3.0
+                    high = target.truncate().next_minor()
                 else:  # ^0.0.1 => >=0.0.1 <0.0.2
-                    high = target.next_patch()
-                return [cls.range(Range.OP_GTE, target), cls.Range(Range.OP_LT, high)]
+                    high = target.truncate().next_patch()
+                return [cls.range(Range.OP_GTE, target), cls.range(Range.OP_LT, high)]
 
             elif prefix == cls.PREFIX_TILDE:
                 assert major is not None
