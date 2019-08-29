@@ -14,7 +14,7 @@ class SemVerField(models.CharField):
 
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('max_length', 200)
-        super().__init__(*args, **kwargs)
+        super(SemVerField, self).__init__(*args, **kwargs)
 
     def from_db_value(self, value, expression, connection, context):
         """Convert from the database format.
@@ -36,7 +36,7 @@ class SemVerField(models.CharField):
         return str(value)
 
     def run_validators(self, value):
-        return super().run_validators(str(value))
+        return super(SemVerField, self).run_validators(str(value))
 
 
 class VersionField(SemVerField):
@@ -54,11 +54,11 @@ class VersionField(SemVerField):
                 stacklevel=2,
             )
         self.coerce = kwargs.pop('coerce', False)
-        super().__init__(*args, **kwargs)
+        super(VersionField, self).__init__(*args, **kwargs)
 
     def deconstruct(self):
         """Handle django.db.migrations."""
-        name, path, args, kwargs = super().deconstruct()
+        name, path, args, kwargs = super(VersionField, self).deconstruct()
         kwargs['partial'] = self.partial
         kwargs['coerce'] = self.coerce
         return name, path, args, kwargs
@@ -83,11 +83,11 @@ class SpecField(SemVerField):
 
     def __init__(self, *args, **kwargs):
         self.syntax = kwargs.pop('syntax', base.DEFAULT_SYNTAX)
-        super().__init__(*args, **kwargs)
+        super(SpecField, self).__init__(*args, **kwargs)
 
     def deconstruct(self):
         """Handle django.db.migrations."""
-        name, path, args, kwargs = super().deconstruct()
+        name, path, args, kwargs = super(SpecField, self).deconstruct()
         if self.syntax != base.DEFAULT_SYNTAX:
             kwargs['syntax'] = self.syntax
         return name, path, args, kwargs

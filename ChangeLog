@@ -4,7 +4,9 @@ ChangeLog
 2.7.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+*New:*
+
+    * Restore support for Python 2.
 
 
 2.7.1 (2019-08-28)

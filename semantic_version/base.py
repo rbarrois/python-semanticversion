@@ -14,7 +14,7 @@ def _has_leading_zero(value):
             and value != '0')
 
 
-class MaxIdentifier:
+class MaxIdentifier(object):
     __slots__ = []
 
     def __repr__(self):
@@ -25,7 +25,7 @@ class MaxIdentifier:
 
 
 @functools.total_ordering
-class NumericIdentifier:
+class NumericIdentifier(object):
     __slots__ = ['value']
 
     def __init__(self, value):
@@ -51,7 +51,7 @@ class NumericIdentifier:
 
 
 @functools.total_ordering
-class AlphaIdentifier:
+class AlphaIdentifier(object):
     __slots__ = ['value']
 
     def __init__(self, value):
@@ -76,7 +76,7 @@ class AlphaIdentifier:
             return NotImplemented
 
 
-class Version:
+class Version(object):
 
     version_re = re.compile(r'^(\d+)\.(\d+)\.(\d+)(?:-([0-9a-zA-Z.-]+))?(?:\+([0-9a-zA-Z.-]+))?$')
     partial_version_re = re.compile(r'^(\d+)(?:\.(\d+)(?:\.(\d+))?)?(?:-([0-9a-zA-Z.-]*))?(?:\+([0-9a-zA-Z.-]*))?$')
@@ -84,7 +84,6 @@ class Version:
     def __init__(
             self,
             version_string=None,
-            *,
             major=None,
             minor=None,
             patch=None,
@@ -404,7 +403,7 @@ class Version:
     def precedence_key(self):
         if self.prerelease:
             prerelease_key = tuple(
-                NumericIdentifier(part) if part.isdecimal() else AlphaIdentifier(part)
+                NumericIdentifier(part) if re.match(r'^[0-9]+$', part) else AlphaIdentifier(part)
                 for part in self.prerelease
             )
         else:
@@ -468,7 +467,7 @@ class Version:
         return self.precedence_key >= other.precedence_key
 
 
-class SpecItem:
+class SpecItem(object):
     """A requirement specification."""
 
     KIND_ANY = '*'
@@ -576,7 +575,7 @@ def validate(version_string):
 DEFAULT_SYNTAX = 'simple'
 
 
-class BaseSpec:
+class BaseSpec(object):
     """A specification of compatible versions.
 
     Usage:
@@ -606,7 +605,7 @@ class BaseSpec:
         return subclass
 
     def __init__(self, expression):
-        super().__init__()
+        super(BaseSpec, self).__init__()
         self.expression = expression
         self.clause = self._parse_to_clause(expression)
 
@@ -659,7 +658,7 @@ class BaseSpec:
         return '<%s: %r>' % (self.__class__.__name__, self.expression)
 
 
-class Clause:
+class Clause(object):
     __slots__ = []
 
     def match(self, version):
@@ -685,7 +684,7 @@ class AnyOf(Clause):
     __slots__ = ['clauses']
 
     def __init__(self, *clauses):
-        super().__init__()
+        super(AnyOf, self).__init__()
         self.clauses = frozenset(clauses)
 
     def match(self, version):
@@ -739,7 +738,7 @@ class AllOf(Clause):
     __slots__ = ['clauses']
 
     def __init__(self, *clauses):
-        super().__init__()
+        super(AllOf, self).__init__()
         self.clauses = frozenset(clauses)
 
     def match(self, version):
@@ -878,7 +877,7 @@ class Range(Matcher):
     __slots__ = ['operator', 'target', 'prerelease_policy', 'build_policy']
 
     def __init__(self, operator, target, prerelease_policy=PRERELEASE_NATURAL, build_policy=BUILD_IMPLICIT):
-        super().__init__()
+        super(Range, self).__init__()
         if target.build and operator not in (self.OP_EQ, self.OP_NEQ):
             raise ValueError(
                 "Invalid range %s%s: build numbers have no ordering."
@@ -1155,7 +1154,7 @@ class LegacySpec(SimpleSpec):
                 stacklevel=2,
             )
         expression = ','.join(expressions)
-        super().__init__(expression)
+        super(LegacySpec, self).__init__(expression)
 
     def __iter__(self):
         warnings.warn(

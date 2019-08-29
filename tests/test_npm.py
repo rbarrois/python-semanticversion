@@ -6,11 +6,18 @@
 """Test NPM-style specifications."""
 
 import unittest
+import sys
 
 from semantic_version import base
 
 
 class NpmSpecTests(unittest.TestCase):
+    if sys.version_info[0] <= 2:
+        import contextlib
+        @contextlib.contextmanager
+        def subTest(self, **kwargs):
+            yield
+
     examples = {
         # range: [matchings], [failings]
         '>=1.2.7': (

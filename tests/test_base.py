@@ -6,12 +6,19 @@
 """Test the various functions from 'base'."""
 
 import unittest
+import sys
 
 from semantic_version import base
 
 
 class TopLevelTestCase(unittest.TestCase):
     """Test module-level functions."""
+
+    if sys.version_info[0] <= 2:
+        import contextlib
+        @contextlib.contextmanager
+        def subTest(self, **kwargs):
+            yield
 
     versions = (
         ('0.1.0', '0.1.1', -1),
@@ -89,6 +96,12 @@ class TopLevelTestCase(unittest.TestCase):
 
 
 class VersionTestCase(unittest.TestCase):
+    if sys.version_info[0] <= 2:
+        import contextlib
+        @contextlib.contextmanager
+        def subTest(self, **kwargs):
+            yield
+
     versions = {
         '1.0.0-alpha': (1, 0, 0, ('alpha',), ()),
         '1.0.0-alpha.1': (1, 0, 0, ('alpha', '1'), ()),
@@ -199,6 +212,7 @@ class VersionTestCase(unittest.TestCase):
             ]))
         )
 
+    @unittest.skipIf(sys.version_info[0] <= 2, "Comparisons don't raise TypeError in Python 2")
     def test_invalid_comparisons(self):
         v = base.Version('0.1.0')
         with self.assertRaises(TypeError):
@@ -367,6 +381,12 @@ class VersionTestCase(unittest.TestCase):
 
 
 class SpecItemTestCase(unittest.TestCase):
+    if sys.version_info[0] <= 2:
+        import contextlib
+        @contextlib.contextmanager
+        def subTest(self, **kwargs):
+            yield
+
     invalids = [
         '<=0.1.1+build3',
         '<=0.1.1+',
@@ -540,6 +560,12 @@ class SpecItemTestCase(unittest.TestCase):
 
 
 class CoerceTestCase(unittest.TestCase):
+    if sys.version_info[0] <= 2:
+        import contextlib
+        @contextlib.contextmanager
+        def subTest(self, **kwargs):
+            yield
+
     examples = {
         # Dict of target: [list of equivalents]
         '0.0.0': ('0', '0.0', '0.0.0', '0.0.0+', '0-'),
@@ -564,6 +590,19 @@ class CoerceTestCase(unittest.TestCase):
 
 
 class SpecTestCase(unittest.TestCase):
+    if sys.version_info[0] <= 2:
+        import contextlib
+        @contextlib.contextmanager
+        def subTest(self, **kwargs):
+            yield
+
+        def assertCountEqual(self, a, b):
+            import collections
+            self.assertEqual(
+                collections.Counter(a),
+                collections.Counter(b),
+            )
+
     examples = {
         '>=0.1.1,<0.1.2': ['>=0.1.1', '<0.1.2'],
         '>=0.1.0,!=0.1.3-rc1,<0.1.3': ['>=0.1.0', '!=0.1.3-rc1', '<0.1.3'],
