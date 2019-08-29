@@ -1156,6 +1156,10 @@ class LegacySpec(SimpleSpec):
         expression = ','.join(expressions)
         super(LegacySpec, self).__init__(expression)
 
+    @property
+    def specs(self):
+        return list(self)
+
     def __iter__(self):
         warnings.warn(
             "Iterating over the components of a SimpleSpec object will be removed in 3.0.",

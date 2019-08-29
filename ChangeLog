@@ -4,7 +4,9 @@ ChangeLog
 2.8.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+*Bugfix:*
+
+    * Restored attribute ``Spec.specs``, removed by mistake during the refactor.
 
 
 2.8.0 (2019-08-29)
