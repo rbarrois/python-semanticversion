@@ -4,7 +4,11 @@ ChangeLog
 2.8.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+*Bugfix:*
+
+    * `#82 <https://github.com/rbarrois/python-semanticversion/issues/82>`_:
+      Restore computation of ``Spec.specs`` for single-term expressions
+      (``>=0.1.2``)
 
 
 2.8.1 (2019-08-29)

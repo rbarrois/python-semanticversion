@@ -1166,7 +1166,11 @@ class LegacySpec(SimpleSpec):
             DeprecationWarning,
             stacklevel=2,
         )
-        for clause in self.clause:
+        try:
+            clauses = list(self.clause)
+        except TypeError:  # Not an iterable
+            clauses = [self.clause]
+        for clause in clauses:
             yield SpecItem.from_matcher(clause)
 
 
