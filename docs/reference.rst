@@ -470,7 +470,7 @@ Each of those ``Spec`` classes provides a shared set of methods to work with ver
     * A clause of ``<=XXX`` will match versions that match ``<XXX`` or ``==XXX``
     * A clause of ``>0.1.2`` will match versions strictly above ``0.1.2``, including all prereleases of ``0.1.3``.
     * A clause of ``>0.1.2-rc.3`` will match versions strictly above ``0.1.2-rc.3``, including matching prereleases of ``0.1.2``: ``0.1.2-rc.10`` is included;
-    * A clause of ``<=XXX`` will match versions that match ``>XXX`` or ``==XXX``
+    * A clause of ``>=XXX`` will match versions that match ``>XXX`` or ``==XXX``
 
     .. rubric:: Extensions
 
