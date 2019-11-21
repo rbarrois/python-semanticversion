@@ -4,7 +4,13 @@ ChangeLog
 2.8.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+*New:*
+    - Add `Clause.prettyprint()` for debugging
+
+*Bugfix:*
+
+    * `#86 <https://github.com/rbarrois/python-semanticversion/issues/86>`_:
+      Fix handling of prerelease ranges within `NpmSpec`
 
 
 2.8.2 (2019-09-06)

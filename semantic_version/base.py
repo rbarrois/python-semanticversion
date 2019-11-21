@@ -1273,7 +1273,7 @@ class NpmSpec(BaseSpec):
                                 prerelease_policy=Range.PRERELEASE_ALWAYS,
                             ))
                         elif clause.operator in (Range.OP_LT, Range.OP_LTE):
-                            prerelease_clauses.append(cls.range(
+                            prerelease_clauses.append(Range(
                                 operator=Range.OP_GTE,
                                 target=Version(
                                     major=clause.target.major,
@@ -1281,6 +1281,7 @@ class NpmSpec(BaseSpec):
                                     patch=0,
                                     prerelease=(),
                                 ),
+                                prerelease_policy=Range.PRERELEASE_ALWAYS,
                             ))
                         prerelease_clauses.append(clause)
                         non_prerel_clauses.append(cls.range(
