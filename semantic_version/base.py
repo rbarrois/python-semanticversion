@@ -673,6 +673,19 @@ class Clause(object):
     def __eq__(self, other):
         raise NotImplementedError()
 
+    def prettyprint(self, indent='\t'):
+        """Pretty-print the clause.
+        """
+        return '\n'.join(self._pretty()).replace('\t', indent)
+
+    def _pretty(self):
+        """Actual pretty-printing logic.
+
+        Yields:
+            A list of string. Indentation is performed with \t.
+        """
+        yield repr(self)
+
     def __ne__(self, other):
         return not self == other
 
@@ -733,6 +746,15 @@ class AnyOf(Clause):
     def __repr__(self):
         return 'AnyOf(%s)' % ', '.join(sorted(repr(c) for c in self.clauses))
 
+    def _pretty(self):
+        yield 'AnyOF('
+        for clause in self.clauses:
+            lines = list(clause._pretty())
+            for line in lines[:-1]:
+                yield '\t' + line
+            yield '\t' + lines[-1] + ','
+        yield ')'
+
 
 class AllOf(Clause):
     __slots__ = ['clauses']
@@ -788,6 +810,15 @@ class AllOf(Clause):
 
     def __repr__(self):
         return 'AllOf(%s)' % ', '.join(sorted(repr(c) for c in self.clauses))
+
+    def _pretty(self):
+        yield 'AllOF('
+        for clause in self.clauses:
+            lines = list(clause._pretty())
+            for line in lines[:-1]:
+                yield '\t' + line
+            yield '\t' + lines[-1] + ','
+        yield ')'
 
 
 class Matcher(Clause):
