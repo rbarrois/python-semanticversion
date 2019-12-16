@@ -171,8 +171,8 @@ The :class:`SimpleSpec` object describes a range of accepted versions:
     >>> s = SimpleSpec('>=0.1.1')  # At least 0.1.1
     >>> s.match(Version('0.1.1'))
     True
-    >>> s.match(Version('0.1.1-alpha1'))  # pre-release satisfy version spec
-    True
+    >>> s.match(Version('0.1.1-alpha1'))  # pre-release doesn't satisfy version spec
+    False
     >>> s.match(Version('0.1.0'))
     False
 
