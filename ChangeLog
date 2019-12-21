@@ -4,7 +4,11 @@ ChangeLog
 2.8.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+*Bugfix:*
+
+    * `#89 <https://github.com/rbarrois/python-semanticversion/issues/89>`_:
+      Properly coerce versions with leading zeroes in components (e.g.
+      ``1.01.007``)
 
 
 2.8.3 (2019-11-21)

@@ -244,6 +244,14 @@ class Version(object):
             while version.count('.') < 2:
                 version += '.0'
 
+        # Strip leading zeros in components
+        # Version is of the form nn, nn.pp or nn.pp.qq
+        version = '.'.join(
+            # If the part was '0', we end up with an empty string.
+            part.lstrip('0') or '0'
+            for part in version.split('.')
+        )
+
         if match.end() == len(version_string):
             return Version(version, partial=partial)
 
