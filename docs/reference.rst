@@ -173,7 +173,7 @@ Representing a version (the Version class)
             >>> Version('1.1.0-alpha').next_minor()
             Version('1.1.0')
 
-    .. method:: next_patch(self):
+    .. method:: next_patch(self)
 
         Return the next patch version, i.e the smallest version strictly
         greater than the current one with empty :attr:`prerelease` and :attr:`build`.
@@ -192,7 +192,7 @@ Representing a version (the Version class)
                      :attr:`prerelease` component: it's the smallest "pure"
                      patch version strictly greater than that version.
 
-    .. method:: truncate(self, level='patch']):
+    .. method:: truncate(self[, level='patch'])
 
         Returns a similar level, but truncated at the provided level.
 
