@@ -472,6 +472,15 @@ Each of those ``Spec`` classes provides a shared set of methods to work with ver
     * A clause of ``>0.1.2-rc.3`` will match versions strictly above ``0.1.2-rc.3``, including matching prereleases of ``0.1.2``: ``0.1.2-rc.10`` is included;
     * A clause of ``>=XXX`` will match versions that match ``>XXX`` or ``==XXX``
 
+    ..rubric:: Wildcards
+
+    * A clause of ``==0.1.*`` is equivalent to ``>=0.1.0,<0.2.0``
+    * A clause of ``>=0.1.*`` is equivalent to ``>=0.1.0``
+    * A clause of ``==1.*`` or ``==1.*.*`` is equivalent to ``>=1.0.0,<2.0.0``
+    * A clause of ``>=1.*`` or ``>=1.*.*`` is equivalent to ``>=1.0.0``
+    * A clause of ``==*`` maps to ``>=0.0.0``
+    * A clause of ``>=*`` maps to ``>=0.0.0``
+
     .. rubric:: Extensions
 
     Additionnally, python-semanticversion supports extensions from specific packaging platforms:

@@ -1123,7 +1123,7 @@ class SimpleSpec(BaseSpec):
                 elif minor is None:
                     return Range(Range.OP_GTE, target) & Range(Range.OP_LT, target.next_major())
                 elif patch is None:
-                    return Range(Range.OP_GTE, target) & Range(Range.OP_LT, target.next_patch())
+                    return Range(Range.OP_GTE, target) & Range(Range.OP_LT, target.next_minor())
                 elif build == '':
                     return Range(Range.OP_EQ, target, build_policy=Range.BUILD_STRICT)
                 else:

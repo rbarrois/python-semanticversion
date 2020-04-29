@@ -4,7 +4,10 @@ ChangeLog
 2.8.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+*Bugfix:*
+
+    * `98 <https://github.com/rbarrois/python-semanticversion/issues/98>`_:
+      Properly handle wildcards in ``SimpleSpec`` (e.g. ``==1.2.*``).
 
 
 2.8.4 (2019-12-21)

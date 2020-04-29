@@ -644,6 +644,16 @@ class SpecTestCase(unittest.TestCase):
             ['0.1.1', '0.1.1+4'],
             ['0.1.1-alpha', '0.1.2-alpha', '0.1.2', '1.3.4'],
         ),
+        # 0.1.x
+        '==0.1.*': (
+            ['0.1.1', '0.1.1+4', '0.1.0', '0.1.99'],
+            ['0.1.0-alpha', '0.0.1', '0.2.0'],
+        ),
+        # 1.x.x
+        '==1.*': (
+            ['1.1.1', '1.1.0+4', '1.1.0', '1.99.99'],
+            ['1.0.0-alpha', '0.1.0', '2.0.0'],
+        ),
         # At least 0.1.0 with pre-releases, less than 0.1.4 excluding pre-releases,
         # neither 0.1.3-rc1 nor any build of that version,
         # not 0.1.0+b3 precisely
