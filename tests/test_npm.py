@@ -40,6 +40,10 @@ class NpmSpecTests(unittest.TestCase):
             ['1.2.3-alpha.3', '1.2.3-alpha.7', '3.4.5'],
             ['1.2.3-alpha.2', '3.4.5-alpha.9'],
         ),
+        '<=1.2.3-beta.3': (
+            ['1.2.3-beta.2', '1.2.3-alpha.7'],
+            ['1.2.3-beta.4', '1.2.3-rc.1', '1.1.1'],
+        ),
         '>1.2.3-alpha <1.2.3-beta': (
             ['1.2.3-alpha.0', '1.2.3-alpha.1'],
             ['1.2.3', '1.2.3-beta.0', '1.2.3-bravo'],
