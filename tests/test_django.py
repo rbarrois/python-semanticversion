@@ -261,3 +261,17 @@ class DbInteractingTestCase(DjangoTestCase):
 
         obj2 = models.VersionModel.objects.get(pk=o2.pk)
         self.assertEqual(o2.version, obj2.version)
+
+    def test_get_or_create(self):
+        o1, created = models.VersionModel.objects.get_or_create(version=Version('0.1.1'), spec=SimpleSpec('==0.4.3'))
+        self.assertTrue(created)
+        self.assertIsNotNone(o1.pk)
+        self.assertEqual(Version('0.1.1'), o1.version)
+        self.assertEqual(SimpleSpec('==0.4.3'), o1.spec)
+
+        o2, created = models.VersionModel.objects.get_or_create(version=Version('0.1.1'), spec=SimpleSpec('==0.4.3'))
+        self.assertFalse(created)
+        self.assertEqual(o1, o2)
+        self.assertEqual(o1.pk, o2.pk)
+        self.assertEqual(Version('0.1.1'), o2.version)
+        self.assertEqual(SimpleSpec('==0.4.3'), o2.spec)
