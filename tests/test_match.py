@@ -12,6 +12,7 @@ import semantic_version
 class MatchTestCase(unittest.TestCase):
     if sys.version_info[0] <= 2:
         import contextlib
+
         @contextlib.contextmanager
         def subTest(self, **kwargs):
             yield

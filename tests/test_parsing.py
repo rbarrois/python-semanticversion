@@ -13,6 +13,7 @@ import semantic_version
 class ParsingTestCase(unittest.TestCase):
     if sys.version_info[0] <= 2:
         import contextlib
+
         @contextlib.contextmanager
         def subTest(self, **kwargs):
             yield
@@ -75,6 +76,7 @@ class ParsingTestCase(unittest.TestCase):
 class ComparisonTestCase(unittest.TestCase):
     if sys.version_info[0] <= 2:
         import contextlib
+
         @contextlib.contextmanager
         def subTest(self, **kwargs):
             yield

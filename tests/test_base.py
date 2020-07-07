@@ -16,6 +16,7 @@ class TopLevelTestCase(unittest.TestCase):
 
     if sys.version_info[0] <= 2:
         import contextlib
+
         @contextlib.contextmanager
         def subTest(self, **kwargs):
             yield
@@ -98,6 +99,7 @@ class TopLevelTestCase(unittest.TestCase):
 class VersionTestCase(unittest.TestCase):
     if sys.version_info[0] <= 2:
         import contextlib
+
         @contextlib.contextmanager
         def subTest(self, **kwargs):
             yield
@@ -383,6 +385,7 @@ class VersionTestCase(unittest.TestCase):
 class SpecItemTestCase(unittest.TestCase):
     if sys.version_info[0] <= 2:
         import contextlib
+
         @contextlib.contextmanager
         def subTest(self, **kwargs):
             yield
@@ -562,6 +565,7 @@ class SpecItemTestCase(unittest.TestCase):
 class CoerceTestCase(unittest.TestCase):
     if sys.version_info[0] <= 2:
         import contextlib
+
         @contextlib.contextmanager
         def subTest(self, **kwargs):
             yield
@@ -592,12 +596,14 @@ class CoerceTestCase(unittest.TestCase):
 class SpecTestCase(unittest.TestCase):
     if sys.version_info[0] <= 2:
         import contextlib
+
         @contextlib.contextmanager
         def subTest(self, **kwargs):
             yield
 
         def assertCountEqual(self, a, b):
             import collections
+
             self.assertEqual(
                 collections.Counter(a),
                 collections.Counter(b),
