@@ -181,8 +181,10 @@ Simpler test syntax is also available using the ``in`` keyword:
 .. code-block:: pycon
 
     >>> s = SimpleSpec('==0.1.1')
-    >>> Version('0.1.1-alpha1') in s
+    >>> Version('0.1.1+git7ccc72') in s  # build variants are equivalent to full versions
     True
+    >>> Version('0.1.1-alpha1') in s     # pre-release variants don't match the full version.
+    False
     >>> Version('0.1.2') in s
     False
 
