@@ -152,7 +152,7 @@ Finally, one may create a :class:`Version` with named components instead:
     Version('0.1.2')
 
 In that case, ``major``, ``minor`` and ``patch`` are mandatory, and must be integers.
-``prerelease`` and ``patch``, if provided, must be tuples of strings:
+``prerelease`` and ``build``, if provided, must be tuples of strings:
 
 .. code-block:: pycon
 
