@@ -4,6 +4,7 @@
 
 import warnings
 
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -65,14 +66,17 @@ class VersionField(SemVerField):
 
     def to_python(self, value):
         """Converts any value to a base.Version field."""
-        if value is None or value == '':
-            return value
-        if isinstance(value, base.Version):
-            return value
-        if self.coerce:
-            return base.Version.coerce(value, partial=self.partial)
-        else:
-            return base.Version(value, partial=self.partial)
+        try:
+            if value is None or value == '':
+                return value
+            if isinstance(value, base.Version):
+                return value
+            if self.coerce:
+                return base.Version.coerce(value, partial=self.partial)
+            else:
+                return base.Version(value, partial=self.partial)
+        except ValueError as err:
+            raise ValidationError(err)
 
 
 class SpecField(SemVerField):
@@ -94,8 +98,11 @@ class SpecField(SemVerField):
 
     def to_python(self, value):
         """Converts any value to a base.Spec field."""
-        if value is None or value == '':
-            return value
-        if isinstance(value, base.BaseSpec):
-            return value
-        return base.BaseSpec.parse(value, syntax=self.syntax)
+        try:
+            if value is None or value == '':
+                return value
+            if isinstance(value, base.BaseSpec):
+                return value
+            return base.BaseSpec.parse(value, syntax=self.syntax)
+        except ValueError as err:
+            raise ValidationError(err)
