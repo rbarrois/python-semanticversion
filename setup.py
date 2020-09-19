@@ -49,7 +49,7 @@ setup(
     url='https://github.com/rbarrois/python-semanticversion',
     download_url='http://pypi.python.org/pypi/semantic_version/',
     packages=['semantic_version'],
-    python_requires=">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*",
+    python_requires=">=3.5",
     setup_requires=[
         'setuptools>=0.8',
     ],
@@ -61,12 +61,11 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
     test_suite='tests',
