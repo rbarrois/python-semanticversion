@@ -5,6 +5,7 @@ script:
   - tox
 
 install:
+  - pip install --upgrade pip
   - pip install tox
 
 matrix:
