@@ -7,7 +7,7 @@ ChangeLog
 *New:*
 
     * Add support for Django 3.1
-    * Add support for Python 3.7 / Python 3.8
+    * Add support for Python 3.7 / 3.8 / 3.9
 
 
 2.8.5 (2020-04-29)
