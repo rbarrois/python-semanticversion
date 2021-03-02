@@ -27,7 +27,7 @@ clean:
 
 update:
 	pip install --upgrade pip setuptools
-	pip install --upgrade -r requirements_dev.txt
+	pip install --upgrade -e .[dev,doc]
 	pip freeze
 
 
