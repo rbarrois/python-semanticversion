@@ -4,8 +4,8 @@ python-semanticversion
 This small python library provides a few tools to handle `SemVer`_ in Python.
 It follows strictly the 2.0.0 version of the SemVer scheme.
 
-.. image:: https://secure.travis-ci.org/rbarrois/python-semanticversion.png?branch=master
-    :target: http://travis-ci.org/rbarrois/python-semanticversion/
+.. image:: https://github.com/rbarrois/python-semanticversion/actions/workflows/test.yml/badge.svg
+    :target: https://github.com/rbarrois/python-semanticversion/actions/workflows/test.yml
 
 .. image:: https://img.shields.io/pypi/v/semantic_version.svg
     :target: https://python-semanticversion.readthedocs.io/en/latest/changelog.html
