@@ -24,6 +24,12 @@ jobs:
             django-family: 22
           - python-version: 3.8
             django-family: 22
+          - python-version: 3.7
+            django-family: 31
+          - python-version: 3.8
+            django-family: 31
+          - python-version: pypy3
+            django-family: 31
         exclude:
           - python-version: pypy3
             django-family: 111
