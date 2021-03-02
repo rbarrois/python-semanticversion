@@ -59,8 +59,8 @@ check-manifest:
 # Note: we run the linter in two runs, because our __init__.py files has specific warnings we want to exclude
 # DOC: Verify code quality
 flake8:
-	$(FLAKE8) --config .flake8 --exclude $(PACKAGE)/__init__.py $(PACKAGE) $(TESTS_DIR) setup.py
-	$(FLAKE8) --config .flake8 --ignore F401 $(PACKAGE)/__init__.py
+	$(FLAKE8) --exclude $(PACKAGE)/__init__.py $(PACKAGE) $(TESTS_DIR) setup.py
+	$(FLAKE8) --ignore F401 $(PACKAGE)/__init__.py
 
 # DOC: Run tests with coverage collection
 coverage:
