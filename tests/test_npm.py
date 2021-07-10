@@ -74,7 +74,6 @@ class NpmSpecTests(unittest.TestCase):
         # Hyphen ranges
         '1.2.3 - 2.3.4': '>=1.2.3 <=2.3.4',
         '1.2 - 2.3.4': '>=1.2.0 <=2.3.4',
-        '1.2 - 2.3.5': '>=1.2.0 <2.3.6',
         '1.2.3 - 2.3': '>=1.2.3 <2.4.0',
         '1.2.3 - 2': '>=1.2.3 <3',
         '1.2.3    - 2': '>=1.2.3 <3',
@@ -85,13 +84,13 @@ class NpmSpecTests(unittest.TestCase):
         '1.x': '>=1.0.0 <2.0.0',
         '1.2.x': '>=1.2.0 <1.3.0',
         '': '*',
-        '||': '*',
         'x': '*',
         '1': '1.x.x',
         '1.x.x': '>=1.0.0 <2.0.0',
         '1.2': '1.2.x',
 
         # Partial GT LT Ranges
+        '>=1': '>=1.0.0',
         '>1': '>=2.0.0',
         '>1.2': '>=1.3.0',
         '<1': '<1.0.0',
@@ -143,6 +142,23 @@ class NpmSpecTests(unittest.TestCase):
                 self.assertEqual(
                     base.NpmSpec(source).clause,
                     base.NpmSpec(expanded).clause,
+                )
+
+    equivalent_npmspecs = {
+        '||': '*',
+        #'>1.2.3 || *': '*',
+        #'>=1.2.1 <=2.3.4': '>1.2.0 <2.3.5',
+    }
+
+    def test_equivalent(self):
+        # like expand, but we also simplify both sides
+        # NOTE: some specs can be equivalent but don't
+        # currently simplify to the same clauses
+        for left, right in self.equivalent_npmspecs.items():
+            with self.subTest(l=left, r=right):
+                self.assertEqual(
+                    base.NpmSpec(left).clause.simplify(),
+                    base.NpmSpec(right).clause.simplify(),
                 )
 
     invalid_npmspecs = [
