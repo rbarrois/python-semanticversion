@@ -1256,10 +1256,10 @@ class NpmSpec(BaseSpec):
                 subclauses = []
                 if cls.HYPHEN in group:
                     low, high = group.split(cls.HYPHEN, 2)
-                    subclauses = cls.parse_simple('>=' + low) + cls.parse_simple('<=' + high)
+                    subclauses = cls.parse_simple('>=' + low.strip()) + cls.parse_simple('<=' + high.strip())
 
                 else:
-                    blocks = group.split(' ')
+                    blocks = group.split()
                     for block in blocks:
                         if not cls.NPM_SPEC_BLOCK.match(block):
                             raise ValueError("Invalid NPM block in %r: %r" % (expression, block))
