@@ -66,21 +66,35 @@ class NpmSpecTests(unittest.TestCase):
                     self.assertNotIn(base.Version(version), base.NpmSpec(spec))
 
     expansions = {
+        # Basic
+        '>1.2.3': '>1.2.3',
+        '<1.2.3': '<1.2.3',
+        '<=1.2.3': '<=1.2.3',
+
         # Hyphen ranges
         '1.2.3 - 2.3.4': '>=1.2.3 <=2.3.4',
         '1.2 - 2.3.4': '>=1.2.0 <=2.3.4',
+        '1.2 - 2.3.5': '>=1.2.0 <2.3.6',
         '1.2.3 - 2.3': '>=1.2.3 <2.4.0',
         '1.2.3 - 2': '>=1.2.3 <3',
         '1.2.3    - 2': '>=1.2.3 <3',
 
         # X-Ranges
         '*': '>=0.0.0',
+        '>=*': '>=0.0.0',
         '1.x': '>=1.0.0 <2.0.0',
         '1.2.x': '>=1.2.0 <1.3.0',
         '': '*',
+        '||': '*',
+        'x': '*',
         '1': '1.x.x',
         '1.x.x': '>=1.0.0 <2.0.0',
         '1.2': '1.2.x',
+
+        # Partial GT LT Ranges
+        '>1': '>=2.0.0',
+        '>1.2': '>=1.3.0',
+        '<1': '<1.0.0',
 
         # Tilde ranges
         '~1.2.3': '>=1.2.3 <1.3.0',
@@ -104,11 +118,13 @@ class NpmSpecTests(unittest.TestCase):
         '^0.0': '>=0.0.0 <0.1.0',
         '^1.x': '>=1.0.0 <2.0.0',
         '^0.x': '>=0.0.0 <1.0.0',
+        '^0': '>=0.0.0 <1.0.0',
         '^ 1.2.3': '>=1.2.3 <2.0.0',
         '^   1.2.3': '>=1.2.3 <2.0.0',
 
         # Weird whitespace ranges
         '>= 1.2.3': '>=1.2.3',
+        '>=\t1.2.3': '>=1.2.3',
         '>=   1.2.3': '>=1.2.3',
         '>=1.2.3      <2.0.0': '>=1.2.3 <2.0.0',
         '   >=1.2.3 <2.0.0    ': '>=1.2.3 <2.0.0',
@@ -128,3 +144,21 @@ class NpmSpecTests(unittest.TestCase):
                     base.NpmSpec(source).clause,
                     base.NpmSpec(expanded).clause,
                 )
+
+    invalid_npmspecs = [
+        '==0.1.2',
+        '>>0.1.2',
+        '> = 0.1.2',
+        '<=>0.1.2',
+        '~1.2.3beta',
+        '~=1.2.3',
+        '>01.02.03',
+        '!0.1.2',
+        '!=0.1.2',
+    ]
+
+    def test_invalid(self):
+        for invalid in self.invalid_npmspecs:
+            with self.subTest(spec=invalid):
+                with self.assertRaises(ValueError, msg="NpmSpec(%r) should be invalid" % invalid):
+                    base.NpmSpec(invalid)
