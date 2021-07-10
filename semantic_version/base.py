@@ -1230,14 +1230,20 @@ class NpmSpec(BaseSpec):
 
         NUMBER = r'x|X|\*|0|[1-9][0-9]*'
         PART = r'[a-zA-Z0-9.-]*'
+        OP = r'<|<=|=|>=|>|\^|~'
         NPM_SPEC_BLOCK = re.compile(r"""
             ^(?:v)?                     # Strip optional initial v
-            (?P<op><|<=|>=|>|=|\^|~|)   # Operator, can be empty
+            (?P<op>{op}|)               # Operator, can be empty
             (?P<major>{nb})(?:\.(?P<minor>{nb})(?:\.(?P<patch>{nb}))?)?
             (?:-(?P<prerel>{part}))?    # Optional re-release
             (?:\+(?P<build>{part}))?    # Optional build
-            $""".format(nb=NUMBER, part=PART),
+            $""".format(nb=NUMBER, part=PART, op=OP),
             re.VERBOSE,
+        )
+        OP_RE = re.compile(r"""
+            ^{op}$      # A standalone operator, cannot be empty
+            """.format(op=OP),
+           re.VERBOSE,
         )
 
         @classmethod
@@ -1260,11 +1266,17 @@ class NpmSpec(BaseSpec):
 
                 else:
                     blocks = group.split()
+                    maybe_prepend_op = None
                     for block in blocks:
-                        if not cls.NPM_SPEC_BLOCK.match(block):
+                        block = maybe_prepend_op + block if maybe_prepend_op else block
+                        if cls.NPM_SPEC_BLOCK.match(block):
+                            subclauses.extend(cls.parse_simple(block))
+                            maybe_prepend_op = None
+                        elif maybe_prepend_op is None and cls.OP_RE.match(block):
+                            maybe_prepend_op = block
+                        else:
                             raise ValueError("Invalid NPM block in %r: %r" % (expression, block))
 
-                        subclauses.extend(cls.parse_simple(block))
 
                 prerelease_clauses = []
                 non_prerel_clauses = []
