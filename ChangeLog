@@ -8,6 +8,8 @@ ChangeLog
 
     * Add support for Django 3.1
     * Add support for Python 3.7 / 3.8 / 3.9
+    * `#115 <https://github.com/rbarrois/python-semanticversion/issues/98>`_:
+      Improve ``NpmSpec`` compatibility with official ``node-semver`` implementation by allowing some whitespace before the version (e.g. ``>  1.2.3``, ``1.2.3    - 4.5.6``) and adding ``~>`` as an alias for ``~``.
 
 
 2.8.5 (2020-04-29)
@@ -15,7 +17,7 @@ ChangeLog
 
 *Bugfix:*
 
-    * `98 <https://github.com/rbarrois/python-semanticversion/issues/98>`_:
+    * `#98 <https://github.com/rbarrois/python-semanticversion/issues/98>`_:
       Properly handle wildcards in ``SimpleSpec`` (e.g. ``==1.2.*``).
 
 
