@@ -1241,7 +1241,7 @@ class NpmSpec(BaseSpec):
             re.VERBOSE,
         )
         OP_RE = re.compile(r"""
-            ^{op}$      # A standalone operator, cannot be empty
+            ^(?:{op})$      # A standalone operator, cannot be empty
             """.format(op=OP),
            re.VERBOSE,
         )
