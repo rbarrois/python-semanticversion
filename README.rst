@@ -273,6 +273,7 @@ build metadata is equality.
     >>> Version('1.0.0+build1') in SimpleSpec('==1.0.0+build2')  # Include build in checks
     False
 
+When using '+' in the spec text only operators '==' and '!=' are supported whilst any variant of lower/greater is not.
 
 NPM-based ranges
 ----------------
