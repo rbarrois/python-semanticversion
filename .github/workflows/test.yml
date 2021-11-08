@@ -14,33 +14,33 @@ jobs:
       matrix:
         include:
           # Django 1.11: 3.4, 3.7
-          - python-version: 2.7
+          - python-version: "2.7"
             django-family: 111
-          - python-version: 3.4
+          - python-version: "3.4"
             django-family: 111
-          - python-version: 3.7
+          - python-version: "3.7"
             django-family: 111
-          - python-version: pypy3
+          - python-version: "pypy3"
             django-family: 111
 
           # Django 2.2: 3.5, 3.7, 3.8
-          - python-version: 3.5
+          - python-version: "3.5"
             django-family: 22
-          - python-version: 3.7
+          - python-version: "3.7"
             django-family: 22
-          - python-version: 3.8
+          - python-version: "3.8"
             django-family: 22
-          - python-version: pypy3
+          - python-version: "pypy3"
             django-family: 22
 
           # Django 3.1: Python 3.6, 3.8, 3.9
-          - python-version: 3.6
+          - python-version: "3.6"
             django-family: 31
-          - python-version: 3.8
+          - python-version: "3.8"
             django-family: 31
-          - python-version: 3.9
+          - python-version: "3.9"
             django-family: 31
-          - python-version: pypy3
+          - python-version: "pypy3"
             django-family: 31
 
     env:
