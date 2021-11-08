@@ -13,10 +13,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Django 1.11: 3.4, 3.7
+          # Django 1.11: 3.5, 3.7
           - python-version: "2.7"
             django-family: 111
-          - python-version: "3.4"
+          - python-version: "3.5"
             django-family: 111
           - python-version: "3.7"
             django-family: 111
