@@ -290,7 +290,8 @@ class Version(object):
 
     @classmethod
     def parse(cls, version_string, partial=False, coerce=False):
-        """Parse a version string into a Version() object.
+        """Parse a version string into a tuple of components:
+           (major, minor, patch, prerelease, build).
 
         Args:
             version_string (str), the version string to parse
