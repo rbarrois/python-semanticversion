@@ -37,4 +37,4 @@ with their :attr:`~django.db.models.CharField.max_length` defaulting to 200.
 
         The syntax to use for the field; defaults to ``'simple'``.
 
-        .. versionaddedd:: 2.7
+        .. versionadded:: 2.7

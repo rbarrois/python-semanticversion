@@ -66,6 +66,7 @@ Representing a version (the Version class)
 ------------------------------------------
 
 .. class:: Version(version_string[, partial=False])
+    :noindex:
 
     Object representation of a `SemVer`_-compliant version.
 
@@ -89,15 +90,6 @@ Representing a version (the Version class)
 
     .. rubric:: Attributes
 
-
-    .. attribute:: partial
-
-        ``bool``, whether this is a 'partial' or a complete version number.
-        Partial version number may lack :attr:`minor` or :attr:`patch` version numbers.
-
-        .. deprecated:: 2.7
-            The ability to define a partial version will be removed in version 3.0.
-            Use :class:`SimpleSpec` instead: ``SimpleSpec('1.x.x')``.
 
     .. attribute:: major
 
@@ -140,6 +132,15 @@ Representing a version (the Version class)
 
         Note that the :attr:`~Version.build` isn't included in the precedence_key computatin.
 
+    .. attribute:: partial
+
+        ``bool``, whether this is a 'partial' or a complete version number.
+        Partial version number may lack :attr:`minor` or :attr:`patch` version numbers.
+
+        .. deprecated:: 2.7
+            The ability to define a partial version will be removed in version 3.0.
+            Use :class:`SimpleSpec` instead: ``SimpleSpec('1.x.x')``.
+
     .. rubric:: Methods
 
 
@@ -173,7 +174,7 @@ Representing a version (the Version class)
             >>> Version('1.1.0-alpha').next_minor()
             Version('1.1.0')
 
-    .. method:: next_patch(self):
+    .. method:: next_patch(self)
 
         Return the next patch version, i.e the smallest version strictly
         greater than the current one with empty :attr:`prerelease` and :attr:`build`.
@@ -231,6 +232,7 @@ Representing a version (the Version class)
 
         - For non-:attr:`partial` versions, compare using the `SemVer`_ scheme
         - If any compared object is :attr:`partial`:
+
             - Begin comparison using the `SemVer`_ scheme
             - If a component (:attr:`minor`, :attr:`patch`, :attr:`prerelease` or :attr:`build`)
               was absent from the :attr:`partial` :class:`Version` -- represented with :obj:`None`
@@ -472,7 +474,7 @@ Each of those ``Spec`` classes provides a shared set of methods to work with ver
     * A clause of ``>0.1.2-rc.3`` will match versions strictly above ``0.1.2-rc.3``, including matching prereleases of ``0.1.2``: ``0.1.2-rc.10`` is included;
     * A clause of ``>=XXX`` will match versions that match ``>XXX`` or ``==XXX``
 
-    ..rubric:: Wildcards
+    .. rubric:: Wildcards
 
     * A clause of ``==0.1.*`` is equivalent to ``>=0.1.0,<0.2.0``
     * A clause of ``>=0.1.*`` is equivalent to ``>=0.1.0``
@@ -554,7 +556,7 @@ Each of those ``Spec`` classes provides a shared set of methods to work with ver
             <SpecItem: != Version('1.1.13', partial=True)>,
         )>
 
-    Its keeps a list of :class:`SpecItem` objects, based on the initial expression
+    It keeps a list of :class:`SpecItem` objects, based on the initial expression
     components.
 
     .. method:: __iter__(self)
@@ -705,7 +707,13 @@ Each of those ``Spec`` classes provides a shared set of methods to work with ver
             >>> Version('1.0.1') in Spec('!=1.0.1')
             False
 
-        The kind of 'Almost equal to' specifications
+    .. data:: KIND_COMPATIBLE
+
+        The kind of `compatible release clauses`_
+        specifications::
+
+            >>> Version('1.1.2') in Spec('~=1.1.0')
+            True
 
 
 
