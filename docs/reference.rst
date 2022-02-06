@@ -336,7 +336,7 @@ In order to solve this problem, each `SemVer`_-based package management platform
 python-semanticversion provides a couple of implementations of those range definition syntaxes:
 
 - ``'simple'`` (through :class:`SimpleSpec`): A python-semanticversion specific syntax, which supports simple / intuitive patterns, and some NPM-inspired extensions;
-- ``'npm'`` (through :class:`NpmSpec`): The NPM syntax, based on https://docs.npmjs.com/misc/semver.html
+- ``'npm'`` (through :class:`NpmSpec`): The NPM syntax, based on https://github.com/npm/node-semver#ranges
 - More might be added in the future.
 
 Each of those ``Spec`` classes provides a shared set of methods to work with versions:
@@ -518,7 +518,7 @@ Each of those ``Spec`` classes provides a shared set of methods to work with ver
 
     .. versionadded:: 2.7
 
-    A NPM-compliant version matching engine, based on the https://docs.npmjs.com/misc/semver.html specification.
+    A NPM-compliant version matching engine, based on the https://github.com/npm/node-semver#ranges specification.
 
     .. code-block:: pycon
 

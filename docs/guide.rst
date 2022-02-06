@@ -326,7 +326,7 @@ The :class:`NpmSpec` scheme
 """""""""""""""""""""""""""
 
 The :class:`NpmSpec` class implements the full NPM specification (from
-https://docs.npmjs.com/misc/semver.html):
+https://github.com/npm/node-semver#ranges):
 
 .. code-block:: pycon
 
