@@ -266,9 +266,9 @@ When submitting patches or pull requests, you should respect the following rules
 - Coding conventions are based on :pep:`8`
 - The whole test suite must pass after adding the changes
 - The test coverage for a new feature must be 100%
-- New features and methods should be documented in the :doc:`reference` section
-  and included in the :doc:`changelog`
-- Include your name in the :ref:`contributors` section
+- New features and methods should be documented in the ``reference`` section
+  and included in the ``changelog``
+- Include your name in the ``contributors`` section
 
 .. note:: All files should contain the following header::
 
