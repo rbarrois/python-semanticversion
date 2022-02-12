@@ -1,10 +1,19 @@
 ChangeLog
 =========
 
-2.8.6 (unreleased)
+2.9.1 (unreleased)
 ------------------
 
 - Nothing changed yet.
+
+
+2.9.0 (2022-02-06)
+------------------
+
+*New:*
+
+    * Add support for Django 3.1, 3.2, 4.0
+    * Add support for Python 3.7 / 3.8 / 3.9 / 3.10
 
 
 2.8.5 (2020-04-29)
@@ -91,7 +100,7 @@ Backwards compatibility has been kept, but users should adjust their code for th
     * Allow creation of a ``Version`` directly from parsed components, as keyword arguments
       (``Version(major=1, minor=2, patch=3)``)
     * Add ``Version.truncate()`` to build a truncated copy of a ``Version``
-    * Add ``NpmSpec(...)``, following strict NPM matching rules (https://docs.npmjs.com/misc/semver)
+    * Add ``NpmSpec(...)``, following strict NPM matching rules (https://github.com/npm/node-semver#ranges)
     * Add ``Spec.parse('xxx', syntax='<syntax>')`` for simpler multi-syntax support
     * Add ``Version().precedence_key``, for use in ``sort(versions, key=lambda v: v.precedence_key)`` calls.
       The contents of this attribute is an implementation detail.

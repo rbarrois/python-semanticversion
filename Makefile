@@ -27,7 +27,7 @@ clean:
 
 update:
 	pip install --upgrade pip setuptools
-	pip install --upgrade -r requirements_dev.txt
+	pip install --upgrade -e .[dev,doc]
 	pip freeze
 
 
@@ -47,7 +47,7 @@ testall:
 
 # DOC: Run tests for the currently installed version
 test:
-	python -Wdefault setup.py test
+	python -Wdefault -m nose2
 
 # DOC: Perform code quality tasks
 lint: check-manifest flake8
@@ -59,8 +59,8 @@ check-manifest:
 # Note: we run the linter in two runs, because our __init__.py files has specific warnings we want to exclude
 # DOC: Verify code quality
 flake8:
-	$(FLAKE8) --config .flake8 --exclude $(PACKAGE)/__init__.py $(PACKAGE) $(TESTS_DIR) setup.py
-	$(FLAKE8) --config .flake8 --ignore F401 $(PACKAGE)/__init__.py
+	$(FLAKE8) --exclude $(PACKAGE)/__init__.py $(PACKAGE) $(TESTS_DIR) setup.py
+	$(FLAKE8) --ignore F401 $(PACKAGE)/__init__.py
 
 # DOC: Run tests with coverage collection
 coverage:

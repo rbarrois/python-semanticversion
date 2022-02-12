@@ -4,9 +4,15 @@
 
 import warnings
 
+import django
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+
+if django.VERSION >= (3, 0):
+    # See https://docs.djangoproject.com/en/dev/releases/3.0/#features-deprecated-in-3-0
+    from django.utils.translation import gettext_lazy as _
+else:
+    from django.utils.translation import ugettext_lazy as _
 
 from . import base
 
