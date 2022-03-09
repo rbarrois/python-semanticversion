@@ -125,52 +125,28 @@ class Version(object):
         return int(value)
 
     def next_major(self):
-        if self.prerelease and self.minor == self.patch == 0:
-            return Version(
-                major=self.major,
-                minor=0,
-                patch=0,
-                partial=self.partial,
-            )
-        else:
-            return Version(
-                major=self.major + 1,
-                minor=0,
-                patch=0,
-                partial=self.partial,
-            )
+        return Version(
+            major=self.major + 1,
+            minor=0,
+            patch=0,
+            partial=self.partial,
+        )
 
     def next_minor(self):
-        if self.prerelease and self.patch == 0:
-            return Version(
-                major=self.major,
-                minor=self.minor,
-                patch=0,
-                partial=self.partial,
-            )
-        else:
-            return Version(
-                major=self.major,
-                minor=self.minor + 1,
-                patch=0,
-                partial=self.partial,
-            )
+        return Version(
+            major=self.major,
+            minor=self.minor + 1,
+            patch=0,
+            partial=self.partial,
+        )
 
     def next_patch(self):
-        if self.prerelease:
-            return Version(
-                major=self.major,
-                minor=self.minor,
-                patch=self.patch,
-                partial=self.partial,
-            )
-        else:
-            return Version(
-                major=self.major,
-                minor=self.minor,
-                patch=self.patch + 1,
-                partial=self.partial,
-            )
+        return Version(
+            major=self.major,
+            minor=self.minor,
+            patch=self.patch + 1,
+            partial=self.partial,
+        )
 
     def truncate(self, level='patch'):
         """Return a new Version object, truncated up to the selected level."""
