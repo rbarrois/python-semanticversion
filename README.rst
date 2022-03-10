@@ -26,7 +26,7 @@ It follows strictly the 2.0.0 version of the SemVer scheme.
 Links
 -----
 
-- Package on `PyPI`_: http://pypi.python.org/pypi/semantic_version/
+- Package on `PyPI`_: https://pypi.org/project/semantic-version/
 - Doc on `ReadTheDocs <http://readthedocs.org/>`_: https://python-semanticversion.readthedocs.io/
 - Source on `GitHub <http://github.com/>`_: http://github.com/rbarrois/python-semanticversion/
 - Build on Github Actions: https://github.com/rbarrois/python-semanticversion/actions
@@ -40,7 +40,7 @@ Install the package from `PyPI`_, using pip:
 
 .. code-block:: sh
 
-    pip install semantic_version
+    pip install semantic-version
 
 Or from GitHub:
 
