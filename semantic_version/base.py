@@ -412,7 +412,7 @@ class Version(object):
     def precedence_key(self):
         if self.prerelease:
             prerelease_key = tuple(
-                NumericIdentifier(part) if re.match(r'^[0-9]+$', part) else AlphaIdentifier(part)
+                NumericIdentifier(part) if re.match(r'^[0-9]+(-)?', part) else AlphaIdentifier(part)
                 for part in self.prerelease
             )
         else:
