@@ -1230,7 +1230,7 @@ class NpmSpec(BaseSpec):
 
         NUMBER = r'x|X|\*|0|[1-9][0-9]*'
         PART = r'[a-zA-Z0-9.-]*'
-        OP = r'<|<=|=|>=|>|\^|~|~>'
+        OP = r'~>|<=|>=|>|<|\^|~|='
         NPM_SPEC_BLOCK = re.compile(r"""
             ^(?:v)?                     # Strip optional initial v
             (?P<op>{op}|)               # Operator, can be empty
