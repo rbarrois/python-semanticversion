@@ -1,10 +1,14 @@
 ChangeLog
 =========
 
-2.9.1 (unreleased)
-------------------
+2.10.0 (unreleased)
+-------------------
 
-- Nothing changed yet.
+*New:*
+
+    * `132 <https://github.com/rbarrois/python-semanticversion/issues/132>`_:
+      Ensure sorting a collection of versions is always stable, even with
+      build metadata.
 
 
 2.9.0 (2022-02-06)

@@ -229,6 +229,20 @@ class VersionTestCase(unittest.TestCase):
         self.assertTrue(v != '0.1.0')
         self.assertFalse(v == '0.1.0')
 
+    def test_stable_ordering(self):
+        a = [
+            base.Version('0.1.0'),
+            base.Version('0.1.0+a'),
+            base.Version('0.1.0+a.1'),
+            base.Version('0.1.1-a1'),
+        ]
+        b = [a[1], a[3], a[0], a[2]]
+
+        self.assertEqual(
+            sorted(a, key=lambda v: v.precedence_key),
+            sorted(b, key=lambda v: v.precedence_key),
+        )
+
     def test_bump_clean_versions(self):
         # We Test each property explicitly as the == comparator for versions
         # does not distinguish between prerelease or builds for equality.

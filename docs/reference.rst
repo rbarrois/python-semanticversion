@@ -130,7 +130,16 @@ Representing a version (the Version class)
         The actual value of the attribute is considered an implementation detail; the only
         guarantee is that ordering versions by their precedence_key will comply with semver precedence rules.
 
-        Note that the :attr:`~Version.build` isn't included in the precedence_key computatin.
+
+        .. warning::
+
+           .. versionchanged:: 2.10.0
+
+           The :attr:`~Version.build` is included in the precedence_key computation, but
+           only for ordering stability.
+           The only guarantee is that, for a given release of python-semanticversion, two versions'
+           :attr:`~Version.precedence_key` will always compare in the same direction if they include
+           build metadata; that ordering is an implementation detail and shouldn't be relied upon.
 
     .. attribute:: partial
 
