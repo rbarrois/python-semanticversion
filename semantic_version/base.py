@@ -2,6 +2,7 @@
 # Copyright (c) The python-semanticversion project
 # This code is distributed under the two-clause BSD License.
 
+import copy
 import functools
 import re
 import warnings
@@ -181,7 +182,7 @@ class Version(object):
     def truncate(self, level='patch'):
         """Return a new Version object, truncated up to the selected level."""
         if level == 'build':
-            return self
+            return copy.copy(self)
         elif level == 'prerelease':
             return Version(
                 major=self.major,
