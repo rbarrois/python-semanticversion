@@ -4,7 +4,10 @@ ChangeLog
 2.10.1 (unreleased)
 -------------------
 
-- Nothing changed yet.
+*Bugfix:*
+
+    * `141 <https://github.com/rbarrois/python-semanticversion/issues/141>`_:
+      Ensure we return a new instance for ``Version.truncate("build")``.
 
 
 2.10.0 (2022-05-26)

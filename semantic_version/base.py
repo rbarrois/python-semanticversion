@@ -181,7 +181,14 @@ class Version(object):
     def truncate(self, level='patch'):
         """Return a new Version object, truncated up to the selected level."""
         if level == 'build':
-            return self
+            return Version(
+                major=self.major,
+                minor=self.minor,
+                patch=self.patch,
+                prerelease=self.prerelease,
+                build=self.build,
+                partial=self.partial,
+            )
         elif level == 'prerelease':
             return Version(
                 major=self.major,

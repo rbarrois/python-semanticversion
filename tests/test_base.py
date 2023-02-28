@@ -395,6 +395,16 @@ class VersionTestCase(unittest.TestCase):
         self.assertEqual(v.prerelease, ())
         self.assertEqual(v.build, ())
 
+    def test_truncate(self):
+        v = base.Version("3.2.1-pre+build")
+        self.assertEqual(v.truncate("build"), v)
+        self.assertIsNot(v.truncate("build"), v)
+        self.assertEqual(v.truncate("prerelease"), base.Version("3.2.1-pre"))
+        self.assertEqual(v.truncate("patch"), base.Version("3.2.1"))
+        self.assertEqual(v.truncate(), base.Version("3.2.1"))
+        self.assertEqual(v.truncate("minor"), base.Version("3.2.0"))
+        self.assertEqual(v.truncate("major"), base.Version("3.0.0"))
+
 
 class SpecItemTestCase(unittest.TestCase):
     if sys.version_info[0] <= 2:
