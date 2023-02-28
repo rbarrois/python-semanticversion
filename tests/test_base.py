@@ -405,6 +405,15 @@ class VersionTestCase(unittest.TestCase):
         self.assertEqual(v.truncate("minor"), base.Version("3.2.0"))
         self.assertEqual(v.truncate("major"), base.Version("3.0.0"))
 
+    def test_subclass(self):
+        """Custom subclasses of Version returns instances of themselves."""
+        class MyVersion(base.Version):
+            pass
+
+        v = MyVersion("3.2.1-pre")
+        subv = v.truncate()
+        self.assertEqual(type(subv), MyVersion)
+
 
 class SpecItemTestCase(unittest.TestCase):
     if sys.version_info[0] <= 2:

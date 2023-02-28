@@ -132,14 +132,14 @@ class Version(object):
 
     def next_major(self):
         if self.prerelease and self.minor == self.patch == 0:
-            return Version(
+            return self.__class__(
                 major=self.major,
                 minor=0,
                 patch=0,
                 partial=self.partial,
             )
         else:
-            return Version(
+            return self.__class__(
                 major=self.major + 1,
                 minor=0,
                 patch=0,
@@ -148,14 +148,14 @@ class Version(object):
 
     def next_minor(self):
         if self.prerelease and self.patch == 0:
-            return Version(
+            return self.__class__(
                 major=self.major,
                 minor=self.minor,
                 patch=0,
                 partial=self.partial,
             )
         else:
-            return Version(
+            return self.__class__(
                 major=self.major,
                 minor=self.minor + 1,
                 patch=0,
@@ -164,14 +164,14 @@ class Version(object):
 
     def next_patch(self):
         if self.prerelease:
-            return Version(
+            return self.__class__(
                 major=self.major,
                 minor=self.minor,
                 patch=self.patch,
                 partial=self.partial,
             )
         else:
-            return Version(
+            return self.__class__(
                 major=self.major,
                 minor=self.minor,
                 patch=self.patch + 1,
@@ -181,7 +181,7 @@ class Version(object):
     def truncate(self, level='patch'):
         """Return a new Version object, truncated up to the selected level."""
         if level == 'build':
-            return Version(
+            return self.__class__(
                 major=self.major,
                 minor=self.minor,
                 patch=self.patch,
@@ -190,7 +190,7 @@ class Version(object):
                 partial=self.partial,
             )
         elif level == 'prerelease':
-            return Version(
+            return self.__class__(
                 major=self.major,
                 minor=self.minor,
                 patch=self.patch,
@@ -198,21 +198,21 @@ class Version(object):
                 partial=self.partial,
             )
         elif level == 'patch':
-            return Version(
+            return self.__class__(
                 major=self.major,
                 minor=self.minor,
                 patch=self.patch,
                 partial=self.partial,
             )
         elif level == 'minor':
-            return Version(
+            return self.__class__(
                 major=self.major,
                 minor=self.minor,
                 patch=None if self.partial else 0,
                 partial=self.partial,
             )
         elif level == 'major':
-            return Version(
+            return self.__class__(
                 major=self.major,
                 minor=None if self.partial else 0,
                 patch=None if self.partial else 0,
@@ -266,7 +266,7 @@ class Version(object):
         )
 
         if match.end() == len(version_string):
-            return Version(version, partial=partial)
+            return cls(version, partial=partial)
 
         rest = version_string[match.end():]
 

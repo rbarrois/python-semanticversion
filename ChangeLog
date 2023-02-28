@@ -4,6 +4,12 @@ ChangeLog
 2.10.1 (unreleased)
 -------------------
 
+*Minor:*
+
+    * `112 <https://github.com/rbarrois/python-semanticversion/issues/112>`_:
+      Functions returning a new ``Version`` instance reuse the current class,
+      helping with subclassing.
+
 *Bugfix:*
 
     * `141 <https://github.com/rbarrois/python-semanticversion/issues/141>`_:
