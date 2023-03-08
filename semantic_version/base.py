@@ -599,14 +599,17 @@ class SpecItem(object):
         return hash((self.kind, self.spec))
 
 
+@functools.lru_cache()
 def compare(v1, v2):
     return Version(v1).__cmp__(Version(v2))
 
 
+@functools.lru_cache()
 def match(spec, version):
     return Spec(spec).match(Version(version))
 
 
+@functools.lru_cache()
 def validate(version_string):
     """Validates a version string againt the SemVer specification."""
     try:
