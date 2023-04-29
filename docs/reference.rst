@@ -202,7 +202,7 @@ Representing a version (the Version class)
                      :attr:`prerelease` component: it's the smallest "pure"
                      patch version strictly greater than that version.
 
-    .. method:: truncate(self, level='patch']):
+    .. method:: truncate(self[, level='patch'])
 
         Returns a similar level, but truncated at the provided level.
 
