@@ -5,9 +5,7 @@
 import unittest
 
 from semantic_version import Version, SimpleSpec, NpmSpec
-
 from .setup_django import django_loaded
-
 
 if django_loaded:  # pragma: no cover
     from semantic_version import django_fields
@@ -20,11 +18,11 @@ if django_loaded:  # pragma: no cover
     from django.test import TransactionTestCase
     from django.test import runner as django_test_runner
     from django.test import utils as django_test_utils
+    from django.core.exceptions import ValidationError
 
 else:
     DjangoTestCase = unittest.TestCase
     TransactionTestCase = unittest.TestCase
-
 
 test_state = {}
 
@@ -139,10 +137,10 @@ class DjangoFieldTestCase(unittest.TestCase):
 
     def test_invalid_input(self):
         v = models.VersionModel(version='0.1.1', spec='blah')
-        self.assertRaises(ValueError, v.full_clean)
+        self.assertRaises(ValidationError, v.full_clean)
 
         v2 = models.VersionModel(version='0.1', spec='==0.1.1,!=0.1.1-alpha')
-        self.assertRaises(ValueError, v2.full_clean)
+        self.assertRaises(ValidationError, v2.full_clean)
 
     def test_partial(self):
         obj = models.PartialVersionModel(partial=Version('0.1.0'))
