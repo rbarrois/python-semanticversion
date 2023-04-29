@@ -1328,15 +1328,17 @@ class NpmSpec(BaseSpec):
                                 prerelease_policy=Range.PRERELEASE_ALWAYS,
                             ))
                         prerelease_clauses.append(clause)
-                        non_prerel_clauses.append(cls.range(
-                            operator=clause.operator,
-                            target=clause.target.truncate(),
-                        ))
+                        if not clause.operator in (Range.OP_LT, Range.OP_LTE):
+                            non_prerel_clauses.append(cls.range(
+                                operator=clause.operator,
+                                target=clause.target.truncate(),
+                            ))
                     else:
                         non_prerel_clauses.append(clause)
                 if prerelease_clauses:
                     result |= AllOf(*prerelease_clauses)
-                result |= AllOf(*non_prerel_clauses)
+                if non_prerel_clauses:
+                    result |= AllOf(*non_prerel_clauses)
 
             return result
 
