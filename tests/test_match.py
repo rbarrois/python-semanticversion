@@ -3,20 +3,12 @@
 # Copyright (c) The python-semanticversion project
 # This code is distributed under the two-clause BSD License.
 
-import unittest
-import sys
-
 import semantic_version
 
+from . import testing
 
-class MatchTestCase(unittest.TestCase):
-    if sys.version_info[0] <= 2:
-        import contextlib
 
-        @contextlib.contextmanager
-        def subTest(self, **kwargs):
-            yield
-
+class MatchTestCase(testing.TestCase):
     invalid_specs = [
         '',
         '!0.1',
@@ -170,7 +162,3 @@ class MatchTestCase(unittest.TestCase):
         spec = semantic_version.Spec('<=0.1.1-rc1')
         version = semantic_version.Version('0.1.1-rc1+4.2')
         self.assertTrue(version in spec, "%r should be in %r" % (version, spec))
-
-
-if __name__ == '__main__':  # pragma: no cover
-    unittest.main()

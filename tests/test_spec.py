@@ -5,15 +5,15 @@
 
 """Test conformance to the specs."""
 
-import unittest
-
 import semantic_version
+
+from . import testing
 
 # shortcut
 Version = semantic_version.Version
 
 
-class FormatTests(unittest.TestCase):
+class FormatTests(testing.TestCase):
     """Tests proper version validation."""
 
     def test_major_minor_patch(self):

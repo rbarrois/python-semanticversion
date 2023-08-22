@@ -10,16 +10,11 @@ import sys
 
 from semantic_version import base
 
+from . import testing
 
-class TopLevelTestCase(unittest.TestCase):
+
+class TopLevelTestCase(testing.TestCase):
     """Test module-level functions."""
-
-    if sys.version_info[0] <= 2:
-        import contextlib
-
-        @contextlib.contextmanager
-        def subTest(self, **kwargs):
-            yield
 
     versions = (
         ('0.1.0', '0.1.1', -1),
@@ -96,13 +91,7 @@ class TopLevelTestCase(unittest.TestCase):
                     "%r should not be a valid version" % (version,))
 
 
-class VersionTestCase(unittest.TestCase):
-    if sys.version_info[0] <= 2:
-        import contextlib
-
-        @contextlib.contextmanager
-        def subTest(self, **kwargs):
-            yield
+class VersionTestCase(testing.TestCase):
 
     versions = {
         '1.0.0-alpha': (1, 0, 0, ('alpha',), ()),
@@ -415,14 +404,7 @@ class VersionTestCase(unittest.TestCase):
         self.assertEqual(type(subv), MyVersion)
 
 
-class SpecItemTestCase(unittest.TestCase):
-    if sys.version_info[0] <= 2:
-        import contextlib
-
-        @contextlib.contextmanager
-        def subTest(self, **kwargs):
-            yield
-
+class SpecItemTestCase(testing.TestCase):
     invalids = [
         '<=0.1.1+build3',
         '<=0.1.1+',
@@ -595,13 +577,7 @@ class SpecItemTestCase(unittest.TestCase):
             len(set([base.SpecItem('==0.1.0'), base.SpecItem('==0.1.0')])))
 
 
-class CoerceTestCase(unittest.TestCase):
-    if sys.version_info[0] <= 2:
-        import contextlib
-
-        @contextlib.contextmanager
-        def subTest(self, **kwargs):
-            yield
+class CoerceTestCase(testing.TestCase):
 
     examples = {
         # Dict of target: [list of equivalents]
@@ -626,21 +602,7 @@ class CoerceTestCase(unittest.TestCase):
         self.assertRaises(ValueError, base.Version.coerce, 'v1')
 
 
-class SpecTestCase(unittest.TestCase):
-    if sys.version_info[0] <= 2:
-        import contextlib
-
-        @contextlib.contextmanager
-        def subTest(self, **kwargs):
-            yield
-
-        def assertCountEqual(self, a, b):
-            import collections
-
-            self.assertEqual(
-                collections.Counter(a),
-                collections.Counter(b),
-            )
+class SpecTestCase(testing.TestCase):
 
     examples = {
         '>=0.1.1,<0.1.2': ['>=0.1.1', '<0.1.2'],
@@ -804,7 +766,3 @@ class SpecTestCase(unittest.TestCase):
         self.assertEqual(
             1,
             len(set([base.Spec('>=0.1.1'), base.Spec('>=0.1.1')])))
-
-
-if __name__ == '__main__':  # pragma: no cover
-    unittest.main()

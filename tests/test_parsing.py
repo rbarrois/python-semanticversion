@@ -4,19 +4,12 @@
 # This code is distributed under the two-clause BSD License.
 
 import itertools
-import unittest
-import sys
 
 import semantic_version
 
+from . import testing
 
-class ParsingTestCase(unittest.TestCase):
-    if sys.version_info[0] <= 2:
-        import contextlib
-
-        @contextlib.contextmanager
-        def subTest(self, **kwargs):
-            yield
+class ParsingTestCase(testing.TestCase):
 
     invalids = [
         None,
@@ -73,13 +66,7 @@ class ParsingTestCase(unittest.TestCase):
                 self.assertEqual(text, str(version))
 
 
-class ComparisonTestCase(unittest.TestCase):
-    if sys.version_info[0] <= 2:
-        import contextlib
-
-        @contextlib.contextmanager
-        def subTest(self, **kwargs):
-            yield
+class ComparisonTestCase(testing.TestCase):
 
     order = [
         '1.0.0-alpha',
@@ -138,7 +125,3 @@ class ComparisonTestCase(unittest.TestCase):
                     self.assertTrue(v1 <= v2, "%r !<= %r" % (v1, v2))
                     self.assertFalse(v2 > v1, "%r !> %r" % (v2, v1))
                     self.assertTrue(v2 >= v1, "%r !>= %r" % (v2, v1))
-
-
-if __name__ == '__main__':  # pragma: no cover
-    unittest.main()
