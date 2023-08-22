@@ -14,20 +14,18 @@ jobs:
       matrix:
         include:
           # Django 3.2: Python 3.8, 3.9, 3.10
-          - python-version: "3.8"
-            django-family: 32
           - python-version: "3.9"
             django-family: 32
           - python-version: "3.10"
             django-family: 32
 
-          # Django 4.1: Python 3.9, 3.10, 3.11
+          # Django 4.2: Python 3.9, 3.10, 3.11
           - python-version: "3.9"
-            django-family: 41
+            django-family: 42
           - python-version: "3.10"
-            django-family: 41
+            django-family: 42
           - python-version: "3.11"
-            django-family: 41
+            django-family: 42
 
     env:
       TOXENV: django${{ matrix.django-family }}

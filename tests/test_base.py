@@ -10,16 +10,11 @@ import sys
 
 from semantic_version import base
 
+from . import testing
 
-class TopLevelTestCase(unittest.TestCase):
+
+class TopLevelTestCase(testing.TestCase):
     """Test module-level functions."""
-
-    if sys.version_info[0] <= 2:
-        import contextlib
-
-        @contextlib.contextmanager
-        def subTest(self, **kwargs):
-            yield
 
     versions = (
         ('0.1.0', '0.1.1', -1),
@@ -96,13 +91,7 @@ class TopLevelTestCase(unittest.TestCase):
                     "%r should not be a valid version" % (version,))
 
 
-class VersionTestCase(unittest.TestCase):
-    if sys.version_info[0] <= 2:
-        import contextlib
-
-        @contextlib.contextmanager
-        def subTest(self, **kwargs):
-            yield
+class VersionTestCase(testing.TestCase):
 
     versions = {
         '1.0.0-alpha': (1, 0, 0, ('alpha',), ()),
@@ -171,6 +160,7 @@ class VersionTestCase(unittest.TestCase):
             (1, 1, 3, (), ('build', '2012-04-13', 'HUY', 'alpha-12', '1')),
     }
 
+    @testing.expect_warning(testing.WARN_SPEC_PARTIAL)
     def test_parsing_partials(self):
         for text, expected_fields in self.partial_versions.items():
             with self.subTest(text=text):
@@ -181,6 +171,7 @@ class VersionTestCase(unittest.TestCase):
                 self.assertEqual(expected_fields, actual_fields)
                 self.assertTrue(version.partial, "%r should have partial=True" % version)
 
+    @testing.expect_warning(testing.WARN_SPEC_PARTIAL)
     def test_str_partials(self):
         for text in self.partial_versions:
             with self.subTest(text=text):
@@ -188,6 +179,7 @@ class VersionTestCase(unittest.TestCase):
                 self.assertEqual(text, str(version))
                 self.assertEqual("Version('%s', partial=True)" % text, repr(version))
 
+    @testing.expect_warning(testing.WARN_SPEC_PARTIAL)
     def test_compare_partial_to_self(self):
         for text in self.partial_versions:
             with self.subTest(text=text):
@@ -196,6 +188,7 @@ class VersionTestCase(unittest.TestCase):
                     base.Version(text, partial=True))
                 self.assertNotEqual(text, base.Version(text, partial=True))
 
+    @testing.expect_warning(testing.WARN_SPEC_PARTIAL)
     def test_hash(self):
         self.assertEqual(
             1,
@@ -415,20 +408,14 @@ class VersionTestCase(unittest.TestCase):
         self.assertEqual(type(subv), MyVersion)
 
 
-class SpecItemTestCase(unittest.TestCase):
-    if sys.version_info[0] <= 2:
-        import contextlib
-
-        @contextlib.contextmanager
-        def subTest(self, **kwargs):
-            yield
-
+class SpecItemTestCase(testing.TestCase):
     invalids = [
         '<=0.1.1+build3',
         '<=0.1.1+',
         '>0.2.3-rc2+',
     ]
 
+    @testing.expect_warning(testing.WARN_SPEC_PARTIAL, testing.WARN_SPECITEM)
     def test_invalids(self):
         for invalid in self.invalids:
             with self.subTest(invalid=invalid):
@@ -453,6 +440,7 @@ class SpecItemTestCase(unittest.TestCase):
         '^0.1.3': (base.SpecItem.KIND_CARET, 0, 1, 3, None, None),
     }
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS, testing.WARN_SPEC_PARTIAL, testing.WARN_SPECITEM)
     def test_components(self):
         for spec_text, components in self.components.items():
             with self.subTest(spec_text=spec_text):
@@ -561,6 +549,7 @@ class SpecItemTestCase(unittest.TestCase):
         ),
     }
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS, testing.WARN_SPEC_PARTIAL, testing.WARN_SPECITEM)
     def test_matches(self):
         for spec_text, versions in self.matches.items():
             spec = base.SpecItem(spec_text)
@@ -578,30 +567,27 @@ class SpecItemTestCase(unittest.TestCase):
                         spec.match(version),
                         "%r should not match %r" % (version, spec))
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS, testing.WARN_SPEC_PARTIAL, testing.WARN_SPECITEM)
     def test_equality(self):
         spec1 = base.SpecItem('==0.1.0')
         spec2 = base.SpecItem('==0.1.0')
         self.assertEqual(spec1, spec2)
         self.assertFalse(spec1 == '==0.1.0')
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS, testing.WARN_SPEC_PARTIAL, testing.WARN_SPECITEM)
     def test_to_string(self):
         spec = base.SpecItem('==0.1.0')
         self.assertEqual('==0.1.0', str(spec))
         self.assertEqual(base.SpecItem.KIND_EQUAL, spec.kind)
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS, testing.WARN_SPEC_PARTIAL, testing.WARN_SPECITEM)
     def test_hash(self):
         self.assertEqual(
             1,
             len(set([base.SpecItem('==0.1.0'), base.SpecItem('==0.1.0')])))
 
 
-class CoerceTestCase(unittest.TestCase):
-    if sys.version_info[0] <= 2:
-        import contextlib
-
-        @contextlib.contextmanager
-        def subTest(self, **kwargs):
-            yield
+class CoerceTestCase(testing.TestCase):
 
     examples = {
         # Dict of target: [list of equivalents]
@@ -626,21 +612,7 @@ class CoerceTestCase(unittest.TestCase):
         self.assertRaises(ValueError, base.Version.coerce, 'v1')
 
 
-class SpecTestCase(unittest.TestCase):
-    if sys.version_info[0] <= 2:
-        import contextlib
-
-        @contextlib.contextmanager
-        def subTest(self, **kwargs):
-            yield
-
-        def assertCountEqual(self, a, b):
-            import collections
-
-            self.assertEqual(
-                collections.Counter(a),
-                collections.Counter(b),
-            )
+class SpecTestCase(testing.TestCase):
 
     examples = {
         '>=0.1.1,<0.1.2': ['>=0.1.1', '<0.1.2'],
@@ -651,6 +623,7 @@ class SpecTestCase(unittest.TestCase):
         '~=1.2.3': ['>=1.2.3', '<1.3.0'],
     }
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS, testing.WARN_SPEC_ITER, testing.WARN_SPEC_PARTIAL)
     def test_parsing(self):
         for spec_list_text, specs in self.examples.items():
             with self.subTest(spec=spec_list_text):
@@ -665,6 +638,13 @@ class SpecTestCase(unittest.TestCase):
         ('>=0.1.0', '!=0.1.3-rc1,<0.1.3'): ['>=0.1.0', '!=0.1.3-rc1', '<0.1.3'],
     }
 
+    @testing.expect_warning(
+        testing.WARN_SIMPLESPEC_MANY,
+        testing.WARN_SPECITEM,
+        testing.WARN_SPEC_CLASS,
+        testing.WARN_SPEC_ITER,
+        testing.WARN_SPEC_PARTIAL,
+    )
     def test_parsing_split(self):
         for spec_list_texts, specs in self.split_examples.items():
             with self.subTest(spec=spec_list_texts):
@@ -703,6 +683,7 @@ class SpecTestCase(unittest.TestCase):
         ),
     }
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS)
     def test_matches(self):
         for spec_list_text, versions in self.matches.items():
             spec_list = base.Spec(spec_list_text)
@@ -728,6 +709,7 @@ class SpecTestCase(unittest.TestCase):
                         spec_list.match(version),
                         "%r should not match %r" % (version, spec_list))
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS)
     def test_equality(self):
         for spec_list_text in self.examples:
             with self.subTest(spec=spec_list_text):
@@ -736,11 +718,13 @@ class SpecTestCase(unittest.TestCase):
                 self.assertEqual(slist1, slist2)
                 self.assertFalse(slist1 == spec_list_text)
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS)
     def test_filter_empty(self):
         s = base.Spec('>=0.1.1')
         res = tuple(s.filter(()))
         self.assertEqual((), res)
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS)
     def test_filter_incompatible(self):
         s = base.Spec('>=0.1.1,!=0.1.4')
         res = tuple(s.filter([
@@ -750,6 +734,7 @@ class SpecTestCase(unittest.TestCase):
         ]))
         self.assertEqual((), res)
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS)
     def test_filter_compatible(self):
         s = base.Spec('>=0.1.1,!=0.1.4,<0.2.0')
         res = tuple(s.filter([
@@ -770,10 +755,12 @@ class SpecTestCase(unittest.TestCase):
 
         self.assertEqual(expected, res)
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS)
     def test_select_empty(self):
         s = base.Spec('>=0.1.1')
         self.assertIsNone(s.select(()))
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS)
     def test_select_incompatible(self):
         s = base.Spec('>=0.1.1,!=0.1.4')
         res = s.select([
@@ -783,6 +770,7 @@ class SpecTestCase(unittest.TestCase):
         ])
         self.assertIsNone(res)
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS)
     def test_select_compatible(self):
         s = base.Spec('>=0.1.1,!=0.1.4,<0.2.0')
         res = s.select([
@@ -797,14 +785,12 @@ class SpecTestCase(unittest.TestCase):
 
         self.assertEqual(base.Version('0.1.5'), res)
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS)
     def test_contains(self):
         self.assertFalse('ii' in base.Spec('>=0.1.1'))
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS)
     def test_hash(self):
         self.assertEqual(
             1,
             len(set([base.Spec('>=0.1.1'), base.Spec('>=0.1.1')])))
-
-
-if __name__ == '__main__':  # pragma: no cover
-    unittest.main()
