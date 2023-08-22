@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) The python-semanticversion project
 
-try:  # pragma: no cover
-    import django
-    django_loaded = True
-except ImportError:  # pragma: no cover
-    django_loaded = False
-    django = None
+
+import django
+from django.apps import apps
+from django.conf import settings
 
 
-if django_loaded:
-    from django.conf import settings
+def configure_django():
     if not settings.configured:
         settings.configure(
             DATABASES={
@@ -24,6 +21,7 @@ if django_loaded:
             ],
             MIDDLEWARE_CLASSES=[],
         )
+
     django.setup()
-    from django.apps import apps
+
     apps.populate(settings.INSTALLED_APPS)

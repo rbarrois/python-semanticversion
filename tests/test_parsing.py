@@ -9,6 +9,7 @@ import semantic_version
 
 from . import testing
 
+
 class ParsingTestCase(testing.TestCase):
 
     invalids = [

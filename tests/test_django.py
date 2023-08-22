@@ -2,36 +2,32 @@
 # Copyright (c) The python-semanticversion project
 # This code is distributed under the two-clause BSD License.
 
-import unittest
-
 from semantic_version import Version, SimpleSpec, NpmSpec
 
-from .setup_django import django_loaded
+# Import Django code
+from django.core import serializers
+from django.core.management import call_command
+from django.db import connection
+from django.test import TestCase as DjangoTestCase
+from django.test import TransactionTestCase
+from django.test import runner as django_test_runner
+from django.test import utils as django_test_utils
 
+from semantic_version import django_fields
 
-if django_loaded:  # pragma: no cover
-    from semantic_version import django_fields
-    from .django_test_app import models
+# Configure Django
+from .setup_django import configure_django
+from . import testing
 
-    from django.core import serializers
-    from django.core.management import call_command
-    from django.db import connection
-    from django.test import TestCase as DjangoTestCase
-    from django.test import TransactionTestCase
-    from django.test import runner as django_test_runner
-    from django.test import utils as django_test_utils
+configure_django()
 
-else:
-    DjangoTestCase = unittest.TestCase
-    TransactionTestCase = unittest.TestCase
+from .django_test_app import models  # noqa: E402
 
 
 test_state = {}
 
 
 def setUpModule():
-    if not django_loaded:  # pragma: no cover
-        raise unittest.SkipTest("Django not installed")
     django_test_utils.setup_test_environment()
     runner = django_test_runner.DiscoverRunner()
     runner_state = runner.setup_databases()
@@ -42,8 +38,6 @@ def setUpModule():
 
 
 def tearDownModule():
-    if not django_loaded:  # pragma: no cover
-        return
     runner = test_state['runner']
     runner_state = test_state['runner_state']
     runner.teardown_databases(runner_state)
@@ -58,8 +52,7 @@ def save_and_refresh(obj):
     obj = obj.__class__.objects.get(id=obj.id)
 
 
-@unittest.skipIf(not django_loaded, "Django not installed")
-class DjangoFieldTestCase(unittest.TestCase):
+class DjangoFieldTestCase(testing.TestCase):
     def test_version(self):
         obj = models.VersionModel(
             version=Version('0.1.1'),
@@ -209,7 +202,6 @@ class DjangoFieldTestCase(unittest.TestCase):
         self.assertEqual(o2.optional, obj2.object.optional)
 
 
-@unittest.skipIf(not django_loaded, "Django not installed")
 class FieldMigrationTests(DjangoTestCase):
     def test_version_field(self):
         field = django_fields.VersionField(
@@ -234,7 +226,6 @@ class FieldMigrationTests(DjangoTestCase):
         self.assertEqual(field.deconstruct()[3], expected)
 
 
-@unittest.skipIf(not django_loaded, "Django not installed")
 class FullMigrateTests(TransactionTestCase):
     def test_migrate(self):
         # Let's check that this does not crash
@@ -246,7 +237,6 @@ class FullMigrateTests(TransactionTestCase):
             self.assertIn('django_test_app_versionmodel', table_list)
 
 
-@unittest.skipIf(not django_loaded, "Django not installed")
 class DbInteractingTestCase(DjangoTestCase):
 
     def test_db_interaction(self):
