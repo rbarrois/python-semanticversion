@@ -117,12 +117,14 @@ class MatchTestCase(testing.TestCase):
         ],
     }
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS)
     def test_invalid(self):
         for invalid in self.invalid_specs:
             with self.subTest(spec=invalid):
                 with self.assertRaises(ValueError, msg="Spec(%r) should be invalid" % invalid):
                     semantic_version.Spec(invalid)
 
+    @testing.expect_warning(testing.WARN_SPECITEM, testing.WARN_SPEC_CLASS, testing.WARN_SPEC_PARTIAL)
     def test_simple(self):
         for valid in self.valid_specs:
             with self.subTest(spec=valid):
@@ -130,6 +132,7 @@ class MatchTestCase(testing.TestCase):
                 normalized = str(spec)
                 self.assertEqual(spec, semantic_version.SpecItem(normalized))
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS)
     def test_match(self):
         for spec_text, versions in self.matches.items():
             for version_text in versions:
@@ -141,6 +144,7 @@ class MatchTestCase(testing.TestCase):
                     self.assertTrue(spec.match(version), "%r does not match %r" % (version, spec))
                     self.assertTrue(semantic_version.match(spec_text, version_text))
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS)
     def test_contains(self):
         spec = semantic_version.Spec('<=0.1.1')
         self.assertFalse('0.1.0' in spec, "0.1.0 should not be in %r" % spec)
@@ -151,6 +155,7 @@ class MatchTestCase(testing.TestCase):
         version = semantic_version.Version('0.1.1-rc1+4.2')
         self.assertTrue(version in spec, "%r should be in %r" % (version, spec))
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS)
     def test_prerelease_check(self):
         strict_spec = semantic_version.Spec('>=0.1.1-')
         lax_spec = semantic_version.Spec('>=0.1.1')
@@ -158,6 +163,7 @@ class MatchTestCase(testing.TestCase):
         self.assertFalse(version in lax_spec, "%r should not be in %r" % (version, lax_spec))
         self.assertFalse(version in strict_spec, "%r should not be in %r" % (version, strict_spec))
 
+    @testing.expect_warning(testing.WARN_SPEC_CLASS)
     def test_build_check(self):
         spec = semantic_version.Spec('<=0.1.1-rc1')
         version = semantic_version.Version('0.1.1-rc1+4.2')

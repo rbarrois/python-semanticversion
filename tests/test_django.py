@@ -19,7 +19,8 @@ from semantic_version import django_fields
 from .setup_django import configure_django
 from . import testing
 
-configure_django()
+with testing.expect_warning(testing.WARN_VERSION_PARTIAL):
+    configure_django()
 
 from .django_test_app import models  # noqa: E402
 
@@ -27,6 +28,7 @@ from .django_test_app import models  # noqa: E402
 test_state = {}
 
 
+@testing.expect_warning(testing.WARN_VERSION_PARTIAL)
 def setUpModule():
     django_test_utils.setup_test_environment()
     runner = django_test_runner.DiscoverRunner()
@@ -119,6 +121,7 @@ class DjangoFieldTestCase(testing.TestCase):
         self.assertEqual(Version('0.1.1'), obj.version)
         self.assertEqual(SimpleSpec('==0,!=0.2'), obj.spec)
 
+    @testing.expect_warning(testing.WARN_SPEC_PARTIAL)
     def test_coerce_clean(self):
         obj = models.CoerceVersionModel(version='0.1.1a+2', partial='23')
         obj.full_clean()
@@ -137,6 +140,7 @@ class DjangoFieldTestCase(testing.TestCase):
         v2 = models.VersionModel(version='0.1', spec='==0.1.1,!=0.1.1-alpha')
         self.assertRaises(ValueError, v2.full_clean)
 
+    @testing.expect_warning(testing.WARN_SPEC_PARTIAL)
     def test_partial(self):
         obj = models.PartialVersionModel(partial=Version('0.1.0'))
 
@@ -181,6 +185,7 @@ class DjangoFieldTestCase(testing.TestCase):
         self.assertEqual(o2.spec, obj2.object.spec)
         self.assertEqual(o2.npm_spec, obj2.object.npm_spec)
 
+    @testing.expect_warning(testing.WARN_SPEC_PARTIAL)
     def test_serialization_partial(self):
         o1 = models.PartialVersionModel(
             partial=Version('0.1.1', partial=True),
@@ -203,6 +208,7 @@ class DjangoFieldTestCase(testing.TestCase):
 
 
 class FieldMigrationTests(DjangoTestCase):
+    @testing.expect_warning(testing.WARN_VERSION_PARTIAL)
     def test_version_field(self):
         field = django_fields.VersionField(
             partial=True,
@@ -227,6 +233,7 @@ class FieldMigrationTests(DjangoTestCase):
 
 
 class FullMigrateTests(TransactionTestCase):
+    @testing.expect_warning(testing.WARN_VERSION_PARTIAL)
     def test_migrate(self):
         # Let's check that this does not crash
         call_command('makemigrations', verbosity=0)

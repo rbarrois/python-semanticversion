@@ -604,7 +604,7 @@ def compare(v1, v2):
 
 
 def match(spec, version):
-    return Spec(spec).match(Version(version))
+    return SimpleSpec(spec).match(Version(version))
 
 
 def validate(version_string):

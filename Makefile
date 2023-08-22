@@ -47,7 +47,7 @@ testall:
 
 # DOC: Run tests for the currently installed version
 test:
-	python -Wdefault -m nose2
+	python -Werr -m nose2
 
 # DOC: Perform code quality tasks
 lint: check-manifest flake8
