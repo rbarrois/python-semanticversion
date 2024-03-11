@@ -295,6 +295,8 @@ class Version(object):
         build = build.replace('+', '.')
 
         if prerelease:
+            if prerelease.startswith("0"):
+                prerelease = prerelease.lstrip("0") or "0"
             version = '%s-%s' % (version, prerelease)
         if build:
             version = '%s+%s' % (version, build)
